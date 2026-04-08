@@ -1,7 +1,7 @@
-
 import { useState, useEffect, useRef } from "react";
 import emailjs from "@emailjs/browser";
 
+// ---------- GPA / CGPA Constants & Helpers ----------
 const GRADES = [
   { l: "A+  — 4.00", p: 4.0, g: "A+" },
   { l: "A   — 4.00", p: 4.0, g: "A" },
@@ -49,13 +49,9 @@ function AnimatedNumber({ value, decimals = 2 }) {
 function CourseCard({ id, index, removable, onRemove, data, onChange }) {
   return (
     <div style={{
-      background: "rgba(255,255,255,0.03)",
-      border: "1px solid rgba(255,255,255,0.08)",
-      borderRadius: 16,
-      padding: "20px 20px 16px",
-      position: "relative",
-      transition: "border-color 0.2s, transform 0.2s",
-      marginBottom: 12,
+      background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)",
+      borderRadius: 16, padding: "20px 20px 16px", position: "relative",
+      transition: "border-color 0.2s, transform 0.2s", marginBottom: 12,
       animation: "slideIn 0.25s ease",
     }}
       onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(167,139,250,0.35)"}
@@ -202,6 +198,136 @@ function GradeProgressBar({ gpa }) {
   );
 }
 
+// ---------- Calculator Component ----------
+function CalculatorPanel() {
+  const [mode, setMode] = useState("normal");
+  const [input, setInput] = useState("");
+  const [result, setResult] = useState("0");
+  const [history, setHistory] = useState([]);
+
+  const handleNormalClick = (value) => {
+    if (value === "C") { setInput(""); setResult("0"); }
+    else if (value === "⌫") { setInput(prev => prev.slice(0, -1)); }
+    else if (value === "=") {
+      try {
+        const evalResult = Function('"use strict";return (' + input + ')')();
+        const res = typeof evalResult === "number" ? evalResult.toString() : "Error";
+        setResult(res);
+        setHistory(prev => [`${input} = ${res}`, ...prev.slice(0, 4)]);
+        setInput(res);
+      } catch { setResult("Error"); setInput(""); }
+    } else {
+      setInput(prev => prev + value);
+    }
+  };
+
+  const handleScientific = (func) => {
+    const current = parseFloat(input) || 0;
+    let res;
+    try {
+      switch (func) {
+        case "sin": res = Math.sin(current * Math.PI / 180); break;
+        case "cos": res = Math.cos(current * Math.PI / 180); break;
+        case "tan": res = Math.tan(current * Math.PI / 180); break;
+        case "√": res = Math.sqrt(current); break;
+        case "x²": res = Math.pow(current, 2); break;
+        case "log": res = Math.log10(current); break;
+        case "ln": res = Math.log(current); break;
+        case "π": res = Math.PI; break;
+        case "e": res = Math.E; break;
+        case "(": setInput(prev => prev + "("); return;
+        case ")": setInput(prev => prev + ")"); return;
+        default: return;
+      }
+      const resStr = res.toString();
+      setResult(resStr);
+      setInput(resStr);
+      setHistory(prev => [`${func}(${current}) = ${resStr}`, ...prev.slice(0, 4)]);
+    } catch { setResult("Error"); setInput(""); }
+  };
+
+  const clearAll = () => { setInput(""); setResult("0"); };
+
+  const normalButtons = [
+    ["C", "⌫", "%", "/"],
+    ["7", "8", "9", "*"],
+    ["4", "5", "6", "-"],
+    ["1", "2", "3", "+"],
+    ["00", "0", ".", "="],
+  ];
+
+  const scientificButtons = [
+    ["sin", "cos", "tan", "("],
+    ["√", "x²", "log", ")"],
+    ["ln", "π", "e", "/"],
+    ["7", "8", "9", "*"],
+    ["4", "5", "6", "-"],
+    ["1", "2", "3", "+"],
+    ["C", "0", ".", "="],
+  ];
+
+  return (
+    <div>
+      {/* Display */}
+      <div style={{ background: "rgba(0,0,0,0.3)", borderRadius: 16, padding: "20px 18px", border: "1px solid rgba(255,255,255,0.06)", marginBottom: 18 }}>
+        <div style={{ fontSize: 14, color: "rgba(255,255,255,0.4)", fontFamily: "'JetBrains Mono', monospace", minHeight: 22, wordBreak: "break-all" }}>
+          {input || "0"}
+        </div>
+        <div style={{ fontSize: 32, fontWeight: 600, color: "#fff", fontFamily: "'JetBrains Mono', monospace", letterSpacing: -1, wordBreak: "break-all" }}>
+          {result}
+        </div>
+      </div>
+
+      {/* Mode Toggle */}
+      <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+        {["normal", "scientific"].map(m => (
+          <button key={m} onClick={() => setMode(m)} style={{
+            flex: 1, padding: "10px", background: mode === m ? "linear-gradient(135deg,#7c3aed,#6d28d9)" : "rgba(255,255,255,0.03)",
+            border: mode === m ? "none" : "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#fff", fontSize: 13, fontWeight: 500,
+            cursor: "pointer", fontFamily: "'DM Sans', sans-serif", transition: "all 0.2s", textTransform: "capitalize"
+          }}>{m}</button>
+        ))}
+      </div>
+
+      {/* Buttons Grid */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8 }}>
+        {(mode === "normal" ? normalButtons : scientificButtons).map((row, i) =>
+          row.map((btn, j) => (
+            <button key={`${i}-${j}`} onClick={() => {
+              if (mode === "normal") handleNormalClick(btn);
+              else {
+                if (["sin", "cos", "tan", "√", "x²", "log", "ln", "π", "e", "(", ")"].includes(btn)) {
+                  if (btn === "π" || btn === "e") { setInput(prev => prev + btn); }
+                  else handleScientific(btn);
+                } else handleNormalClick(btn);
+              }
+            }} style={{
+              padding: "14px 0", background: ["C", "="].includes(btn) ? "linear-gradient(135deg,#7c3aed,#6d28d9)" : "rgba(255,255,255,0.05)",
+              border: "1px solid rgba(255,255,255,0.08)", borderRadius: 12, color: "#fff", fontSize: 16, fontWeight: 500,
+              cursor: "pointer", fontFamily: btn.match(/[0-9]/) ? "'JetBrains Mono', monospace" : "'DM Sans', sans-serif",
+              transition: "all 0.15s", gridColumn: btn === "=" ? "span 1" : "auto"
+            }}
+              onMouseEnter={e => { if (!["C", "="].includes(btn)) e.currentTarget.style.background = "rgba(124,58,237,0.25)"; }}
+              onMouseLeave={e => { if (!["C", "="].includes(btn)) e.currentTarget.style.background = "rgba(255,255,255,0.05)"; }}
+            >{btn}</button>
+          ))
+        )}
+      </div>
+
+      {/* History */}
+      {history.length > 0 && (
+        <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+          <div style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 8 }}>Recent</div>
+          {history.map((h, i) => (
+            <div key={i} style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", fontFamily: "'JetBrains Mono', monospace", padding: "4px 0" }}>{h}</div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ---------- Main App ----------
 export default function App() {
   const [tab, setTab] = useState("gpa");
   const [visitors, setVisitors] = useState(1312);
@@ -287,42 +413,34 @@ export default function App() {
 
   const submitContact = () => {
     setContactErr("");
-
     if (!contact.name.trim() || !contact.email.trim() || !contact.message.trim()) {
       setContactErr("Please fill in all required fields.");
       return;
     }
-
     if (!/\S+@\S+\.\S+/.test(contact.email)) {
       setContactErr("Please enter a valid email address.");
       return;
     }
-
     emailjs.send(
-      "service_9216",
-      "template_9216",
+      import.meta.env.VITE_EMAILJS_SERVICE_ID,
+      import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
       {
         name: contact.name,
         email: contact.email,
         subject: contact.subject,
         message: contact.message
       },
-      "zi7G3LciN7Dv838Zv"
+      import.meta.env.VITE_EMAILJS_PUBLIC_KEY
     )
-    .then(() => {
-  setContactSent(true);
-  setContactErr("");
-  setContact({
-    name: "",
-    email: "",
-    subject: "",
-    message: ""
-  });
-})
-    .catch((err) => {
-  console.error(err);
-  setContactErr("Failed to send message. Try again.");
-});
+      .then(() => {
+        setContactSent(true);
+        setContactErr("");
+        setContact({ name: "", email: "", subject: "", message: "" });
+      })
+      .catch((err) => {
+        console.error(err);
+        setContactErr("Failed to send message. Try again.");
+      });
   };
 
   const inputStyle = {
@@ -333,6 +451,12 @@ export default function App() {
 
   return (
     <div style={{ fontFamily: "'DM Sans', sans-serif", background: "#080617", color: "#fff", minHeight: "100vh" }}>
+      {/* SEO Meta (invisible, but helps search engines) */}
+      <div style={{ display: "none" }}>
+        <h1>GPA & CGPA Calculator with Scientific Calculator</h1>
+        <p>Free online GPA calculator, CGPA calculator, and scientific calculator. Track academic performance and do advanced math.</p>
+      </div>
+
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
         @keyframes slideIn { from { opacity:0; transform:translateY(12px) } to { opacity:1; transform:translateY(0) } }
@@ -353,10 +477,10 @@ export default function App() {
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px 0 0" }}>
           <div>
             <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, fontWeight: 700, letterSpacing: -0.5, background: "linear-gradient(135deg,#fff 40%,#a78bfa)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-              GPA Calculator
+              Academic Calculator
             </div>
             <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", letterSpacing: 1.5, textTransform: "uppercase", marginTop: 2 }}>
-              Academic Performance Tracker
+              GPA • CGPA • Scientific
             </div>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 8, background: "rgba(124,58,237,0.12)", border: "1px solid rgba(124,58,237,0.25)", borderRadius: 24, padding: "8px 14px" }}>
@@ -367,20 +491,20 @@ export default function App() {
         </div>
 
         <div style={{ display: "flex", gap: 0, marginTop: 20 }}>
-          {["gpa", "cgpa"].map((t, i) => (
+          {["gpa", "cgpa", "calculator"].map((t, i) => (
             <button key={t} onClick={() => setTab(t)} style={{
               padding: "12px 24px", fontSize: 13, fontWeight: 500, cursor: "pointer",
               background: "transparent", border: "none", borderBottom: tab === t ? "2px solid #7c3aed" : "2px solid transparent",
               color: tab === t ? "#fff" : "rgba(255,255,255,0.35)", transition: "all 0.2s",
-              fontFamily: "'DM Sans', sans-serif", letterSpacing: 0.3
+              fontFamily: "'DM Sans', sans-serif", letterSpacing: 0.3, textTransform: "capitalize"
             }}>
-              {t === "gpa" ? "Semester GPA" : "CGPA"}
+              {t === "gpa" ? "Semester GPA" : t === "cgpa" ? "CGPA" : "Calculator"}
             </button>
           ))}
         </div>
       </div>
 
-      {/* GPA Panel */}
+      {/* Tab Content */}
       {tab === "gpa" && (
         <div style={{ padding: "20px 20px 0" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
@@ -435,7 +559,6 @@ export default function App() {
         </div>
       )}
 
-      {/* CGPA Panel */}
       {tab === "cgpa" && (
         <div style={{ padding: "20px 20px 0" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
@@ -518,6 +641,13 @@ export default function App() {
         </div>
       )}
 
+      {tab === "calculator" && (
+        <div style={{ padding: "20px 20px 0" }}>
+          <CalculatorPanel />
+          <div style={{ height: 24 }} />
+        </div>
+      )}
+
       {/* Contact Us */}
       <div style={{ margin: "0 20px 0", padding: "28px 0 0", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
         <div style={{ marginBottom: 20 }}>
@@ -593,13 +723,32 @@ export default function App() {
 
       {/* Footer */}
       <div style={{ textAlign: "center", padding: "28px 20px 20px", marginTop: 24, borderTop: "1px solid rgba(255,255,255,0.05)" }}>
-        <div style={{ fontFamily: "'Playfair Display',serif", fontSize: 14, color: "rgba(255,255,255,0.5)" }}>
-          Crafted by <span style={{ color: "#a78bfa", fontWeight: 600 }}>Usman Murtaza</span>
-        </div>
-        <div style={{ fontSize: 10, color: "rgba(255,255,255,0.2)", letterSpacing: 1, textTransform: "uppercase", marginTop: 4 }}>
-          Academic Calculator — All rights reserved
+        <div
+          style={{
+            fontFamily: "'Playfair Display',serif",
+            fontSize: 14,
+            color: "rgba(255,255,255,0.5)"
+          }}
+        >
+          Crafted by{" "}
+          <a
+            href="https://usmanmurtaza.netlify.app"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              color: "#a78bfa",
+              fontWeight: 600,
+              textDecoration: "none"
+            }}
+          >
+            Usman Murtaza
+          </a>
         </div>
       </div>
+      <div style={{ fontSize: 10, color: "rgba(255,255,255,0.2)", letterSpacing: 1, textTransform: "uppercase", marginTop: 4 }}>
+        Academic Calculator — All rights reserved
+      </div>
     </div>
+    </div >
   );
 }

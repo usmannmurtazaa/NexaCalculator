@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: https://nexacalculator.netlify.app/sitemap.xml
+
+# Crawl-delay: 10
