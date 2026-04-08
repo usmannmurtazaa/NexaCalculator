@@ -139,7 +139,7 @@ function ResultCard({ gpa, courses, credits, points }) {
       <div style={{ background: "linear-gradient(135deg,#0f0829 0%,#1a0f3a 100%)", padding: "32px 24px", textAlign: "center", position: "relative" }}>
         <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: "linear-gradient(90deg,transparent,#7c3aed,#a78bfa,transparent)" }} />
         <div style={{ fontSize: 10, letterSpacing: 2, textTransform: "uppercase", color: "rgba(255,255,255,0.4)", marginBottom: 12 }}>Semester GPA</div>
-        <div style={{ fontSize: 68, fontWeight: 700, color: "#a78bfa", fontFamily: "'JetBrains Mono',monospace", lineHeight: 1, letterSpacing: -2 }}>
+        <div style={{ fontSize: "clamp(48px, 15vw, 68px)", fontWeight: 700, color: "#a78bfa", fontFamily: "'JetBrains Mono',monospace", lineHeight: 1, letterSpacing: -2 }}>
           <AnimatedNumber value={gpa} />
         </div>
         <div style={{ marginTop: 12, display: "inline-block", padding: "5px 16px", borderRadius: 20, background: "rgba(167,139,250,0.1)", border: `1px solid ${s.color}33`, color: s.color, fontSize: 12, fontWeight: 500 }}>
@@ -149,7 +149,7 @@ function ResultCard({ gpa, courses, credits, points }) {
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", background: "rgba(255,255,255,0.02)", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
         {[["Courses", courses, ""], ["Credit hrs", credits, ""], ["Quality pts", points, ".2f"]].map(([k, v, fmt], i) => (
           <div key={i} style={{ padding: "14px 8px", textAlign: "center", borderRight: i < 2 ? "1px solid rgba(255,255,255,0.06)" : "none" }}>
-            <div style={{ fontSize: 18, fontWeight: 700, color: "#e2d9f3", fontFamily: "'JetBrains Mono',monospace" }}>{fmt ? parseFloat(v).toFixed(2) : v}</div>
+            <div style={{ fontSize: "clamp(16px, 4vw, 18px)", fontWeight: 700, color: "#e2d9f3", fontFamily: "'JetBrains Mono',monospace" }}>{fmt ? parseFloat(v).toFixed(2) : v}</div>
             <div style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", textTransform: "uppercase", letterSpacing: 0.8, marginTop: 3 }}>{k}</div>
           </div>
         ))}
@@ -165,7 +165,7 @@ function CGPAResultCard({ cgpa, sems, total, best }) {
       <div style={{ background: "linear-gradient(135deg,#0f0829,#1a0f3a)", padding: "32px 24px", textAlign: "center", position: "relative" }}>
         <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: "linear-gradient(90deg,transparent,#7c3aed,#a78bfa,transparent)" }} />
         <div style={{ fontSize: 10, letterSpacing: 2, textTransform: "uppercase", color: "rgba(255,255,255,0.4)", marginBottom: 12 }}>Cumulative CGPA</div>
-        <div style={{ fontSize: 68, fontWeight: 700, color: "#a78bfa", fontFamily: "'JetBrains Mono',monospace", lineHeight: 1, letterSpacing: -2 }}>
+        <div style={{ fontSize: "clamp(48px, 15vw, 68px)", fontWeight: 700, color: "#a78bfa", fontFamily: "'JetBrains Mono',monospace", lineHeight: 1, letterSpacing: -2 }}>
           <AnimatedNumber value={cgpa} />
         </div>
         <div style={{ marginTop: 12, display: "inline-block", padding: "5px 16px", borderRadius: 20, background: "rgba(167,139,250,0.1)", border: `1px solid ${s.color}33`, color: s.color, fontSize: 12, fontWeight: 500 }}>
@@ -175,7 +175,7 @@ function CGPAResultCard({ cgpa, sems, total, best }) {
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", background: "rgba(255,255,255,0.02)", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
         {[["Semesters", sems, false], ["GPA sum", total, true], ["Best sem", best, true]].map(([k, v, fmt], i) => (
           <div key={i} style={{ padding: "14px 8px", textAlign: "center", borderRight: i < 2 ? "1px solid rgba(255,255,255,0.06)" : "none" }}>
-            <div style={{ fontSize: 18, fontWeight: 700, color: "#e2d9f3", fontFamily: "'JetBrains Mono',monospace" }}>{fmt ? parseFloat(v).toFixed(2) : v}</div>
+            <div style={{ fontSize: "clamp(16px, 4vw, 18px)", fontWeight: 700, color: "#e2d9f3", fontFamily: "'JetBrains Mono',monospace" }}>{fmt ? parseFloat(v).toFixed(2) : v}</div>
             <div style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", textTransform: "uppercase", letterSpacing: 0.8, marginTop: 3 }}>{k}</div>
           </div>
         ))}
@@ -246,8 +246,6 @@ function CalculatorPanel() {
     } catch { setResult("Error"); setInput(""); }
   };
 
-  const clearAll = () => { setInput(""); setResult("0"); };
-
   const normalButtons = [
     ["C", "⌫", "%", "/"],
     ["7", "8", "9", "*"],
@@ -269,11 +267,11 @@ function CalculatorPanel() {
   return (
     <div>
       {/* Display */}
-      <div style={{ background: "rgba(0,0,0,0.3)", borderRadius: 16, padding: "20px 18px", border: "1px solid rgba(255,255,255,0.06)", marginBottom: 18 }}>
-        <div style={{ fontSize: 14, color: "rgba(255,255,255,0.4)", fontFamily: "'JetBrains Mono', monospace", minHeight: 22, wordBreak: "break-all" }}>
+      <div style={{ background: "rgba(0,0,0,0.3)", borderRadius: 16, padding: "clamp(16px, 4vw, 20px) clamp(14px, 3vw, 18px)", border: "1px solid rgba(255,255,255,0.06)", marginBottom: 18 }}>
+        <div style={{ fontSize: "clamp(12px, 3vw, 14px)", color: "rgba(255,255,255,0.4)", fontFamily: "'JetBrains Mono', monospace", minHeight: 22, wordBreak: "break-all" }}>
           {input || "0"}
         </div>
-        <div style={{ fontSize: 32, fontWeight: 600, color: "#fff", fontFamily: "'JetBrains Mono', monospace", letterSpacing: -1, wordBreak: "break-all" }}>
+        <div style={{ fontSize: "clamp(24px, 6vw, 32px)", fontWeight: 600, color: "#fff", fontFamily: "'JetBrains Mono', monospace", letterSpacing: -1, wordBreak: "break-all" }}>
           {result}
         </div>
       </div>
@@ -282,15 +280,15 @@ function CalculatorPanel() {
       <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
         {["normal", "scientific"].map(m => (
           <button key={m} onClick={() => setMode(m)} style={{
-            flex: 1, padding: "10px", background: mode === m ? "linear-gradient(135deg,#7c3aed,#6d28d9)" : "rgba(255,255,255,0.03)",
-            border: mode === m ? "none" : "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#fff", fontSize: 13, fontWeight: 500,
+            flex: 1, padding: "clamp(8px, 2vw, 10px)", background: mode === m ? "linear-gradient(135deg,#7c3aed,#6d28d9)" : "rgba(255,255,255,0.03)",
+            border: mode === m ? "none" : "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#fff", fontSize: "clamp(12px, 3vw, 13px)", fontWeight: 500,
             cursor: "pointer", fontFamily: "'DM Sans', sans-serif", transition: "all 0.2s", textTransform: "capitalize"
           }}>{m}</button>
         ))}
       </div>
 
       {/* Buttons Grid */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "clamp(6px, 2vw, 8px)" }}>
         {(mode === "normal" ? normalButtons : scientificButtons).map((row, i) =>
           row.map((btn, j) => (
             <button key={`${i}-${j}`} onClick={() => {
@@ -302,8 +300,8 @@ function CalculatorPanel() {
                 } else handleNormalClick(btn);
               }
             }} style={{
-              padding: "14px 0", background: ["C", "="].includes(btn) ? "linear-gradient(135deg,#7c3aed,#6d28d9)" : "rgba(255,255,255,0.05)",
-              border: "1px solid rgba(255,255,255,0.08)", borderRadius: 12, color: "#fff", fontSize: 16, fontWeight: 500,
+              padding: "clamp(10px, 3vw, 14px) 0", background: ["C", "="].includes(btn) ? "linear-gradient(135deg,#7c3aed,#6d28d9)" : "rgba(255,255,255,0.05)",
+              border: "1px solid rgba(255,255,255,0.08)", borderRadius: 12, color: "#fff", fontSize: "clamp(14px, 3.5vw, 16px)", fontWeight: 500,
               cursor: "pointer", fontFamily: btn.match(/[0-9]/) ? "'JetBrains Mono', monospace" : "'DM Sans', sans-serif",
               transition: "all 0.15s", gridColumn: btn === "=" ? "span 1" : "auto"
             }}
@@ -319,7 +317,7 @@ function CalculatorPanel() {
         <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid rgba(255,255,255,0.06)" }}>
           <div style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 8 }}>Recent</div>
           {history.map((h, i) => (
-            <div key={i} style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", fontFamily: "'JetBrains Mono', monospace", padding: "4px 0" }}>{h}</div>
+            <div key={i} style={{ fontSize: "clamp(11px, 2.5vw, 13px)", color: "rgba(255,255,255,0.5)", fontFamily: "'JetBrains Mono', monospace", padding: "4px 0", wordBreak: "break-all" }}>{h}</div>
           ))}
         </div>
       )}
@@ -458,10 +456,11 @@ export default function App() {
       </div>
 
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700;1,800;1,900&family=JetBrains+Mono:wght@400;500;700&display=swap');
         @keyframes slideIn { from { opacity:0; transform:translateY(12px) } to { opacity:1; transform:translateY(0) } }
         @keyframes fadeUp { from { opacity:0; transform:translateY(20px) } to { opacity:1; transform:translateY(0) } }
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+        @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
         * { box-sizing:border-box; }
         select option { background:#1a1035; color:#fff; }
         input::placeholder { color:rgba(255,255,255,0.2); }
@@ -470,250 +469,339 @@ export default function App() {
         ::-webkit-scrollbar { width:4px; }
         ::-webkit-scrollbar-track { background:transparent; }
         ::-webkit-scrollbar-thumb { background:#7c3aed44; border-radius:4px; }
+        
+        @media (max-width: 768px) {
+          .header-container {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 12px;
+          }
+          .tab-buttons {
+            justify-content: space-around;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          .semester-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .contact-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .visitor-badge {
+            align-self: flex-start;
+          }
+        }
       `}</style>
 
       {/* Header */}
-      <div style={{ background: "linear-gradient(180deg,#0f0829 0%,#080617 100%)", borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "0 20px" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px 0 0" }}>
+      <div style={{ background: "linear-gradient(180deg,#0f0829 0%,#080617 100%)", borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "clamp(16px, 4vw, 20px) clamp(16px, 4vw, 20px) 0" }}>
+        <div className="header-container" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "clamp(14px, 3vw, 18px) 0 0" }}>
           <div>
-            <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, fontWeight: 700, letterSpacing: -0.5, background: "linear-gradient(135deg,#fff 40%,#a78bfa)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-              Academic Calculator
+            <div style={{ 
+              fontFamily: "'Playfair Display', serif", 
+              fontSize: "clamp(20px, 5vw, 28px)", 
+              fontWeight: 800, 
+              letterSpacing: "-0.02em",
+              background: "linear-gradient(135deg, #ffffff 0%, #c4b5fd 50%, #a78bfa 100%)",
+              backgroundSize: "200% 200%",
+              animation: "gradientShift 3s ease infinite",
+              WebkitBackgroundClip: "text", 
+              WebkitTextFillColor: "transparent",
+              textShadow: "0 0 30px rgba(167, 139, 250, 0.3)",
+              marginBottom: "4px"
+            }}>
+              Nexa Calculator
             </div>
-            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", letterSpacing: 1.5, textTransform: "uppercase", marginTop: 2 }}>
-              GPA • CGPA • Scientific
+            <div style={{ 
+              fontSize: "clamp(10px, 2.5vw, 12px)", 
+              color: "rgba(255,255,255,0.4)", 
+              letterSpacing: "0.15em", 
+              textTransform: "uppercase", 
+              marginTop: 2,
+              fontWeight: 500,
+              fontFamily: "'DM Sans', sans-serif"
+            }}>
+              Academic Excellence Suite • GPA • CGPA • Scientific
             </div>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, background: "rgba(124,58,237,0.12)", border: "1px solid rgba(124,58,237,0.25)", borderRadius: 24, padding: "8px 14px" }}>
-            <div style={{ width: 7, height: 7, borderRadius: "50%", background: "#a78bfa", animation: "pulse 2s infinite" }} />
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 500, color: "#c4b5fd" }}>{visitors.toLocaleString()}</span>
-            <span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", letterSpacing: 0.5 }}>visitors</span>
+          <div className="visitor-badge" style={{ 
+            display: "flex", 
+            alignItems: "center", 
+            gap: 8, 
+            background: "rgba(124,58,237,0.15)", 
+            border: "1px solid rgba(124,58,237,0.3)", 
+            borderRadius: 30, 
+            padding: "clamp(6px, 2vw, 8px) clamp(12px, 3vw, 16px)",
+            backdropFilter: "blur(10px)",
+            boxShadow: "0 4px 15px rgba(124, 58, 237, 0.2)"
+          }}>
+            <div style={{ 
+              width: 8, 
+              height: 8, 
+              borderRadius: "50%", 
+              background: "#a78bfa", 
+              animation: "pulse 2s infinite",
+              boxShadow: "0 0 15px #a78bfa"
+            }} />
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "clamp(12px, 3vw, 14px)", fontWeight: 600, color: "#c4b5fd" }}>{visitors.toLocaleString()}</span>
+            <span style={{ fontSize: "clamp(9px, 2vw, 11px)", color: "rgba(255,255,255,0.4)", letterSpacing: 0.5, fontWeight: 400 }}>active users</span>
           </div>
         </div>
 
-        <div style={{ display: "flex", gap: 0, marginTop: 20 }}>
+        <div className="tab-buttons" style={{ display: "flex", gap: "clamp(8px, 2vw, 16px)", marginTop: "clamp(16px, 4vw, 24px)", flexWrap: "wrap" }}>
           {["gpa", "cgpa", "calculator"].map((t, i) => (
             <button key={t} onClick={() => setTab(t)} style={{
-              padding: "12px 24px", fontSize: 13, fontWeight: 500, cursor: "pointer",
-              background: "transparent", border: "none", borderBottom: tab === t ? "2px solid #7c3aed" : "2px solid transparent",
-              color: tab === t ? "#fff" : "rgba(255,255,255,0.35)", transition: "all 0.2s",
-              fontFamily: "'DM Sans', sans-serif", letterSpacing: 0.3, textTransform: "capitalize"
-            }}>
-              {t === "gpa" ? "Semester GPA" : t === "cgpa" ? "CGPA" : "Calculator"}
+              padding: "clamp(10px, 2.5vw, 14px) clamp(20px, 5vw, 28px)", 
+              fontSize: "clamp(13px, 3vw, 15px)", 
+              fontWeight: 600, 
+              cursor: "pointer",
+              background: tab === t ? "linear-gradient(135deg, rgba(124,58,237,0.2), rgba(167,139,250,0.1))" : "transparent", 
+              border: "none", 
+              borderBottom: tab === t ? "3px solid #7c3aed" : "3px solid transparent",
+              color: tab === t ? "#fff" : "rgba(255,255,255,0.4)", 
+              transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+              fontFamily: "'DM Sans', sans-serif", 
+              letterSpacing: "0.02em", 
+              textTransform: "capitalize",
+              borderRadius: "8px 8px 0 0",
+              position: "relative",
+              top: tab === t ? "0px" : "2px"
+            }}
+            onMouseEnter={e => { if (tab !== t) e.currentTarget.style.color = "rgba(255,255,255,0.8)"; }}
+            onMouseLeave={e => { if (tab !== t) e.currentTarget.style.color = "rgba(255,255,255,0.4)"; }}
+            >
+              {t === "gpa" ? "📊 Semester GPA" : t === "cgpa" ? "📈 Cumulative CGPA" : "🔢 Scientific Calculator"}
             </button>
           ))}
         </div>
       </div>
 
       {/* Tab Content */}
-      {tab === "gpa" && (
-        <div style={{ padding: "20px 20px 0" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
-            <div style={{ fontSize: 11, fontWeight: 500, letterSpacing: 1.5, textTransform: "uppercase", color: "rgba(255,255,255,0.35)" }}>Courses & grades</div>
-            <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 11, color: "#7c3aed", background: "rgba(124,58,237,0.1)", border: "1px solid rgba(124,58,237,0.2)", padding: "3px 10px", borderRadius: 12 }}>
-              {courses.length} / 6
-            </div>
-          </div>
-
-          {courses.map((c, i) => (
-            <CourseCard key={c.id} id={c.id} index={i} removable={i >= 3} onRemove={removeCourse} data={c} onChange={updateCourse} />
-          ))}
-
-          {courses.length < 6 && (
-            <button onClick={addCourse} style={{
-              width: "100%", padding: "11px", border: "1.5px dashed rgba(124,58,237,0.3)",
-              borderRadius: 12, background: "transparent", color: "#7c3aed", fontSize: 13,
-              fontWeight: 500, cursor: "pointer", marginBottom: 14, fontFamily: "'DM Sans',sans-serif",
-              display: "flex", alignItems: "center", justifyContent: "center", gap: 8, transition: "all 0.2s"
-            }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = "#7c3aed"; e.currentTarget.style.background = "rgba(124,58,237,0.06)"; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(124,58,237,0.3)"; e.currentTarget.style.background = "transparent"; }}
-            >
-              <span style={{ fontSize: 18, lineHeight: 1 }}>+</span> Add more course
-            </button>
-          )}
-
-          <button onClick={calcGPA} style={{
-            width: "100%", padding: "14px", background: "linear-gradient(135deg,#7c3aed,#6d28d9)",
-            color: "#fff", border: "none", borderRadius: 12, fontSize: 15, fontWeight: 600,
-            cursor: "pointer", fontFamily: "'DM Sans',sans-serif", letterSpacing: 0.3, transition: "all 0.2s"
-          }}
-            onMouseEnter={e => e.currentTarget.style.opacity = "0.9"}
-            onMouseLeave={e => e.currentTarget.style.opacity = "1"}
-          >
-            Calculate GPA
-          </button>
-
-          {gpaErr && (
-            <div style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 10, padding: "10px 14px", fontSize: 13, color: "#f87171", marginTop: 10 }}>
-              {gpaErr}
-            </div>
-          )}
-
-          {gpaResult && (
-            <>
-              <ResultCard gpa={gpaResult.gpa} courses={gpaResult.count} credits={gpaResult.credits} points={gpaResult.points} />
-              <GradeProgressBar gpa={gpaResult.gpa} />
-            </>
-          )}
-          <div style={{ height: 24 }} />
-        </div>
-      )}
-
-      {tab === "cgpa" && (
-        <div style={{ padding: "20px 20px 0" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
-            <div style={{ fontSize: 11, fontWeight: 500, letterSpacing: 1.5, textTransform: "uppercase", color: "rgba(255,255,255,0.35)" }}>Semester GPAs</div>
-            <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 11, color: "#7c3aed", background: "rgba(124,58,237,0.1)", border: "1px solid rgba(124,58,237,0.2)", padding: "3px 10px", borderRadius: 12 }}>
-              {sems.length} / 6
-            </div>
-          </div>
-
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14 }}>
-            {sems.map((s, i) => (
-              <div key={s.id} style={{
-                background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)",
-                borderRadius: 14, padding: "14px 16px", position: "relative", animation: "slideIn 0.25s ease",
-                transition: "border-color 0.2s"
-              }}
-                onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(167,139,250,0.3)"}
-                onMouseLeave={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"}
-              >
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-                  <div style={{ fontSize: 10, fontWeight: 500, letterSpacing: 1, textTransform: "uppercase", color: "rgba(255,255,255,0.3)" }}>Semester {i + 1}</div>
-                  {i >= 2 && (
-                    <button onClick={() => removeSem(s.id)} style={{
-                      background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)",
-                      color: "#f87171", borderRadius: 6, width: 20, height: 20, cursor: "pointer",
-                      fontSize: 12, display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1
-                    }}>×</button>
-                  )}
-                </div>
-                <input
-                  type="number" min="0" max="4" step="0.01" placeholder="0.00"
-                  value={s.val}
-                  onChange={e => updateSem(s.id, e.target.value)}
-                  style={{
-                    width: "100%", background: "transparent", border: "none",
-                    borderBottom: "1.5px solid rgba(255,255,255,0.12)", color: "#fff",
-                    fontSize: 22, fontFamily: "'JetBrains Mono',monospace", fontWeight: 500,
-                    padding: "4px 0", outline: "none", transition: "border-color 0.2s"
-                  }}
-                  onFocus={e => e.target.style.borderBottomColor = "#7c3aed"}
-                  onBlur={e => e.target.style.borderBottomColor = "rgba(255,255,255,0.12)"}
-                />
+      <div style={{ padding: "clamp(16px, 4vw, 24px) clamp(16px, 4vw, 24px) 0" }}>
+        {tab === "gpa" && (
+          <div>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16, flexWrap: "wrap", gap: 10 }}>
+              <div style={{ fontSize: "clamp(11px, 2.5vw, 13px)", fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: "rgba(255,255,255,0.4)" }}>Current Courses & Grades</div>
+              <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 12, color: "#7c3aed", background: "rgba(124,58,237,0.12)", border: "1px solid rgba(124,58,237,0.25)", padding: "4px 12px", borderRadius: 20, fontWeight: 500 }}>
+                {courses.length} / 6 courses
               </div>
-            ))}
-          </div>
-
-          {sems.length < 6 && (
-            <button onClick={addSem} style={{
-              width: "100%", padding: "11px", border: "1.5px dashed rgba(124,58,237,0.3)",
-              borderRadius: 12, background: "transparent", color: "#7c3aed", fontSize: 13,
-              fontWeight: 500, cursor: "pointer", marginBottom: 14, fontFamily: "'DM Sans',sans-serif",
-              display: "flex", alignItems: "center", justifyContent: "center", gap: 8, transition: "all 0.2s"
-            }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = "#7c3aed"; e.currentTarget.style.background = "rgba(124,58,237,0.06)"; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(124,58,237,0.3)"; e.currentTarget.style.background = "transparent"; }}
-            >
-              <span style={{ fontSize: 18, lineHeight: 1 }}>+</span> Add semester
-            </button>
-          )}
-
-          <button onClick={calcCGPA} style={{
-            width: "100%", padding: "14px", background: "linear-gradient(135deg,#7c3aed,#6d28d9)",
-            color: "#fff", border: "none", borderRadius: 12, fontSize: 15, fontWeight: 600,
-            cursor: "pointer", fontFamily: "'DM Sans',sans-serif", letterSpacing: 0.3, transition: "all 0.2s"
-          }}
-            onMouseEnter={e => e.currentTarget.style.opacity = "0.9"}
-            onMouseLeave={e => e.currentTarget.style.opacity = "1"}
-          >
-            Calculate CGPA
-          </button>
-
-          {cgpaErr && (
-            <div style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 10, padding: "10px 14px", fontSize: 13, color: "#f87171", marginTop: 10 }}>
-              {cgpaErr}
             </div>
-          )}
 
-          {cgpaResult && <CGPAResultCard cgpa={cgpaResult.cgpa} sems={cgpaResult.sems} total={cgpaResult.total} best={cgpaResult.best} />}
-          <div style={{ height: 24 }} />
-        </div>
-      )}
+            {courses.map((c, i) => (
+              <CourseCard key={c.id} id={c.id} index={i} removable={i >= 3} onRemove={removeCourse} data={c} onChange={updateCourse} />
+            ))}
 
-      {tab === "calculator" && (
-        <div style={{ padding: "20px 20px 0" }}>
-          <CalculatorPanel />
-          <div style={{ height: 24 }} />
-        </div>
-      )}
+            {courses.length < 6 && (
+              <button onClick={addCourse} style={{
+                width: "100%", padding: "clamp(10px, 2.5vw, 12px)", border: "2px dashed rgba(124,58,237,0.4)",
+                borderRadius: 14, background: "transparent", color: "#a78bfa", fontSize: "clamp(13px, 3vw, 14px)",
+                fontWeight: 600, cursor: "pointer", marginBottom: 16, fontFamily: "'DM Sans',sans-serif",
+                display: "flex", alignItems: "center", justifyContent: "center", gap: 8, transition: "all 0.3s"
+              }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = "#a78bfa"; e.currentTarget.style.background = "rgba(124,58,237,0.08)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(124,58,237,0.4)"; e.currentTarget.style.background = "transparent"; e.currentTarget.style.transform = "translateY(0)"; }}
+              >
+                <span style={{ fontSize: 20, lineHeight: 1 }}>+</span> Add New Course
+              </button>
+            )}
 
-      {/* Contact Us */}
-      <div style={{ margin: "0 20px 0", padding: "28px 0 0", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-        <div style={{ marginBottom: 20 }}>
-          <div style={{ fontFamily: "'Playfair Display',serif", fontSize: 20, fontWeight: 600, letterSpacing: -0.3 }}>Contact Us</div>
-          <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", marginTop: 4 }}>Have questions or feedback? We'd love to hear from you.</div>
-        </div>
+            <button onClick={calcGPA} style={{
+              width: "100%", padding: "clamp(13px, 3vw, 16px)", background: "linear-gradient(135deg,#7c3aed,#6d28d9)",
+              color: "#fff", border: "none", borderRadius: 14, fontSize: "clamp(15px, 3.5vw, 16px)", fontWeight: 600,
+              cursor: "pointer", fontFamily: "'DM Sans',sans-serif", letterSpacing: 0.5, transition: "all 0.3s",
+              boxShadow: "0 8px 20px rgba(124, 58, 237, 0.3)"
+            }}
+              onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 12px 25px rgba(124, 58, 237, 0.4)"; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 8px 20px rgba(124, 58, 237, 0.3)"; }}
+            >
+              Calculate Semester GPA
+            </button>
 
-        {contactSent ? (
-          <div style={{ background: "rgba(52,211,153,0.08)", border: "1px solid rgba(52,211,153,0.2)", borderRadius: 16, padding: "28px 24px", textAlign: "center", animation: "fadeUp 0.4s ease" }}>
-            <div style={{ fontSize: 32, marginBottom: 12 }}>✓</div>
-            <div style={{ fontSize: 16, fontWeight: 600, color: "#34d399" }}>Message Sent!</div>
-            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", marginTop: 6 }}>We'll get back to you as soon as possible.</div>
-            <button onClick={() => { setContactSent(false); setContact({ name: "", email: "", subject: "", message: "" }); }} style={{
-              marginTop: 16, padding: "9px 20px", background: "rgba(52,211,153,0.1)", border: "1px solid rgba(52,211,153,0.25)",
-              borderRadius: 10, color: "#34d399", fontSize: 13, cursor: "pointer", fontFamily: "'DM Sans',sans-serif"
-            }}>Send another</button>
+            {gpaErr && (
+              <div style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.25)", borderRadius: 12, padding: "12px 16px", fontSize: 13, color: "#fca5a5", marginTop: 12, animation: "slideIn 0.3s ease" }}>
+                ⚠️ {gpaErr}
+              </div>
+            )}
+
+            {gpaResult && (
+              <>
+                <ResultCard gpa={gpaResult.gpa} courses={gpaResult.count} credits={gpaResult.credits} points={gpaResult.points} />
+                <GradeProgressBar gpa={gpaResult.gpa} />
+              </>
+            )}
           </div>
-        ) : (
-          <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 20, padding: "24px 20px" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
-              {[["name", "Your name *", "text"], ["email", "Email address *", "email"]].map(([field, ph, type]) => (
-                <div key={field}>
-                  <div style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", letterSpacing: 1, textTransform: "uppercase", marginBottom: 6 }}>{ph.replace(" *", "")}</div>
-                  <input type={type} placeholder={ph} value={contact[field]}
-                    onChange={e => setContact(p => ({ ...p, [field]: e.target.value }))}
-                    style={inputStyle}
-                    onFocus={e => e.target.style.borderColor = "#7c3aed"}
-                    onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.09)"}
+        )}
+
+        {tab === "cgpa" && (
+          <div>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16, flexWrap: "wrap", gap: 10 }}>
+              <div style={{ fontSize: "clamp(11px, 2.5vw, 13px)", fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: "rgba(255,255,255,0.4)" }}>Semester GPAs</div>
+              <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 12, color: "#7c3aed", background: "rgba(124,58,237,0.12)", border: "1px solid rgba(124,58,237,0.25)", padding: "4px 12px", borderRadius: 20, fontWeight: 500 }}>
+                {sems.length} / 6 semesters
+              </div>
+            </div>
+
+            <div className="semester-grid" style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "clamp(8px, 2vw, 12px)", marginBottom: 16 }}>
+              {sems.map((s, i) => (
+                <div key={s.id} style={{
+                  background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)",
+                  borderRadius: 16, padding: "clamp(14px, 3vw, 18px) clamp(12px, 3vw, 16px)", position: "relative", animation: "slideIn 0.25s ease",
+                  transition: "all 0.3s"
+                }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(167,139,250,0.4)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.transform = "translateY(0)"; }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+                    <div style={{ fontSize: "clamp(10px, 2.5vw, 12px)", fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "rgba(255,255,255,0.35)" }}>Semester {i + 1}</div>
+                    {i >= 2 && (
+                      <button onClick={() => removeSem(s.id)} style={{
+                        background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)",
+                        color: "#f87171", borderRadius: 8, width: 24, height: 24, cursor: "pointer",
+                        fontSize: 14, display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1,
+                        transition: "all 0.2s"
+                      }}
+                      onMouseEnter={e => { e.currentTarget.style.background = "rgba(239,68,68,0.2)"; }}
+                      onMouseLeave={e => { e.currentTarget.style.background = "rgba(239,68,68,0.1)"; }}
+                      >×</button>
+                    )}
+                  </div>
+                  <input
+                    type="number" min="0" max="4" step="0.01" placeholder="0.00"
+                    value={s.val}
+                    onChange={e => updateSem(s.id, e.target.value)}
+                    style={{
+                      width: "100%", background: "transparent", border: "none",
+                      borderBottom: "2px solid rgba(255,255,255,0.15)", color: "#fff",
+                      fontSize: "clamp(20px, 5vw, 24px)", fontFamily: "'JetBrains Mono',monospace", fontWeight: 600,
+                      padding: "6px 0", outline: "none", transition: "border-color 0.3s"
+                    }}
+                    onFocus={e => e.target.style.borderBottomColor = "#7c3aed"}
+                    onBlur={e => e.target.style.borderBottomColor = "rgba(255,255,255,0.15)"}
                   />
                 </div>
               ))}
             </div>
 
-            <div style={{ marginBottom: 12 }}>
-              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", letterSpacing: 1, textTransform: "uppercase", marginBottom: 6 }}>Subject</div>
-              <input type="text" placeholder="What's this about?" value={contact.subject}
-                onChange={e => setContact(p => ({ ...p, subject: e.target.value }))}
-                style={inputStyle}
-                onFocus={e => e.target.style.borderColor = "#7c3aed"}
-                onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.09)"}
-              />
+            {sems.length < 6 && (
+              <button onClick={addSem} style={{
+                width: "100%", padding: "clamp(10px, 2.5vw, 12px)", border: "2px dashed rgba(124,58,237,0.4)",
+                borderRadius: 14, background: "transparent", color: "#a78bfa", fontSize: "clamp(13px, 3vw, 14px)",
+                fontWeight: 600, cursor: "pointer", marginBottom: 16, fontFamily: "'DM Sans',sans-serif",
+                display: "flex", alignItems: "center", justifyContent: "center", gap: 8, transition: "all 0.3s"
+              }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = "#a78bfa"; e.currentTarget.style.background = "rgba(124,58,237,0.08)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(124,58,237,0.4)"; e.currentTarget.style.background = "transparent"; e.currentTarget.style.transform = "translateY(0)"; }}
+              >
+                <span style={{ fontSize: 20, lineHeight: 1 }}>+</span> Add Semester
+              </button>
+            )}
+
+            <button onClick={calcCGPA} style={{
+              width: "100%", padding: "clamp(13px, 3vw, 16px)", background: "linear-gradient(135deg,#7c3aed,#6d28d9)",
+              color: "#fff", border: "none", borderRadius: 14, fontSize: "clamp(15px, 3.5vw, 16px)", fontWeight: 600,
+              cursor: "pointer", fontFamily: "'DM Sans',sans-serif", letterSpacing: 0.5, transition: "all 0.3s",
+              boxShadow: "0 8px 20px rgba(124, 58, 237, 0.3)"
+            }}
+              onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 12px 25px rgba(124, 58, 237, 0.4)"; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 8px 20px rgba(124, 58, 237, 0.3)"; }}
+            >
+              Calculate Cumulative CGPA
+            </button>
+
+            {cgpaErr && (
+              <div style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.25)", borderRadius: 12, padding: "12px 16px", fontSize: 13, color: "#fca5a5", marginTop: 12, animation: "slideIn 0.3s ease" }}>
+                ⚠️ {cgpaErr}
+              </div>
+            )}
+
+            {cgpaResult && <CGPAResultCard cgpa={cgpaResult.cgpa} sems={cgpaResult.sems} total={cgpaResult.total} best={cgpaResult.best} />}
+          </div>
+        )}
+
+        {tab === "calculator" && <CalculatorPanel />}
+      </div>
+
+      {/* Contact Us */}
+      <div style={{ margin: "0 clamp(16px, 4vw, 24px)", padding: "clamp(24px, 5vw, 32px) 0 0", borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+        <div style={{ marginBottom: "clamp(20px, 4vw, 28px)" }}>
+          <div style={{ 
+            fontFamily: "'Playfair Display',serif", 
+            fontSize: "clamp(24px, 6vw, 32px)", 
+            fontWeight: 700, 
+            letterSpacing: "-0.02em",
+            background: "linear-gradient(135deg, #fff, #c4b5fd)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            marginBottom: "8px"
+          }}>Get in Touch</div>
+          <div style={{ fontSize: "clamp(13px, 3vw, 15px)", color: "rgba(255,255,255,0.4)", lineHeight: 1.5 }}>Have questions or feedback? We'd love to hear from you.</div>
+        </div>
+
+        {contactSent ? (
+          <div style={{ background: "rgba(52,211,153,0.08)", border: "1px solid rgba(52,211,153,0.2)", borderRadius: 20, padding: "clamp(24px, 5vw, 32px)", textAlign: "center", animation: "fadeUp 0.4s ease" }}>
+            <div style={{ fontSize: "clamp(36px, 8vw, 48px)", marginBottom: 16 }}>✓</div>
+            <div style={{ fontSize: "clamp(18px, 4vw, 22px)", fontWeight: 700, color: "#34d399" }}>Message Sent Successfully!</div>
+            <div style={{ fontSize: "clamp(13px, 3vw, 15px)", color: "rgba(255,255,255,0.5)", marginTop: 8 }}>We'll get back to you as soon as possible.</div>
+            <button onClick={() => { setContactSent(false); setContact({ name: "", email: "", subject: "", message: "" }); }} style={{
+              marginTop: 20, padding: "10px 24px", background: "rgba(52,211,153,0.12)", border: "1px solid rgba(52,211,153,0.3)",
+              borderRadius: 12, color: "#34d399", fontSize: "clamp(13px, 3vw, 14px)", fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans',sans-serif",
+              transition: "all 0.3s"
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = "rgba(52,211,153,0.2)"; }}
+            onMouseLeave={e => { e.currentTarget.style.background = "rgba(52,211,153,0.12)"; }}
+            >Send Another Message</button>
+          </div>
+        ) : (
+          <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 24, padding: "clamp(20px, 4vw, 28px)" }}>
+            <div className="contact-grid" style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "clamp(12px, 3vw, 16px)", marginBottom: 16 }}>
+              {[["name", "Your name", "text"], ["email", "Email address", "email"]].map(([field, ph, type]) => (
+                <div key={field}>
+                  <div style={{ fontSize: "clamp(10px, 2.5vw, 12px)", color: "rgba(255,255,255,0.4)", letterSpacing: 1, textTransform: "uppercase", marginBottom: 8, fontWeight: 500 }}>{ph} <span style={{ color: "#7c3aed" }}>*</span></div>
+                  <input type={type} placeholder={`Enter your ${ph.toLowerCase()}`} value={contact[field]}
+                    onChange={e => setContact(p => ({ ...p, [field]: e.target.value }))}
+                    style={inputStyle}
+                    onFocus={e => { e.target.style.borderColor = "#7c3aed"; e.target.style.background = "rgba(255,255,255,0.06)"; }}
+                    onBlur={e => { e.target.style.borderColor = "rgba(255,255,255,0.09)"; e.target.style.background = "rgba(255,255,255,0.04)"; }}
+                  />
+                </div>
+              ))}
             </div>
 
             <div style={{ marginBottom: 16 }}>
-              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", letterSpacing: 1, textTransform: "uppercase", marginBottom: 6 }}>Message *</div>
+              <div style={{ fontSize: "clamp(10px, 2.5vw, 12px)", color: "rgba(255,255,255,0.4)", letterSpacing: 1, textTransform: "uppercase", marginBottom: 8, fontWeight: 500 }}>Subject</div>
+              <input type="text" placeholder="What's this about?" value={contact.subject}
+                onChange={e => setContact(p => ({ ...p, subject: e.target.value }))}
+                style={inputStyle}
+                onFocus={e => { e.target.style.borderColor = "#7c3aed"; e.target.style.background = "rgba(255,255,255,0.06)"; }}
+                onBlur={e => { e.target.style.borderColor = "rgba(255,255,255,0.09)"; e.target.style.background = "rgba(255,255,255,0.04)"; }}
+              />
+            </div>
+
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ fontSize: "clamp(10px, 2.5vw, 12px)", color: "rgba(255,255,255,0.4)", letterSpacing: 1, textTransform: "uppercase", marginBottom: 8, fontWeight: 500 }}>Message <span style={{ color: "#7c3aed" }}>*</span></div>
               <textarea rows={4} placeholder="Write your message here..." value={contact.message}
                 onChange={e => setContact(p => ({ ...p, message: e.target.value }))}
-                style={{ ...inputStyle, minHeight: 100 }}
-                onFocus={e => e.target.style.borderColor = "#7c3aed"}
-                onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.09)"}
+                style={{ ...inputStyle, minHeight: 120 }}
+                onFocus={e => { e.target.style.borderColor = "#7c3aed"; e.target.style.background = "rgba(255,255,255,0.06)"; }}
+                onBlur={e => { e.target.style.borderColor = "rgba(255,255,255,0.09)"; e.target.style.background = "rgba(255,255,255,0.04)"; }}
               />
             </div>
 
             {contactErr && (
-              <div style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 10, padding: "10px 14px", fontSize: 13, color: "#f87171", marginBottom: 12 }}>
-                {contactErr}
+              <div style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.25)", borderRadius: 12, padding: "12px 16px", fontSize: 13, color: "#fca5a5", marginBottom: 16, animation: "slideIn 0.3s ease" }}>
+                ⚠️ {contactErr}
               </div>
             )}
 
             <button onClick={submitContact} style={{
-              width: "100%", padding: "13px", background: "linear-gradient(135deg,#7c3aed,#6d28d9)",
-              color: "#fff", border: "none", borderRadius: 12, fontSize: 14, fontWeight: 600,
-              cursor: "pointer", fontFamily: "'DM Sans',sans-serif", letterSpacing: 0.3, transition: "opacity 0.2s"
+              width: "100%", padding: "clamp(13px, 3vw, 16px)", background: "linear-gradient(135deg,#7c3aed,#6d28d9)",
+              color: "#fff", border: "none", borderRadius: 14, fontSize: "clamp(14px, 3.5vw, 16px)", fontWeight: 600,
+              cursor: "pointer", fontFamily: "'DM Sans',sans-serif", letterSpacing: 0.5, transition: "all 0.3s",
+              boxShadow: "0 8px 20px rgba(124, 58, 237, 0.3)"
             }}
-              onMouseEnter={e => e.currentTarget.style.opacity = "0.88"}
-              onMouseLeave={e => e.currentTarget.style.opacity = "1"}
+              onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 12px 25px rgba(124, 58, 237, 0.4)"; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 8px 20px rgba(124, 58, 237, 0.3)"; }}
             >
               Send Message
             </button>
@@ -722,32 +810,30 @@ export default function App() {
       </div>
 
       {/* Footer */}
-      <div style={{ textAlign: "center", padding: "28px 20px 20px", marginTop: 24, borderTop: "1px solid rgba(255,255,255,0.05)" }}>
-        <div
-          style={{
-            fontFamily: "'Playfair Display',serif",
-            fontSize: 14,
-            color: "rgba(255,255,255,0.5)"
-          }}
-        >
-          Crafted by{" "}
+      <div style={{ textAlign: "center", padding: "clamp(24px, 5vw, 32px) clamp(16px, 4vw, 24px) clamp(20px, 4vw, 28px)", marginTop: "clamp(24px, 5vw, 32px)", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+        <div style={{ fontFamily: "'Playfair Display',serif", fontSize: "clamp(14px, 3.5vw, 16px)", color: "rgba(255,255,255,0.6)", marginBottom: 8 }}>
+          Crafted with ❤️ by{" "}
           <a
             href="https://usmanmurtaza.netlify.app"
             target="_blank"
             rel="noopener noreferrer"
             style={{
               color: "#a78bfa",
-              fontWeight: 600,
-              textDecoration: "none"
+              fontWeight: 700,
+              textDecoration: "none",
+              borderBottom: "2px solid rgba(167, 139, 250, 0.3)",
+              transition: "all 0.3s"
             }}
+            onMouseEnter={e => { e.currentTarget.style.borderBottomColor = "#a78bfa"; }}
+            onMouseLeave={e => { e.currentTarget.style.borderBottomColor = "rgba(167, 139, 250, 0.3)"; }}
           >
             Usman Murtaza
           </a>
         </div>
+        <div style={{ fontSize: "clamp(10px, 2.5vw, 11px)", color: "rgba(255,255,255,0.25)", letterSpacing: 1.5, textTransform: "uppercase", fontWeight: 500 }}>
+          Nexa Calculator — Academic Excellence Suite
+        </div>
       </div>
-      <div style={{ fontSize: 10, color: "rgba(255,255,255,0.2)", letterSpacing: 1, textTransform: "uppercase", marginTop: 4 }}>
-        Academic Calculator — All rights reserved
-      </div>
-    </div >
+    </div>
   );
 }
