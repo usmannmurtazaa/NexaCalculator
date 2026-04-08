@@ -499,10 +499,10 @@ export default function App() {
         <div className="header-container" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "clamp(14px, 3vw, 18px) 0 0" }}>
           <div>
             <div style={{ 
-              fontFamily: "'Poppins', serif", 
+              fontFamily: "'Playfair Display', serif", 
               fontSize: "clamp(20px, 5vw, 28px)", 
               fontWeight: 800, 
-              letterSpacing: "-0.01em",
+              letterSpacing: "-0.02em",
               background: "linear-gradient(135deg, #ffffff 0%, #c4b5fd 50%, #a78bfa 100%)",
               backgroundSize: "200% 200%",
               animation: "gradientShift 3s ease infinite",
@@ -811,7 +811,7 @@ export default function App() {
 
       {/* Footer */}
       <div style={{ textAlign: "center", padding: "clamp(24px, 5vw, 32px) clamp(16px, 4vw, 24px) clamp(20px, 4vw, 28px)", marginTop: "clamp(24px, 5vw, 32px)", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-        <div style={{ fontFamily: "'Cinzel',serif", fontSize: "clamp(14px, 3.5vw, 16px)", color: "rgba(255,255,255,0.6)", marginBottom: 8 }}>
+        <div style={{ fontFamily: "'Cinzel Decorative',serif", fontSize: "clamp(14px, 3.5vw, 16px)", color: "rgba(255,255,255,0.6)", marginBottom: 8 }}>
           Crafted by{" "}
           <a
             href="https://usmanmurtaza.netlify.app"
@@ -821,10 +821,11 @@ export default function App() {
               color: "#a78bfa",
               fontWeight: 800,
               textDecoration: "none",
+              borderBottom: "2px solid rgba(167, 139, 250, 0.3)",
               transition: "all 0.3s"
             }}
-            onMouseEnter={e => { e.currentTarget.style.Color = "#a78bfa"; }}
-            onMouseLeave={e => { e.currentTarget.style.Color = "rgba(167, 139, 250, 0.3)"; }}
+            onMouseEnter={e => { e.currentTarget.style.borderBottomColor = "#a78bfa"; }}
+            onMouseLeave={e => { e.currentTarget.style.borderBottomColor = "rgba(167, 139, 250, 0.3)"; }}
           >
             Usman Murtaza
           </a>
