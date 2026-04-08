@@ -748,7 +748,6 @@ export default function App() {
       <div style={{ fontSize: 10, color: "rgba(255,255,255,0.2)", letterSpacing: 1, textTransform: "uppercase", marginTop: 4 }}>
         Academic Calculator — All rights reserved
       </div>
-    </div>
     </div >
   );
 }
