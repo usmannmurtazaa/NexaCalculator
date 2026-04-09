@@ -19,8 +19,8 @@ if (EMAILJS_PUBLIC_KEY) {
 
 // Wrap console logs for development only
 if (!isDevelopment) {
-  console.log = () => { };
-  console.warn = () => { };
+  console.log = () => {};
+  console.warn = () => {};
 }
 
 // ---------- GPA / CGPA Constants & Helpers ----------
@@ -93,7 +93,7 @@ function AnimatedNumber({ value, decimals = 2 }) {
 
 function CourseCard({ id, index, removable, onRemove, data, onChange, scale, darkMode }) {
   const gradeOptions = SCALES[scale] || GRADES;
-
+  
   return (
     <div style={{
       background: darkMode ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)",
@@ -183,7 +183,7 @@ function CourseCard({ id, index, removable, onRemove, data, onChange, scale, dar
 function ResultCard({ gpa, courses, credits, points, scale, darkMode }) {
   const s = getStanding(parseFloat(gpa), scale);
   const maxGPA = parseFloat(scale);
-
+  
   return (
     <div style={{
       borderRadius: 20, overflow: "hidden", border: "1px solid rgba(167,139,250,0.25)",
@@ -217,7 +217,7 @@ function ResultCard({ gpa, courses, credits, points, scale, darkMode }) {
 function CGPAResultCard({ cgpa, sems, total, best, scale, darkMode }) {
   const s = getStanding(parseFloat(cgpa), scale);
   const maxGPA = parseFloat(scale);
-
+  
   return (
     <div style={{ borderRadius: 20, overflow: "hidden", border: "1px solid rgba(167,139,250,0.25)", marginTop: 20, animation: "fadeUp 0.4s ease" }}>
       <div style={{ background: darkMode ? "linear-gradient(135deg,#0f0829,#1a0f3a)" : "linear-gradient(135deg,#f5f5f5,#e0e0e0)", padding: "32px 24px", textAlign: "center", position: "relative" }}>
@@ -249,7 +249,7 @@ function GradeProgressBar({ gpa, scale, darkMode }) {
   const maxGPA = parseFloat(scale);
   const pct = Math.min((parseFloat(gpa) / maxGPA) * 100, 100);
   const markers = [0, maxGPA * 0.5, maxGPA * 0.75, maxGPA];
-
+  
   return (
     <div style={{ marginTop: 16, padding: "0 2px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: darkMode ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.5)", marginBottom: 6, letterSpacing: 0.5 }}>
@@ -288,7 +288,7 @@ function CalculatorPanel({ darkMode }) {
 
   const handleMemory = (action) => {
     const current = parseFloat(result) || 0;
-    switch (action) {
+    switch(action) {
       case "MC": setMemory(0); break;
       case "MR": setInput(prev => prev + memory.toString()); break;
       case "M+": setMemory(m => m + current); break;
@@ -321,9 +321,9 @@ function CalculatorPanel({ darkMode }) {
         case "|x|": res = Math.abs(current); break;
         case "±": res = -current; break;
         case "1/x": res = 1 / current; break;
-        case "n!":
+        case "n!": 
           if (current < 0 || !Number.isInteger(current)) { res = NaN; break; }
-          res = 1; for (let i = 2; i <= current; i++) res *= i;
+          res = 1; for(let i = 2; i <= current; i++) res *= i;
           break;
         case "(": setInput(prev => prev + "("); return;
         case ")": setInput(prev => prev + ")"); return;
@@ -394,10 +394,10 @@ function CalculatorPanel({ darkMode }) {
                 } else handleNormalClick(btn);
               }
             }} style={{
-              padding: "clamp(10px, 3vw, 14px) 0",
+              padding: "clamp(10px, 3vw, 14px) 0", 
               background: ["C", "="].includes(btn) ? "linear-gradient(135deg,#7c3aed,#6d28d9)" : ["MC", "MR", "M+", "M-"].includes(btn) ? "rgba(167,139,250,0.15)" : darkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
-              border: `1px solid ${darkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"}`, borderRadius: 12, color: darkMode ? "#fff" : "#333",
-              fontSize: "clamp(12px, 3.5vw, 14px)", fontWeight: 500, cursor: "pointer",
+              border: `1px solid ${darkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"}`, borderRadius: 12, color: darkMode ? "#fff" : "#333", 
+              fontSize: "clamp(12px, 3.5vw, 14px)", fontWeight: 500, cursor: "pointer", 
               fontFamily: btn.match(/[0-9]/) ? "'JetBrains Mono', monospace" : "'DM Sans', sans-serif",
               transition: "all 0.15s", gridColumn: btn === "=" ? "span 1" : "auto"
             }}
@@ -532,7 +532,7 @@ export default function App() {
   const [contactSent, setContactSent] = useState(false);
   const [contactErr, setContactErr] = useState("");
   const [isSending, setIsSending] = useState(false);
-
+  
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem('darkMode');
     return saved ? JSON.parse(saved) : true;
@@ -600,11 +600,11 @@ export default function App() {
       setContactErr("Please enter a valid email address."); return;
     }
     setIsSending(true);
-
+    
     if (!EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID || !EMAILJS_PUBLIC_KEY) {
       setContactErr("Email service not configured."); setIsSending(false); return;
     }
-
+    
     try {
       await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
         from_name: contact.name,
@@ -633,7 +633,7 @@ export default function App() {
 
     if (exportData.format === "pdf") {
       const doc = new jsPDF();
-
+      
       // Header
       doc.setFillColor(124, 58, 237);
       doc.rect(0, 0, 210, 40, 'F');
@@ -644,9 +644,9 @@ export default function App() {
       doc.setFontSize(12);
       doc.setTextColor(199, 181, 253);
       doc.text("Academic Excellence Suite", 105, 35, { align: "center" });
-
+      
       let yPos = 55;
-
+      
       // Student Info
       doc.setDrawColor(124, 58, 237);
       doc.line(15, yPos - 5, 195, yPos - 5);
@@ -654,7 +654,7 @@ export default function App() {
       doc.setTextColor(124, 58, 237);
       doc.text("ACADEMIC RECORD", 105, yPos, { align: "center" });
       yPos += 12;
-
+      
       doc.setFontSize(11);
       doc.setTextColor(80, 80, 80);
       doc.setFont("helvetica", "bold");
@@ -668,14 +668,14 @@ export default function App() {
       if (data.semester) { doc.text(`Semester: ${data.semester}`, 25, yPos); yPos += 6; }
       doc.text(`Generated: ${data.date}`, 25, yPos);
       yPos += 12;
-
+      
       // Course Table
       doc.line(20, yPos, 190, yPos); yPos += 8;
       doc.setFont("helvetica", "bold");
       doc.setFontSize(13);
       doc.setTextColor(124, 58, 237);
       doc.text("Course Details", 20, yPos); yPos += 8;
-
+      
       doc.setFillColor(124, 58, 237);
       doc.rect(20, yPos, 170, 8, 'F');
       doc.setFontSize(10);
@@ -685,7 +685,7 @@ export default function App() {
       doc.text("Grade", 115, yPos + 5.5);
       doc.text("Points", 155, yPos + 5.5);
       yPos += 10;
-
+      
       doc.setFont("helvetica", "normal");
       doc.setTextColor(60, 60, 60);
       data.courses.forEach((course, index) => {
@@ -697,7 +697,7 @@ export default function App() {
         doc.text(course.points, 155, yPos);
         yPos += 7;
       });
-
+      
       // Summary
       yPos += 10;
       doc.setDrawColor(124, 58, 237);
@@ -706,7 +706,7 @@ export default function App() {
       doc.setFontSize(12);
       doc.setTextColor(124, 58, 237);
       doc.text("Academic Summary", 20, yPos); yPos += 10;
-
+      
       doc.setFillColor(249, 248, 255);
       doc.rect(20, yPos - 4, 170, 30, 'F');
       doc.setFontSize(11);
@@ -729,7 +729,7 @@ export default function App() {
       doc.setFontSize(14);
       doc.text(data.gpaResult.points.toFixed(2), 150, yPos + 15);
       yPos += 40;
-
+      
       // Standing
       const standing = getStanding(parseFloat(data.gpaResult.gpa), data.scale);
       doc.setFillColor(standing.color === "#a78bfa" ? 167 : standing.color === "#34d399" ? 52 : standing.color === "#60a5fa" ? 96 : standing.color === "#fbbf24" ? 251 : standing.color === "#f87171" ? 248 : 239);
@@ -738,7 +738,7 @@ export default function App() {
       doc.setFontSize(12);
       doc.setTextColor(255, 255, 255);
       doc.text(`Academic Standing: ${standing.t}`, 105, yPos + 3, { align: "center" });
-
+      
       // Footer
       const pageCount = doc.getNumberOfPages();
       for (let i = 1; i <= pageCount; i++) {
@@ -751,14 +751,14 @@ export default function App() {
         doc.text("Crafted by Usman Murtaza • Nexa Calculator", 105, 290, { align: "center" });
         doc.text("nexacalculator.netlify.app", 105, 295, { align: "center" });
       }
-
+      
       doc.save(`Nexa_Academic_Record_${data.studentName.replace(/\s+/g, '_')}.pdf`);
     } else {
       let csv = "NEXA CALCULATOR - ACADEMIC RECORD\n==========================================\n\nSTUDENT INFORMATION\n";
       csv += `Student Name,${data.studentName}\nStudent ID,${data.studentId}\nUniversity,${data.university}\nSemester,${data.semester}\nDate,${data.date}\nScale,${data.scale}\n\nCOURSE DETAILS\nCode,Credits,Grade,Points\n`;
       data.courses.forEach(c => csv += `${c.code},${c.credits},${c.grade},${c.points}\n`);
       csv += `\nACADEMIC SUMMARY\nGPA,${data.gpaResult.gpa}\nCredits,${data.gpaResult.credits}\nPoints,${data.gpaResult.points.toFixed(2)}\n\nGenerated by Nexa Calculator - Crafted by Usman Murtaza`;
-
+      
       const blob = new Blob([csv], { type: 'text/csv' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
@@ -909,8 +909,8 @@ export default function App() {
 
       {/* Footer */}
       <footer style={{ textAlign: "center", padding: "clamp(28px, 5vw, 36px) clamp(16px, 4vw, 24px)", marginTop: "clamp(28px, 5vw, 36px)", borderTop: `1px solid ${darkMode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)"}` }}>
-        <p style={{ margin: "0 0 8px 0", fontSize: "clamp(15px, 3.5vw, 17px)", fontFamily: "ui-rounded", color: darkMode ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.6)" }}>Crafted by <a href="https://usmanmurtaza.netlify.app" target="_blank" rel="noopener noreferrer" style={{ color: "#a78bfa", fontWeight: 700, textDecoration: "none" }}>Usman Murtaza</a></p>
-        <p style={{ margin: 0, fontSize: "clamp(11px, 2.5vw, 12px)", color: darkMode ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.25)", letterSpacing: 1.5, textTransform: "uppercase", fontWeight: 500 }}>Nexa Calculator v1.1.0 — Academic Excellence Suite</p>
+        <p style={{ margin: "0 0 8px 0", fontSize: "clamp(15px, 3.5vw, 17px)", color: darkMode ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.6)" }}>Crafted by <a href="https://usmanmurtaza.netlify.app" target="_blank" rel="noopener noreferrer" style={{ color: "#a78bfa", fontWeight: 700, textDecoration: "none" }}>Usman Murtaza</a></p>
+        <p style={{ margin: 0, fontSize: "clamp(11px, 2.5vw, 12px)", color: darkMode ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.25)", letterSpacing: 1.5, textTransform: "uppercase", fontWeight: 500 }}>Nexa Calculator v2.0 — Academic Excellence Suite</p>
       </footer>
     </div>
   );
