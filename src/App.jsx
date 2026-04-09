@@ -16,12 +16,35 @@ const GRADES = [
   { l: "F   — 0.00", p: 0.0, g: "F" },
 ];
 
-function getStanding(g) {
-  if (g >= 3.7) return { t: "Dean's List — Exceptional", color: "#a78bfa" };
-  if (g >= 3.0) return { t: "Very Good Standing", color: "#34d399" };
-  if (g >= 2.5) return { t: "Good Standing", color: "#60a5fa" };
-  if (g >= 2.0) return { t: "Satisfactory", color: "#fbbf24" };
-  if (g >= 1.0) return { t: "Below Average", color: "#f87171" };
+const SCALES = {
+  "4.0": GRADES,
+  "5.0": [
+    { l: "A  — 5.00", p: 5.0, g: "A" },
+    { l: "B  — 4.00", p: 4.0, g: "B" },
+    { l: "C  — 3.00", p: 3.0, g: "C" },
+    { l: "D  — 2.00", p: 2.0, g: "D" },
+    { l: "E  — 1.00", p: 1.0, g: "E" },
+    { l: "F  — 0.00", p: 0.0, g: "F" },
+  ],
+  "10.0": [
+    { l: "10  — 10.0", p: 10.0, g: "10" },
+    { l: "9   — 9.00", p: 9.0, g: "9" },
+    { l: "8   — 8.00", p: 8.0, g: "8" },
+    { l: "7   — 7.00", p: 7.0, g: "7" },
+    { l: "6   — 6.00", p: 6.0, g: "6" },
+    { l: "5   — 5.00", p: 5.0, g: "5" },
+    { l: "4   — 4.00", p: 4.0, g: "4" },
+  ],
+};
+
+function getStanding(g, scale = "4.0") {
+  const maxGPA = parseFloat(scale);
+  const percentage = (g / maxGPA) * 100;
+  if (percentage >= 92.5) return { t: "Outstanding — Dean's List", color: "#a78bfa" };
+  if (percentage >= 75) return { t: "Very Good Standing", color: "#34d399" };
+  if (percentage >= 62.5) return { t: "Good Standing", color: "#60a5fa" };
+  if (percentage >= 50) return { t: "Satisfactory", color: "#fbbf24" };
+  if (percentage >= 25) return { t: "Below Average", color: "#f87171" };
   return { t: "Academic Probation", color: "#ef4444" };
 }
 
@@ -46,7 +69,9 @@ function AnimatedNumber({ value, decimals = 2 }) {
   return <span>{display}</span>;
 }
 
-function CourseCard({ id, index, removable, onRemove, data, onChange }) {
+function CourseCard({ id, index, removable, onRemove, data, onChange, scale }) {
+  const gradeOptions = SCALES[scale] || GRADES;
+  
   return (
     <div style={{
       background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)",
@@ -106,7 +131,7 @@ function CourseCard({ id, index, removable, onRemove, data, onChange }) {
               borderRadius: 10, padding: "9px 8px", color: "#fff", fontSize: 14, outline: "none", cursor: "pointer"
             }}
           >
-            {[1, 2, 3, 4].map(c => <option key={c} value={c}>{c} cr</option>)}
+            {[1, 2, 3, 4, 5, 6].map(c => <option key={c} value={c}>{c} cr</option>)}
           </select>
         </div>
       </div>
@@ -122,15 +147,17 @@ function CourseCard({ id, index, removable, onRemove, data, onChange }) {
             fontFamily: "'JetBrains Mono', monospace", outline: "none", cursor: "pointer"
           }}
         >
-          {GRADES.map((g, i) => <option key={i} value={i}>{g.l}</option>)}
+          {gradeOptions.map((g, i) => <option key={i} value={i}>{g.l}</option>)}
         </select>
       </div>
     </div>
   );
 }
 
-function ResultCard({ gpa, courses, credits, points }) {
-  const s = getStanding(parseFloat(gpa));
+function ResultCard({ gpa, courses, credits, points, scale }) {
+  const s = getStanding(parseFloat(gpa), scale);
+  const maxGPA = parseFloat(scale);
+  
   return (
     <div style={{
       borderRadius: 20, overflow: "hidden", border: "1px solid rgba(167,139,250,0.25)",
@@ -141,6 +168,9 @@ function ResultCard({ gpa, courses, credits, points }) {
         <div style={{ fontSize: 10, letterSpacing: 2, textTransform: "uppercase", color: "rgba(255,255,255,0.4)", marginBottom: 12 }}>Semester GPA</div>
         <div style={{ fontSize: "clamp(48px, 15vw, 68px)", fontWeight: 700, color: "#a78bfa", fontFamily: "'JetBrains Mono',monospace", lineHeight: 1, letterSpacing: -2 }}>
           <AnimatedNumber value={gpa} />
+        </div>
+        <div style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", marginTop: 4 }}>
+          out of {maxGPA}.00
         </div>
         <div style={{ marginTop: 12, display: "inline-block", padding: "5px 16px", borderRadius: 20, background: "rgba(167,139,250,0.1)", border: `1px solid ${s.color}33`, color: s.color, fontSize: 12, fontWeight: 500 }}>
           {s.t}
@@ -158,8 +188,10 @@ function ResultCard({ gpa, courses, credits, points }) {
   );
 }
 
-function CGPAResultCard({ cgpa, sems, total, best }) {
-  const s = getStanding(parseFloat(cgpa));
+function CGPAResultCard({ cgpa, sems, total, best, scale }) {
+  const s = getStanding(parseFloat(cgpa), scale);
+  const maxGPA = parseFloat(scale);
+  
   return (
     <div style={{ borderRadius: 20, overflow: "hidden", border: "1px solid rgba(167,139,250,0.25)", marginTop: 20, animation: "fadeUp 0.4s ease" }}>
       <div style={{ background: "linear-gradient(135deg,#0f0829,#1a0f3a)", padding: "32px 24px", textAlign: "center", position: "relative" }}>
@@ -167,6 +199,9 @@ function CGPAResultCard({ cgpa, sems, total, best }) {
         <div style={{ fontSize: 10, letterSpacing: 2, textTransform: "uppercase", color: "rgba(255,255,255,0.4)", marginBottom: 12 }}>Cumulative CGPA</div>
         <div style={{ fontSize: "clamp(48px, 15vw, 68px)", fontWeight: 700, color: "#a78bfa", fontFamily: "'JetBrains Mono',monospace", lineHeight: 1, letterSpacing: -2 }}>
           <AnimatedNumber value={cgpa} />
+        </div>
+        <div style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", marginTop: 4 }}>
+          out of {maxGPA}.00
         </div>
         <div style={{ marginTop: 12, display: "inline-block", padding: "5px 16px", borderRadius: 20, background: "rgba(167,139,250,0.1)", border: `1px solid ${s.color}33`, color: s.color, fontSize: 12, fontWeight: 500 }}>
           {s.t}
@@ -184,12 +219,15 @@ function CGPAResultCard({ cgpa, sems, total, best }) {
   );
 }
 
-function GradeProgressBar({ gpa }) {
-  const pct = Math.min((parseFloat(gpa) / 4) * 100, 100);
+function GradeProgressBar({ gpa, scale }) {
+  const maxGPA = parseFloat(scale);
+  const pct = Math.min((parseFloat(gpa) / maxGPA) * 100, 100);
+  const markers = [0, maxGPA * 0.5, maxGPA * 0.75, maxGPA];
+  
   return (
     <div style={{ marginTop: 16, padding: "0 2px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: "rgba(255,255,255,0.35)", marginBottom: 6, letterSpacing: 0.5 }}>
-        <span>0.00</span><span>2.00</span><span>3.00</span><span>4.00</span>
+        {markers.map((m, i) => <span key={i}>{m.toFixed(2)}</span>)}
       </div>
       <div style={{ height: 6, background: "rgba(255,255,255,0.07)", borderRadius: 8, overflow: "hidden" }}>
         <div style={{ height: "100%", width: `${pct}%`, background: "linear-gradient(90deg,#7c3aed,#a78bfa)", borderRadius: 8, transition: "width 0.8s cubic-bezier(0.34,1.56,0.64,1)" }} />
@@ -204,6 +242,8 @@ function CalculatorPanel() {
   const [input, setInput] = useState("");
   const [result, setResult] = useState("0");
   const [history, setHistory] = useState([]);
+  const [memory, setMemory] = useState(0);
+  const [angleMode, setAngleMode] = useState("deg"); // deg or rad
 
   const handleNormalClick = (value) => {
     if (value === "C") { setInput(""); setResult("0"); }
@@ -221,20 +261,51 @@ function CalculatorPanel() {
     }
   };
 
+  const handleMemory = (action) => {
+    const current = parseFloat(result) || 0;
+    switch(action) {
+      case "MC": setMemory(0); break;
+      case "MR": setInput(prev => prev + memory.toString()); break;
+      case "M+": setMemory(m => m + current); break;
+      case "M-": setMemory(m => m - current); break;
+      default: break;
+    }
+  };
+
   const handleScientific = (func) => {
     const current = parseFloat(input) || 0;
     let res;
     try {
       switch (func) {
-        case "sin": res = Math.sin(current * Math.PI / 180); break;
-        case "cos": res = Math.cos(current * Math.PI / 180); break;
-        case "tan": res = Math.tan(current * Math.PI / 180); break;
+        case "sin": 
+          res = angleMode === "deg" ? Math.sin(current * Math.PI / 180) : Math.sin(current); 
+          break;
+        case "cos": 
+          res = angleMode === "deg" ? Math.cos(current * Math.PI / 180) : Math.cos(current); 
+          break;
+        case "tan": 
+          res = angleMode === "deg" ? Math.tan(current * Math.PI / 180) : Math.tan(current); 
+          break;
+        case "asin": res = Math.asin(current); break;
+        case "acos": res = Math.acos(current); break;
+        case "atan": res = Math.atan(current); break;
         case "√": res = Math.sqrt(current); break;
+        case "∛": res = Math.cbrt(current); break;
         case "x²": res = Math.pow(current, 2); break;
+        case "x³": res = Math.pow(current, 3); break;
+        case "xʸ": setInput(prev => prev + "**"); return;
+        case "10ˣ": res = Math.pow(10, current); break;
         case "log": res = Math.log10(current); break;
         case "ln": res = Math.log(current); break;
         case "π": res = Math.PI; break;
         case "e": res = Math.E; break;
+        case "|x|": res = Math.abs(current); break;
+        case "±": res = -current; break;
+        case "1/x": res = 1 / current; break;
+        case "n!": 
+          if (current < 0 || !Number.isInteger(current)) { res = NaN; break; }
+          res = 1; for(let i = 2; i <= current; i++) res *= i;
+          break;
         case "(": setInput(prev => prev + "("); return;
         case ")": setInput(prev => prev + ")"); return;
         default: return;
@@ -247,6 +318,7 @@ function CalculatorPanel() {
   };
 
   const normalButtons = [
+    ["MC", "MR", "M+", "M-"],
     ["C", "⌫", "%", "/"],
     ["7", "8", "9", "*"],
     ["4", "5", "6", "-"],
@@ -256,16 +328,42 @@ function CalculatorPanel() {
 
   const scientificButtons = [
     ["sin", "cos", "tan", "("],
-    ["√", "x²", "log", ")"],
-    ["ln", "π", "e", "/"],
-    ["7", "8", "9", "*"],
-    ["4", "5", "6", "-"],
-    ["1", "2", "3", "+"],
-    ["C", "0", ".", "="],
+    ["asin", "acos", "atan", ")"],
+    ["√", "∛", "x²", "x³"],
+    ["log", "ln", "10ˣ", "xʸ"],
+    ["π", "e", "|x|", "n!"],
+    ["7", "8", "9", "/"],
+    ["4", "5", "6", "*"],
+    ["1", "2", "3", "-"],
+    ["C", "0", ".", "+"],
+    ["MC", "MR", "M+", "="],
   ];
 
   return (
     <div>
+      {/* Angle Mode Toggle */}
+      {mode === "scientific" && (
+        <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+          <button onClick={() => setAngleMode("deg")} style={{
+            flex: 1, padding: "6px", background: angleMode === "deg" ? "rgba(124,58,237,0.2)" : "rgba(255,255,255,0.03)",
+            border: angleMode === "deg" ? "1px solid #7c3aed" : "1px solid rgba(255,255,255,0.1)", 
+            borderRadius: 8, color: "#fff", fontSize: 12, cursor: "pointer"
+          }}>DEG</button>
+          <button onClick={() => setAngleMode("rad")} style={{
+            flex: 1, padding: "6px", background: angleMode === "rad" ? "rgba(124,58,237,0.2)" : "rgba(255,255,255,0.03)",
+            border: angleMode === "rad" ? "1px solid #7c3aed" : "1px solid rgba(255,255,255,0.1)", 
+            borderRadius: 8, color: "#fff", fontSize: 12, cursor: "pointer"
+          }}>RAD</button>
+        </div>
+      )}
+
+      {/* Memory Display */}
+      {memory !== 0 && (
+        <div style={{ fontSize: 11, color: "#a78bfa", marginBottom: 8, fontFamily: "'JetBrains Mono', monospace" }}>
+          M: {memory}
+        </div>
+      )}
+
       {/* Display */}
       <div style={{ background: "rgba(0,0,0,0.3)", borderRadius: 16, padding: "clamp(16px, 4vw, 20px) clamp(14px, 3vw, 18px)", border: "1px solid rgba(255,255,255,0.06)", marginBottom: 18 }}>
         <div style={{ fontSize: "clamp(12px, 3vw, 14px)", color: "rgba(255,255,255,0.4)", fontFamily: "'JetBrains Mono', monospace", minHeight: 22, wordBreak: "break-all" }}>
@@ -292,21 +390,31 @@ function CalculatorPanel() {
         {(mode === "normal" ? normalButtons : scientificButtons).map((row, i) =>
           row.map((btn, j) => (
             <button key={`${i}-${j}`} onClick={() => {
-              if (mode === "normal") handleNormalClick(btn);
-              else {
-                if (["sin", "cos", "tan", "√", "x²", "log", "ln", "π", "e", "(", ")"].includes(btn)) {
+              if (["MC", "MR", "M+", "M-"].includes(btn)) {
+                handleMemory(btn);
+              } else if (mode === "normal") {
+                handleNormalClick(btn);
+              } else {
+                if (["sin", "cos", "tan", "asin", "acos", "atan", "√", "∛", "x²", "x³", "10ˣ", "log", "ln", "π", "e", "|x|", "±", "1/x", "n!", "(", ")"].includes(btn)) {
                   if (btn === "π" || btn === "e") { setInput(prev => prev + btn); }
                   else handleScientific(btn);
                 } else handleNormalClick(btn);
               }
             }} style={{
-              padding: "clamp(10px, 3vw, 14px) 0", background: ["C", "="].includes(btn) ? "linear-gradient(135deg,#7c3aed,#6d28d9)" : "rgba(255,255,255,0.05)",
-              border: "1px solid rgba(255,255,255,0.08)", borderRadius: 12, color: "#fff", fontSize: "clamp(14px, 3.5vw, 16px)", fontWeight: 500,
+              padding: "clamp(10px, 3vw, 14px) 0", 
+              background: ["C", "="].includes(btn) ? "linear-gradient(135deg,#7c3aed,#6d28d9)" : 
+                         ["MC", "MR", "M+", "M-"].includes(btn) ? "rgba(167,139,250,0.15)" : "rgba(255,255,255,0.05)",
+              border: "1px solid rgba(255,255,255,0.08)", borderRadius: 12, color: "#fff", 
+              fontSize: "clamp(12px, 3.5vw, 14px)", fontWeight: 500,
               cursor: "pointer", fontFamily: btn.match(/[0-9]/) ? "'JetBrains Mono', monospace" : "'DM Sans', sans-serif",
               transition: "all 0.15s", gridColumn: btn === "=" ? "span 1" : "auto"
             }}
               onMouseEnter={e => { if (!["C", "="].includes(btn)) e.currentTarget.style.background = "rgba(124,58,237,0.25)"; }}
-              onMouseLeave={e => { if (!["C", "="].includes(btn)) e.currentTarget.style.background = "rgba(255,255,255,0.05)"; }}
+              onMouseLeave={e => { 
+                if (!["C", "="].includes(btn)) {
+                  e.currentTarget.style.background = ["MC", "MR", "M+", "M-"].includes(btn) ? "rgba(167,139,250,0.15)" : "rgba(255,255,255,0.05)";
+                }
+              }}
             >{btn}</button>
           ))
         )}
@@ -315,7 +423,12 @@ function CalculatorPanel() {
       {/* History */}
       {history.length > 0 && (
         <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-          <div style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 8 }}>Recent</div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+            <div style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", letterSpacing: 1.5, textTransform: "uppercase" }}>Recent</div>
+            <button onClick={() => setHistory([])} style={{
+              background: "transparent", border: "none", color: "rgba(255,255,255,0.3)", fontSize: 10, cursor: "pointer"
+            }}>Clear</button>
+          </div>
           {history.map((h, i) => (
             <div key={i} style={{ fontSize: "clamp(11px, 2.5vw, 13px)", color: "rgba(255,255,255,0.5)", fontFamily: "'JetBrains Mono', monospace", padding: "4px 0", wordBreak: "break-all" }}>{h}</div>
           ))}
@@ -325,10 +438,64 @@ function CalculatorPanel() {
   );
 }
 
+// ---------- Target GPA Calculator ----------
+function TargetGPACalculator({ currentGPA, totalCredits }) {
+  const [targetGPA, setTargetGPA] = useState("");
+  const [remainingCredits, setRemainingCredits] = useState("");
+  const [requiredGPA, setRequiredGPA] = useState(null);
+
+  const calculateRequired = () => {
+    const current = parseFloat(currentGPA) || 0;
+    const target = parseFloat(targetGPA) || 0;
+    const total = parseFloat(totalCredits) || 0;
+    const remaining = parseFloat(remainingCredits) || 0;
+    
+    if (remaining === 0) {
+      setRequiredGPA("N/A");
+      return;
+    }
+    
+    const required = (target * (total + remaining) - current * total) / remaining;
+    setRequiredGPA(required.toFixed(2));
+  };
+
+  return (
+    <div style={{ 
+      background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)",
+      borderRadius: 16, padding: 20, marginTop: 20
+    }}>
+      <h3 style={{ fontSize: 14, marginBottom: 16, color: "#a78bfa" }}>🎯 Target GPA Calculator</h3>
+      <div style={{ display: "grid", gap: 12 }}>
+        <input type="number" placeholder="Target GPA" value={targetGPA}
+          onChange={e => setTargetGPA(e.target.value)} style={{
+            background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
+            borderRadius: 10, padding: "10px", color: "#fff"
+          }} />
+        <input type="number" placeholder="Remaining Credits" value={remainingCredits}
+          onChange={e => setRemainingCredits(e.target.value)} style={{
+            background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
+            borderRadius: 10, padding: "10px", color: "#fff"
+          }} />
+        <button onClick={calculateRequired} style={{
+          padding: "10px", background: "linear-gradient(135deg,#7c3aed,#6d28d9)",
+          border: "none", borderRadius: 10, color: "#fff", cursor: "pointer"
+        }}>Calculate Required GPA</button>
+        {requiredGPA && (
+          <div style={{ textAlign: "center", marginTop: 8 }}>
+            <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)" }}>Required GPA in remaining courses:</div>
+            <div style={{ fontSize: 24, fontWeight: 700, color: "#a78bfa" }}>{requiredGPA}</div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ---------- Main App ----------
 export default function App() {
   const [tab, setTab] = useState("gpa");
   const [visitors, setVisitors] = useState(1312);
+  const [scale, setScale] = useState("4.0");
   const [courses, setCourses] = useState([
     { id: 1, code: "", credits: 3, gradeIdx: 0 },
     { id: 2, code: "", credits: 3, gradeIdx: 0 },
@@ -349,6 +516,9 @@ export default function App() {
   const [contact, setContact] = useState({ name: "", email: "", subject: "", message: "" });
   const [contactSent, setContactSent] = useState(false);
   const [contactErr, setContactErr] = useState("");
+  
+  const [darkMode, setDarkMode] = useState(true);
+  const [showTargetGPA, setShowTargetGPA] = useState(false);
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -357,8 +527,14 @@ export default function App() {
     return () => clearInterval(id);
   }, []);
 
+  // Reset courses when scale changes
+  useEffect(() => {
+    setGpaResult(null);
+    setCgpaResult(null);
+  }, [scale]);
+
   const addCourse = () => {
-    if (courses.length >= 6) return;
+    if (courses.length >= 8) return;
     setCourses(prev => [...prev, { id: nextCId, code: "", credits: 3, gradeIdx: 0 }]);
     setNextCId(n => n + 1);
   };
@@ -377,8 +553,9 @@ export default function App() {
       if (!c.code.trim()) { setGpaErr("Please fill in all course codes."); return; }
     }
     let tp = 0, tc = 0;
+    const gradeScale = SCALES[scale] || GRADES;
     for (const c of courses) {
-      tp += GRADES[c.gradeIdx].p * c.credits;
+      tp += gradeScale[c.gradeIdx].p * c.credits;
       tc += c.credits;
     }
     const gpa = tc ? tp / tc : 0;
@@ -386,7 +563,7 @@ export default function App() {
   };
 
   const addSem = () => {
-    if (sems.length >= 6) return;
+    if (sems.length >= 8) return;
     setSems(prev => [...prev, { id: nextSId, val: "" }]);
     setNextSId(n => n + 1);
   };
@@ -399,10 +576,14 @@ export default function App() {
   const calcCGPA = () => {
     setCgpaErr("");
     let total = 0, count = 0, best = 0;
+    const maxGPA = parseFloat(scale);
     for (const s of sems) {
       if (s.val === "") continue;
       const n = parseFloat(s.val);
-      if (isNaN(n) || n < 0 || n > 4) { setCgpaErr("Enter valid GPA values (0.00 – 4.00)."); return; }
+      if (isNaN(n) || n < 0 || n > maxGPA) { 
+        setCgpaErr(`Enter valid GPA values (0.00 – ${maxGPA}.00).`); 
+        return; 
+      }
       total += n; count++; if (n > best) best = n;
     }
     if (!count) { setCgpaErr("Please enter at least one semester GPA."); return; }
@@ -441,6 +622,22 @@ export default function App() {
       });
   };
 
+  const exportData = () => {
+    const data = {
+      scale,
+      courses,
+      sems,
+      gpaResult,
+      cgpaResult
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'nexa-calculator-data.json';
+    a.click();
+  };
+
   const inputStyle = {
     width: "100%", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)",
     borderRadius: 12, padding: "12px 14px", color: "#fff", fontSize: 14,
@@ -448,8 +645,13 @@ export default function App() {
   };
 
   return (
-    <div style={{ fontFamily: "'DM Sans', sans-serif", background: "#080617", color: "#fff", minHeight: "100vh" }}>
-      {/* SEO Meta (invisible, but helps search engines) */}
+    <div style={{ 
+      fontFamily: "'DM Sans', sans-serif", 
+      background: darkMode ? "#080617" : "#f5f5f5", 
+      color: darkMode ? "#fff" : "#333", 
+      minHeight: "100vh",
+      transition: "all 0.3s"
+    }}>
       <div style={{ display: "none" }}>
         <h1>GPA & CGPA Calculator with Scientific Calculator</h1>
         <p>Free online GPA calculator, CGPA calculator, and scientific calculator. Track academic performance and do advanced math.</p>
@@ -457,7 +659,6 @@ export default function App() {
 
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700;1,800;1,900&family=JetBrains+Mono:wght@400;500;700&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&display=swap');
         @keyframes slideIn { from { opacity:0; transform:translateY(12px) } to { opacity:1; transform:translateY(0) } }
         @keyframes fadeUp { from { opacity:0; transform:translateY(20px) } to { opacity:1; transform:translateY(0) } }
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
@@ -496,7 +697,11 @@ export default function App() {
       `}</style>
 
       {/* Header */}
-      <div style={{ background: "linear-gradient(180deg,#0f0829 0%,#080617 100%)", borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "clamp(16px, 4vw, 20px) clamp(16px, 4vw, 20px) 0" }}>
+      <div style={{ 
+        background: darkMode ? "linear-gradient(180deg,#0f0829 0%,#080617 100%)" : "linear-gradient(180deg,#fff 0%,#f5f5f5 100%)", 
+        borderBottom: `1px solid ${darkMode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)"}`, 
+        padding: "clamp(16px, 4vw, 20px) clamp(16px, 4vw, 20px) 0" 
+      }}>
         <div className="header-container" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "clamp(14px, 3vw, 18px) 0 0" }}>
           <div>
             <div style={{ 
@@ -504,19 +709,19 @@ export default function App() {
               fontSize: "clamp(20px, 5vw, 28px)", 
               fontWeight: 800, 
               letterSpacing: "-0.02em",
-              background: "linear-gradient(135deg, #ffffff 0%, #c4b5fd 50%, #a78bfa 100%)",
+              background: darkMode ? "linear-gradient(135deg, #ffffff 0%, #c4b5fd 50%, #a78bfa 100%)" : "linear-gradient(135deg, #333 0%, #7c3aed 50%, #6d28d9 100%)",
               backgroundSize: "200% 200%",
               animation: "gradientShift 3s ease infinite",
               WebkitBackgroundClip: "text", 
               WebkitTextFillColor: "transparent",
-              textShadow: "0 0 30px rgba(167, 139, 250, 0.3)",
+              textShadow: darkMode ? "0 0 30px rgba(167, 139, 250, 0.3)" : "none",
               marginBottom: "4px"
             }}>
               Nexa Calculator
             </div>
             <div style={{ 
               fontSize: "clamp(10px, 2.5vw, 12px)", 
-              color: "rgba(255,255,255,0.4)", 
+              color: darkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.5)", 
               letterSpacing: "0.15em", 
               textTransform: "uppercase", 
               marginTop: 2,
@@ -526,27 +731,34 @@ export default function App() {
               Academic Excellence Suite • GPA • CGPA • Scientific
             </div>
           </div>
-          <div className="visitor-badge" style={{ 
-            display: "flex", 
-            alignItems: "center", 
-            gap: 8, 
-            background: "rgba(124,58,237,0.15)", 
-            border: "1px solid rgba(124,58,237,0.3)", 
-            borderRadius: 30, 
-            padding: "clamp(6px, 2vw, 8px) clamp(12px, 3vw, 16px)",
-            backdropFilter: "blur(10px)",
-            boxShadow: "0 4px 15px rgba(124, 58, 237, 0.2)"
-          }}>
-            <div style={{ 
-              width: 8, 
-              height: 8, 
-              borderRadius: "50%", 
-              background: "#a78bfa", 
-              animation: "pulse 2s infinite",
-              boxShadow: "0 0 15px #a78bfa"
-            }} />
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "clamp(12px, 3vw, 14px)", fontWeight: 600, color: "#c4b5fd" }}>{visitors.toLocaleString()}</span>
-            <span style={{ fontSize: "clamp(9px, 2vw, 11px)", color: "rgba(255,255,255,0.4)", letterSpacing: 0.5, fontWeight: 400 }}>active users</span>
+          <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+            <button onClick={() => setDarkMode(!darkMode)} style={{
+              background: "transparent", border: "none", fontSize: 20, cursor: "pointer"
+            }}>
+              {darkMode ? "🌙" : "☀️"}
+            </button>
+            <div className="visitor-badge" style={{ 
+              display: "flex", 
+              alignItems: "center", 
+              gap: 8, 
+              background: darkMode ? "rgba(124,58,237,0.15)" : "rgba(124,58,237,0.05)", 
+              border: `1px solid ${darkMode ? "rgba(124,58,237,0.3)" : "rgba(124,58,237,0.2)"}`, 
+              borderRadius: 30, 
+              padding: "clamp(6px, 2vw, 8px) clamp(12px, 3vw, 16px)",
+              backdropFilter: "blur(10px)",
+              boxShadow: darkMode ? "0 4px 15px rgba(124, 58, 237, 0.2)" : "none"
+            }}>
+              <div style={{ 
+                width: 6, 
+                height: 6, 
+                borderRadius: "50%", 
+                background: "#a78bfa", 
+                animation: "pulse 2s infinite",
+                boxShadow: "0 0 15px #a78bfa"
+              }} />
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "clamp(12px, 3vw, 14px)", fontWeight: 600, color: darkMode ? "#c4b5fd" : "#7c3aed" }}>{visitors.toLocaleString()}</span>
+              <span style={{ fontSize: "clamp(9px, 2vw, 11px)", color: darkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.5)", letterSpacing: 0.5, fontWeight: 400 }}>active users</span>
+            </div>
           </div>
         </div>
 
@@ -560,7 +772,7 @@ export default function App() {
               background: tab === t ? "linear-gradient(135deg, rgba(124,58,237,0.2), rgba(167,139,250,0.1))" : "transparent", 
               border: "none", 
               borderBottom: tab === t ? "3px solid #7c3aed" : "3px solid transparent",
-              color: tab === t ? "#fff" : "rgba(255,255,255,0.4)", 
+              color: tab === t ? (darkMode ? "#fff" : "#333") : (darkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)"), 
               transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
               fontFamily: "'DM Sans', sans-serif", 
               letterSpacing: "0.02em", 
@@ -569,8 +781,8 @@ export default function App() {
               position: "relative",
               top: tab === t ? "0px" : "2px"
             }}
-            onMouseEnter={e => { if (tab !== t) e.currentTarget.style.color = "rgba(255,255,255,0.8)"; }}
-            onMouseLeave={e => { if (tab !== t) e.currentTarget.style.color = "rgba(255,255,255,0.4)"; }}
+            onMouseEnter={e => { if (tab !== t) e.currentTarget.style.color = darkMode ? "rgba(255,255,255,0.8)" : "rgba(0,0,0,0.8)"; }}
+            onMouseLeave={e => { if (tab !== t) e.currentTarget.style.color = darkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)"; }}
             >
               {t === "gpa" ? "📊 Semester GPA" : t === "cgpa" ? "📈 Cumulative CGPA" : "🔢 Scientific Calculator"}
             </button>
@@ -578,22 +790,54 @@ export default function App() {
         </div>
       </div>
 
+      {/* Scale Selector */}
+      {(tab === "gpa" || tab === "cgpa") && (
+        <div style={{ padding: "clamp(12px, 3vw, 16px) clamp(16px, 4vw, 24px) 0", display: "flex", gap: 12, alignItems: "center" }}>
+          <span style={{ fontSize: 13, color: darkMode ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)" }}>GPA Scale:</span>
+          <select value={scale} onChange={e => setScale(e.target.value)} style={{
+            background: darkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
+            border: `1px solid ${darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`,
+            borderRadius: 8, padding: "6px 12px", color: darkMode ? "#fff" : "#333",
+            fontSize: 13, cursor: "pointer"
+          }}>
+            <option value="4.0">4.0 Scale</option>
+            <option value="5.0">5.0 Scale</option>
+            <option value="10.0">10.0 Scale</option>
+          </select>
+          {(tab === "gpa" && gpaResult) && (
+            <button onClick={exportData} style={{
+              marginLeft: "auto", padding: "6px 12px", background: "rgba(124,58,237,0.2)",
+              border: "1px solid rgba(124,58,237,0.3)", borderRadius: 8, color: "#a78bfa",
+              fontSize: 12, cursor: "pointer"
+            }}>📥 Export Data</button>
+          )}
+        </div>
+      )}
+
       {/* Tab Content */}
       <div style={{ padding: "clamp(16px, 4vw, 24px) clamp(16px, 4vw, 24px) 0" }}>
         {tab === "gpa" && (
           <div>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16, flexWrap: "wrap", gap: 10 }}>
-              <div style={{ fontSize: "clamp(11px, 2.5vw, 13px)", fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: "rgba(255,255,255,0.4)" }}>Current Courses & Grades</div>
-              <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 12, color: "#7c3aed", background: "rgba(124,58,237,0.12)", border: "1px solid rgba(124,58,237,0.25)", padding: "4px 12px", borderRadius: 20, fontWeight: 500 }}>
-                {courses.length} / 6 courses
+              <div style={{ fontSize: "clamp(11px, 2.5vw, 13px)", fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: darkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.5)" }}>Current Courses & Grades</div>
+              <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+                <button onClick={() => setShowTargetGPA(!showTargetGPA)} style={{
+                  padding: "4px 12px", background: "rgba(124,58,237,0.15)", border: "1px solid rgba(124,58,237,0.25)",
+                  borderRadius: 20, color: "#a78bfa", fontSize: 12, cursor: "pointer"
+                }}>
+                  {showTargetGPA ? "Hide" : "Show"} Target GPA
+                </button>
+                <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 12, color: "#7c3aed", background: "rgba(124,58,237,0.12)", border: "1px solid rgba(124,58,237,0.25)", padding: "4px 12px", borderRadius: 20, fontWeight: 500 }}>
+                  {courses.length} / 8 courses
+                </div>
               </div>
             </div>
 
             {courses.map((c, i) => (
-              <CourseCard key={c.id} id={c.id} index={i} removable={i >= 3} onRemove={removeCourse} data={c} onChange={updateCourse} />
+              <CourseCard key={c.id} id={c.id} index={i} removable={i >= 3} onRemove={removeCourse} data={c} onChange={updateCourse} scale={scale} />
             ))}
 
-            {courses.length < 6 && (
+            {courses.length < 8 && (
               <button onClick={addCourse} style={{
                 width: "100%", padding: "clamp(10px, 2.5vw, 12px)", border: "2px dashed rgba(124,58,237,0.4)",
                 borderRadius: 14, background: "transparent", color: "#a78bfa", fontSize: "clamp(13px, 3vw, 14px)",
@@ -627,8 +871,11 @@ export default function App() {
 
             {gpaResult && (
               <>
-                <ResultCard gpa={gpaResult.gpa} courses={gpaResult.count} credits={gpaResult.credits} points={gpaResult.points} />
-                <GradeProgressBar gpa={gpaResult.gpa} />
+                <ResultCard gpa={gpaResult.gpa} courses={gpaResult.count} credits={gpaResult.credits} points={gpaResult.points} scale={scale} />
+                <GradeProgressBar gpa={gpaResult.gpa} scale={scale} />
+                {showTargetGPA && (
+                  <TargetGPACalculator currentGPA={gpaResult.gpa} totalCredits={gpaResult.credits} />
+                )}
               </>
             )}
           </div>
@@ -637,24 +884,25 @@ export default function App() {
         {tab === "cgpa" && (
           <div>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16, flexWrap: "wrap", gap: 10 }}>
-              <div style={{ fontSize: "clamp(11px, 2.5vw, 13px)", fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: "rgba(255,255,255,0.4)" }}>Semester GPAs</div>
+              <div style={{ fontSize: "clamp(11px, 2.5vw, 13px)", fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: darkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.5)" }}>Semester GPAs</div>
               <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 12, color: "#7c3aed", background: "rgba(124,58,237,0.12)", border: "1px solid rgba(124,58,237,0.25)", padding: "4px 12px", borderRadius: 20, fontWeight: 500 }}>
-                {sems.length} / 6 semesters
+                {sems.length} / 8 semesters
               </div>
             </div>
 
             <div className="semester-grid" style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "clamp(8px, 2vw, 12px)", marginBottom: 16 }}>
               {sems.map((s, i) => (
                 <div key={s.id} style={{
-                  background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)",
+                  background: darkMode ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)", 
+                  border: `1px solid ${darkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"}`,
                   borderRadius: 16, padding: "clamp(14px, 3vw, 18px) clamp(12px, 3vw, 16px)", position: "relative", animation: "slideIn 0.25s ease",
                   transition: "all 0.3s"
                 }}
                   onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(167,139,250,0.4)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.transform = "translateY(0)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = darkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"; e.currentTarget.style.transform = "translateY(0)"; }}
                 >
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-                    <div style={{ fontSize: "clamp(10px, 2.5vw, 12px)", fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "rgba(255,255,255,0.35)" }}>Semester {i + 1}</div>
+                    <div style={{ fontSize: "clamp(10px, 2.5vw, 12px)", fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: darkMode ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.5)" }}>Semester {i + 1}</div>
                     {i >= 2 && (
                       <button onClick={() => removeSem(s.id)} style={{
                         background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)",
@@ -668,23 +916,24 @@ export default function App() {
                     )}
                   </div>
                   <input
-                    type="number" min="0" max="4" step="0.01" placeholder="0.00"
+                    type="number" min="0" max={scale} step="0.01" placeholder="0.00"
                     value={s.val}
                     onChange={e => updateSem(s.id, e.target.value)}
                     style={{
                       width: "100%", background: "transparent", border: "none",
-                      borderBottom: "2px solid rgba(255,255,255,0.15)", color: "#fff",
+                      borderBottom: `2px solid ${darkMode ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.15)"}`, 
+                      color: darkMode ? "#fff" : "#333",
                       fontSize: "clamp(20px, 5vw, 24px)", fontFamily: "'JetBrains Mono',monospace", fontWeight: 600,
                       padding: "6px 0", outline: "none", transition: "border-color 0.3s"
                     }}
                     onFocus={e => e.target.style.borderBottomColor = "#7c3aed"}
-                    onBlur={e => e.target.style.borderBottomColor = "rgba(255,255,255,0.15)"}
+                    onBlur={e => e.target.style.borderBottomColor = darkMode ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.15)"}
                   />
                 </div>
               ))}
             </div>
 
-            {sems.length < 6 && (
+            {sems.length < 8 && (
               <button onClick={addSem} style={{
                 width: "100%", padding: "clamp(10px, 2.5vw, 12px)", border: "2px dashed rgba(124,58,237,0.4)",
                 borderRadius: 14, background: "transparent", color: "#a78bfa", fontSize: "clamp(13px, 3vw, 14px)",
@@ -716,7 +965,7 @@ export default function App() {
               </div>
             )}
 
-            {cgpaResult && <CGPAResultCard cgpa={cgpaResult.cgpa} sems={cgpaResult.sems} total={cgpaResult.total} best={cgpaResult.best} />}
+            {cgpaResult && <CGPAResultCard cgpa={cgpaResult.cgpa} sems={cgpaResult.sems} total={cgpaResult.total} best={cgpaResult.best} scale={scale} />}
           </div>
         )}
 
@@ -724,26 +973,26 @@ export default function App() {
       </div>
 
       {/* Contact Us */}
-      <div style={{ margin: "0 clamp(16px, 4vw, 24px)", padding: "clamp(24px, 5vw, 32px) 0 0", borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+      <div style={{ margin: "0 clamp(16px, 4vw, 24px)", padding: "clamp(24px, 5vw, 32px) 0 0", borderTop: `1px solid ${darkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"}` }}>
         <div style={{ marginBottom: "clamp(20px, 4vw, 28px)" }}>
           <div style={{ 
             fontFamily: "'Playfair Display',serif", 
             fontSize: "clamp(24px, 6vw, 32px)", 
             fontWeight: 700, 
             letterSpacing: "-0.02em",
-            background: "linear-gradient(135deg, #fff, #c4b5fd)",
+            background: darkMode ? "linear-gradient(135deg, #fff, #c4b5fd)" : "linear-gradient(135deg, #333, #7c3aed)",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
             marginBottom: "8px"
           }}>Get in Touch</div>
-          <div style={{ fontSize: "clamp(13px, 3vw, 15px)", color: "rgba(255,255,255,0.4)", lineHeight: 1.5 }}>Have questions or feedback? We'd love to hear from you.</div>
+          <div style={{ fontSize: "clamp(13px, 3vw, 15px)", color: darkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.5)", lineHeight: 1.5 }}>Have questions or feedback? We'd love to hear from you.</div>
         </div>
 
         {contactSent ? (
           <div style={{ background: "rgba(52,211,153,0.08)", border: "1px solid rgba(52,211,153,0.2)", borderRadius: 20, padding: "clamp(24px, 5vw, 32px)", textAlign: "center", animation: "fadeUp 0.4s ease" }}>
             <div style={{ fontSize: "clamp(36px, 8vw, 48px)", marginBottom: 16 }}>✓</div>
             <div style={{ fontSize: "clamp(18px, 4vw, 22px)", fontWeight: 700, color: "#34d399" }}>Message Sent Successfully!</div>
-            <div style={{ fontSize: "clamp(13px, 3vw, 15px)", color: "rgba(255,255,255,0.5)", marginTop: 8 }}>We'll get back to you as soon as possible.</div>
+            <div style={{ fontSize: "clamp(13px, 3vw, 15px)", color: darkMode ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)", marginTop: 8 }}>We'll get back to you as soon as possible.</div>
             <button onClick={() => { setContactSent(false); setContact({ name: "", email: "", subject: "", message: "" }); }} style={{
               marginTop: 20, padding: "10px 24px", background: "rgba(52,211,153,0.12)", border: "1px solid rgba(52,211,153,0.3)",
               borderRadius: 12, color: "#34d399", fontSize: "clamp(13px, 3vw, 14px)", fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans',sans-serif",
@@ -754,38 +1003,38 @@ export default function App() {
             >Send Another Message</button>
           </div>
         ) : (
-          <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 24, padding: "clamp(20px, 4vw, 28px)" }}>
+          <div style={{ background: darkMode ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.02)", border: `1px solid ${darkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"}`, borderRadius: 24, padding: "clamp(20px, 4vw, 28px)" }}>
             <div className="contact-grid" style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "clamp(12px, 3vw, 16px)", marginBottom: 16 }}>
               {[["name", "Your name", "text"], ["email", "Email address", "email"]].map(([field, ph, type]) => (
                 <div key={field}>
-                  <div style={{ fontSize: "clamp(10px, 2.5vw, 12px)", color: "rgba(255,255,255,0.4)", letterSpacing: 1, textTransform: "uppercase", marginBottom: 8, fontWeight: 500 }}>{ph} <span style={{ color: "#7c3aed" }}>*</span></div>
+                  <div style={{ fontSize: "clamp(10px, 2.5vw, 12px)", color: darkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.5)", letterSpacing: 1, textTransform: "uppercase", marginBottom: 8, fontWeight: 500 }}>{ph} <span style={{ color: "#7c3aed" }}>*</span></div>
                   <input type={type} placeholder={`Enter your ${ph.toLowerCase()}`} value={contact[field]}
                     onChange={e => setContact(p => ({ ...p, [field]: e.target.value }))}
-                    style={inputStyle}
-                    onFocus={e => { e.target.style.borderColor = "#7c3aed"; e.target.style.background = "rgba(255,255,255,0.06)"; }}
-                    onBlur={e => { e.target.style.borderColor = "rgba(255,255,255,0.09)"; e.target.style.background = "rgba(255,255,255,0.04)"; }}
+                    style={{...inputStyle, color: darkMode ? "#fff" : "#333"}}
+                    onFocus={e => { e.target.style.borderColor = "#7c3aed"; e.target.style.background = darkMode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.02)"; }}
+                    onBlur={e => { e.target.style.borderColor = darkMode ? "rgba(255,255,255,0.09)" : "rgba(0,0,0,0.09)"; e.target.style.background = darkMode ? "rgba(255,255,255,0.04)" : "transparent"; }}
                   />
                 </div>
               ))}
             </div>
 
             <div style={{ marginBottom: 16 }}>
-              <div style={{ fontSize: "clamp(10px, 2.5vw, 12px)", color: "rgba(255,255,255,0.4)", letterSpacing: 1, textTransform: "uppercase", marginBottom: 8, fontWeight: 500 }}>Subject</div>
+              <div style={{ fontSize: "clamp(10px, 2.5vw, 12px)", color: darkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.5)", letterSpacing: 1, textTransform: "uppercase", marginBottom: 8, fontWeight: 500 }}>Subject</div>
               <input type="text" placeholder="What's this about?" value={contact.subject}
                 onChange={e => setContact(p => ({ ...p, subject: e.target.value }))}
-                style={inputStyle}
-                onFocus={e => { e.target.style.borderColor = "#7c3aed"; e.target.style.background = "rgba(255,255,255,0.06)"; }}
-                onBlur={e => { e.target.style.borderColor = "rgba(255,255,255,0.09)"; e.target.style.background = "rgba(255,255,255,0.04)"; }}
+                style={{...inputStyle, color: darkMode ? "#fff" : "#333"}}
+                onFocus={e => { e.target.style.borderColor = "#7c3aed"; e.target.style.background = darkMode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.02)"; }}
+                onBlur={e => { e.target.style.borderColor = darkMode ? "rgba(255,255,255,0.09)" : "rgba(0,0,0,0.09)"; e.target.style.background = darkMode ? "rgba(255,255,255,0.04)" : "transparent"; }}
               />
             </div>
 
             <div style={{ marginBottom: 20 }}>
-              <div style={{ fontSize: "clamp(10px, 2.5vw, 12px)", color: "rgba(255,255,255,0.4)", letterSpacing: 1, textTransform: "uppercase", marginBottom: 8, fontWeight: 500 }}>Message <span style={{ color: "#7c3aed" }}>*</span></div>
+              <div style={{ fontSize: "clamp(10px, 2.5vw, 12px)", color: darkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.5)", letterSpacing: 1, textTransform: "uppercase", marginBottom: 8, fontWeight: 500 }}>Message <span style={{ color: "#7c3aed" }}>*</span></div>
               <textarea rows={4} placeholder="Write your message here..." value={contact.message}
                 onChange={e => setContact(p => ({ ...p, message: e.target.value }))}
-                style={{ ...inputStyle, minHeight: 120 }}
-                onFocus={e => { e.target.style.borderColor = "#7c3aed"; e.target.style.background = "rgba(255,255,255,0.06)"; }}
-                onBlur={e => { e.target.style.borderColor = "rgba(255,255,255,0.09)"; e.target.style.background = "rgba(255,255,255,0.04)"; }}
+                style={{ ...inputStyle, minHeight: 120, color: darkMode ? "#fff" : "#333" }}
+                onFocus={e => { e.target.style.borderColor = "#7c3aed"; e.target.style.background = darkMode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.02)"; }}
+                onBlur={e => { e.target.style.borderColor = darkMode ? "rgba(255,255,255,0.09)" : "rgba(0,0,0,0.09)"; e.target.style.background = darkMode ? "rgba(255,255,255,0.04)" : "transparent"; }}
               />
             </div>
 
@@ -811,16 +1060,16 @@ export default function App() {
       </div>
 
       {/* Footer */}
-      <div style={{ textAlign: "center", padding: "clamp(24px, 5vw, 32px) clamp(16px, 4vw, 24px) clamp(20px, 4vw, 28px)", marginTop: "clamp(24px, 5vw, 32px)", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-        <div style={{ fontFamily: "'Cinzel Decorative',serif", fontSize: "clamp(14px, 3.5vw, 16px)", color: "rgba(255,255,255,0.6)", marginBottom: 8 }}>
-          Crafted by{" "}
+      <div style={{ textAlign: "center", padding: "clamp(24px, 5vw, 32px) clamp(16px, 4vw, 24px) clamp(20px, 4vw, 28px)", marginTop: "clamp(24px, 5vw, 32px)", borderTop: `1px solid ${darkMode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)"}` }}>
+        <div style={{ fontFamily: "'Playfair Display',serif", fontSize: "clamp(14px, 3.5vw, 16px)", color: darkMode ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.6)", marginBottom: 8 }}>
+          Crafted with ❤️ by{" "}
           <a
             href="https://usmanmurtaza.netlify.app"
             target="_blank"
             rel="noopener noreferrer"
             style={{
               color: "#a78bfa",
-              fontWeight: 800,
+              fontWeight: 700,
               textDecoration: "none",
               borderBottom: "2px solid rgba(167, 139, 250, 0.3)",
               transition: "all 0.3s"
@@ -831,8 +1080,8 @@ export default function App() {
             Usman Murtaza
           </a>
         </div>
-        <div style={{ fontSize: "clamp(10px, 2.5vw, 11px)", color: "rgba(255,255,255,0.25)", letterSpacing: 1.5, textTransform: "uppercase", fontWeight: 500 }}>
-          Nexa Calculator — Academic Excellence Suite
+        <div style={{ fontSize: "clamp(10px, 2.5vw, 11px)", color: darkMode ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.25)", letterSpacing: 1.5, textTransform: "uppercase", fontWeight: 500 }}>
+          Nexa Calculator v2.0 — Academic Excellence Suite
         </div>
       </div>
     </div>
