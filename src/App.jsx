@@ -3,6 +3,21 @@ import emailjs from "@emailjs/browser";
 import { jsPDF } from "jspdf";
 import * as XLSX from 'xlsx';
 
+const isDevelopment = import.meta.env.DEV;
+
+// Wrap console logs for development only
+if (!isDevelopment) {
+  console.log = () => {};
+  console.warn = () => {};
+  console.error = () => {};
+}
+
+// Initialize EmailJS with public key
+const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+if (EMAILJS_PUBLIC_KEY) {
+  emailjs.init(EMAILJS_PUBLIC_KEY);
+}
+
 // ---------- GPA / CGPA Constants & Helpers ----------
 const GRADES = [
   { l: "A+  — 4.00", p: 4.0, g: "A+" },
@@ -438,6 +453,62 @@ function CalculatorPanel({ darkMode }) {
   );
 }
 
+// ---------- Target GPA Calculator ----------
+function TargetGPACalculator({ currentGPA, totalCredits, darkMode }) {
+  const [targetGPA, setTargetGPA] = useState("");
+  const [remainingCredits, setRemainingCredits] = useState("");
+  const [requiredGPA, setRequiredGPA] = useState(null);
+
+  const calculateRequired = () => {
+    const current = parseFloat(currentGPA) || 0;
+    const target = parseFloat(targetGPA) || 0;
+    const total = parseFloat(totalCredits) || 0;
+    const remaining = parseFloat(remainingCredits) || 0;
+    
+    if (remaining === 0) {
+      setRequiredGPA("N/A");
+      return;
+    }
+    
+    const required = (target * (total + remaining) - current * total) / remaining;
+    setRequiredGPA(required.toFixed(2));
+  };
+
+  return (
+    <div style={{ 
+      background: darkMode ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)",
+      border: `1px solid ${darkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"}`,
+      borderRadius: 16, padding: 20, marginTop: 20
+    }}>
+      <h3 style={{ fontSize: 15, marginBottom: 16, color: "#a78bfa" }}>🎯 Target GPA Calculator</h3>
+      <div style={{ display: "grid", gap: 12 }}>
+        <input type="number" placeholder="Target GPA" value={targetGPA}
+          onChange={e => setTargetGPA(e.target.value)} style={{
+            background: darkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
+            border: `1px solid ${darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`,
+            borderRadius: 10, padding: "10px", color: darkMode ? "#fff" : "#333"
+          }} />
+        <input type="number" placeholder="Remaining Credits" value={remainingCredits}
+          onChange={e => setRemainingCredits(e.target.value)} style={{
+            background: darkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
+            border: `1px solid ${darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`,
+            borderRadius: 10, padding: "10px", color: darkMode ? "#fff" : "#333"
+          }} />
+        <button onClick={calculateRequired} style={{
+          padding: "10px", background: "linear-gradient(135deg,#7c3aed,#6d28d9)",
+          border: "none", borderRadius: 10, color: "#fff", cursor: "pointer", fontWeight: 500
+        }}>Calculate Required GPA</button>
+        {requiredGPA && (
+          <div style={{ textAlign: "center", marginTop: 8 }}>
+            <div style={{ fontSize: 12, color: darkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.5)" }}>Required GPA in remaining courses:</div>
+            <div style={{ fontSize: 26, fontWeight: 700, color: "#a78bfa" }}>{requiredGPA}</div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ---------- Export Modal Component ----------
 function ExportModal({ isOpen, onClose, onExport, darkMode }) {
   const [studentName, setStudentName] = useState("");
@@ -634,10 +705,10 @@ export default function App() {
     
     const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
     const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
-    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
     
-    if (!serviceId || !templateId || !publicKey) {
-      setContactErr("Email service not configured. Please check environment variables.");
+    if (!serviceId || !templateId) {
+      console.error("EmailJS configuration missing");
+      setContactErr("Email service temporarily unavailable. Please try again later.");
       setIsSending(false);
       return;
     }
@@ -646,9 +717,8 @@ export default function App() {
       from_name: contact.name,
       from_email: contact.email,
       subject: contact.subject || "Nexa Calculator Contact",
-      message: contact.message,
-      to_email: "usmanmurtaza@example.com"
-    }, publicKey)
+      message: contact.message
+    })
       .then(() => {
         setContactSent(true);
         setContactErr("");
@@ -767,11 +837,6 @@ export default function App() {
       margin: 0,
       padding: 0
     }}>
-      <div style={{ display: "none" }}>
-        <h1>GPA & CGPA Calculator with Scientific Calculator</h1>
-        <p>Free online GPA calculator, CGPA calculator, and scientific calculator. Track academic performance and do advanced math.</p>
-      </div>
-
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap');
         
@@ -1044,6 +1109,9 @@ export default function App() {
               <>
                 <ResultCard gpa={gpaResult.gpa} courses={gpaResult.count} credits={gpaResult.credits} points={gpaResult.points} scale={scale} darkMode={darkMode} />
                 <GradeProgressBar gpa={gpaResult.gpa} scale={scale} darkMode={darkMode} />
+                {showTargetGPA && (
+                  <TargetGPACalculator currentGPA={gpaResult.gpa} totalCredits={gpaResult.credits} darkMode={darkMode} />
+                )}
               </>
             )}
           </div>
@@ -1230,7 +1298,7 @@ export default function App() {
       {/* Footer */}
       <div style={{ textAlign: "center", padding: "clamp(28px, 5vw, 36px) clamp(16px, 4vw, 24px) clamp(24px, 4vw, 32px)", marginTop: "clamp(28px, 5vw, 36px)", borderTop: `1px solid ${darkMode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)"}` }}>
         <div style={{ fontFamily: "'Playfair Display',serif", fontSize: "clamp(15px, 3.5vw, 17px)", color: darkMode ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.6)", marginBottom: 8 }}>
-          Crafted with ❤️ by{" "}
+          Crafted by{" "}
           <a
             href="https://usmanmurtaza.netlify.app"
             target="_blank"
@@ -1249,7 +1317,7 @@ export default function App() {
           </a>
         </div>
         <div style={{ fontSize: "clamp(11px, 2.5vw, 12px)", color: darkMode ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.25)", letterSpacing: 1.5, textTransform: "uppercase", fontWeight: 500 }}>
-          Nexa Calculator v2.0 — Academic Excellence Suite
+          Nexa Calculator v1.1.0 — Academic Excellence Suite
         </div>
       </div>
     </div>
