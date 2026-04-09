@@ -240,9 +240,9 @@ Experience the application live: **[Nexa Calculator](https://nexacalculator.netl
 
 ---
 
-🔮 Roadmap & Future Enhancements
+**🔮 Roadmap & Future Enhancements**
 
-v2.1.0 (Coming Soon)
+**v2.1.0 (Coming Soon)**
 
 PWA implementation for offline use
 
@@ -254,7 +254,7 @@ More export format options
 
 ---
 
-v2.2.0 (Planned)
+**v2.2.0 (Planned)**
 
 Multiple grading system presets
 
@@ -268,7 +268,7 @@ Cumulative statistics dashboard
 
 ---
 
-v2.3.0 (Future)
+**v2.3.0 (Future)**
 
 User accounts and cloud sync
 
@@ -280,7 +280,7 @@ Advanced statistics and analytics
 
 ---
 
-Long-term Vision
+**Long-term Vision**
 
 Mobile app (React Native)
 
@@ -294,19 +294,19 @@ Study schedule integration
 
 ---
 
-👨‍💻 Author
+**👨‍💻 Author**
 
 <div align="center"> <img src="https://github.com/usmannmurtazaa.png" width="100" height="100" style="border-radius: 50%;" /> <h3>Usman Murtaza</h3> </div><div align="center"> <a href="https://github.com/usmannmurtazaa"> <img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white" alt="GitHub" /> </a> <a href="https://linkedin.com/in/usman-murtaza"> <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" /> </a> <a href="https://usmanmurtaza.netlify.app"> <img src="https://img.shields.io/badge/Portfolio-000000?style=for-the-badge&logo=About.me&logoColor=white" alt="Portfolio" /> </a> <a href="mailto:usmanmurtaza@example.com"> <img src="https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white" alt="Email" /> </a> </div>
 
 ---
 
-📄 License
+**📄 License**
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
 MIT License
 
-Copyright (c) 2024 Usman Murtaza
+Copyright (c) 2026 Usman Murtaza
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -315,31 +315,29 @@ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions...
 
-[Full license text available in LICENSE file]
+---
+
+**🙏 Acknowledgments**
+
+1. Google Fonts for typography
+
+2. EmailJS for email integration
+
+3. jsPDF for PDF generation
+
+4. Vite Team for the amazing build tool
+
+5. React Community for inspiration and support
 
 ---
 
-🙏 Acknowledgments
-
-Google Fonts for typography
-
-EmailJS for email integration
-
-jsPDF for PDF generation
-
-Vite Team for the amazing build tool
-
-React Community for inspiration and support
-
----
-
-📊 Project Stats
+**📊 Project Stats**
 
 <div align="center"> <img src="https://img.shields.io/github/languages/count/usmannmurtazaa/NexaCalculator?style=flat-square" alt="Languages" /> <img src="https://img.shields.io/github/languages/top/usmannmurtazaa/NexaCalculator?style=flat-square" alt="Top Language" /> <img src="https://img.shields.io/github/repo-size/usmannmurtazaa/NexaCalculator?style=flat-square" alt="Repo Size" /> <img src="https://img.shields.io/github/last-commit/usmannmurtazaa/NexaCalculator?style=flat-square" alt="Last Commit" /> </div>
 
 ---
 
-⭐ Support
+**⭐ Support**
 
 If you find this project helpful, please consider:
 
@@ -351,7 +349,7 @@ If you find this project helpful, please consider:
 
 📢 Sharing with others
 
-<div align="center"> <h3>Made with ❤️ by Usman Murtaza</h3> <p>© 2024 Nexa Calculator. All rights reserved.</p> </div> ```
+<div align="center"> <h3>Made with ❤️ by Usman Murtaza</h3> <p>© 2026 Nexa Calculator. All rights reserved.</p> </div> ```
 
 ---
 
