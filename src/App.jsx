@@ -1062,7 +1062,7 @@ export default function App() {
       {/* Footer */}
       <div style={{ textAlign: "center", padding: "clamp(24px, 5vw, 32px) clamp(16px, 4vw, 24px) clamp(20px, 4vw, 28px)", marginTop: "clamp(24px, 5vw, 32px)", borderTop: `1px solid ${darkMode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)"}` }}>
         <div style={{ fontFamily: "'Playfair Display',serif", fontSize: "clamp(14px, 3.5vw, 16px)", color: darkMode ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.6)", marginBottom: 8 }}>
-          Crafted with ❤️ by{" "}
+          Crafted by{" "}
           <a
             href="https://usmanmurtaza.netlify.app"
             target="_blank"
