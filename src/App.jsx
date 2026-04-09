@@ -4,25 +4,23 @@ import { jsPDF } from "jspdf";
 
 const isDevelopment = import.meta.env.DEV;
 
-// EmailJS Configuration - Direct access to env variables
+// EmailJS Configuration
 const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
 const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
 const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
 
-// Initialize EmailJS once at module level
+// Initialize EmailJS
 if (EMAILJS_PUBLIC_KEY) {
   emailjs.init(EMAILJS_PUBLIC_KEY);
   if (isDevelopment) {
     console.log('✅ EmailJS initialized successfully');
   }
-} else if (isDevelopment) {
-  console.warn('⚠️ EmailJS Public Key not found');
 }
 
 // Wrap console logs for development only
 if (!isDevelopment) {
-  console.log = () => {};
-  console.warn = () => {};
+  console.log = () => { };
+  console.warn = () => { };
 }
 
 // ---------- GPA / CGPA Constants & Helpers ----------
@@ -95,7 +93,7 @@ function AnimatedNumber({ value, decimals = 2 }) {
 
 function CourseCard({ id, index, removable, onRemove, data, onChange, scale, darkMode }) {
   const gradeOptions = SCALES[scale] || GRADES;
-  
+
   return (
     <div style={{
       background: darkMode ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)",
@@ -185,7 +183,7 @@ function CourseCard({ id, index, removable, onRemove, data, onChange, scale, dar
 function ResultCard({ gpa, courses, credits, points, scale, darkMode }) {
   const s = getStanding(parseFloat(gpa), scale);
   const maxGPA = parseFloat(scale);
-  
+
   return (
     <div style={{
       borderRadius: 20, overflow: "hidden", border: "1px solid rgba(167,139,250,0.25)",
@@ -219,7 +217,7 @@ function ResultCard({ gpa, courses, credits, points, scale, darkMode }) {
 function CGPAResultCard({ cgpa, sems, total, best, scale, darkMode }) {
   const s = getStanding(parseFloat(cgpa), scale);
   const maxGPA = parseFloat(scale);
-  
+
   return (
     <div style={{ borderRadius: 20, overflow: "hidden", border: "1px solid rgba(167,139,250,0.25)", marginTop: 20, animation: "fadeUp 0.4s ease" }}>
       <div style={{ background: darkMode ? "linear-gradient(135deg,#0f0829,#1a0f3a)" : "linear-gradient(135deg,#f5f5f5,#e0e0e0)", padding: "32px 24px", textAlign: "center", position: "relative" }}>
@@ -251,7 +249,7 @@ function GradeProgressBar({ gpa, scale, darkMode }) {
   const maxGPA = parseFloat(scale);
   const pct = Math.min((parseFloat(gpa) / maxGPA) * 100, 100);
   const markers = [0, maxGPA * 0.5, maxGPA * 0.75, maxGPA];
-  
+
   return (
     <div style={{ marginTop: 16, padding: "0 2px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: darkMode ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.5)", marginBottom: 6, letterSpacing: 0.5 }}>
@@ -264,7 +262,6 @@ function GradeProgressBar({ gpa, scale, darkMode }) {
   );
 }
 
-// ---------- Calculator Component ----------
 function CalculatorPanel({ darkMode }) {
   const [mode, setMode] = useState("normal");
   const [input, setInput] = useState("");
@@ -291,7 +288,7 @@ function CalculatorPanel({ darkMode }) {
 
   const handleMemory = (action) => {
     const current = parseFloat(result) || 0;
-    switch(action) {
+    switch (action) {
       case "MC": setMemory(0); break;
       case "MR": setInput(prev => prev + memory.toString()); break;
       case "M+": setMemory(m => m + current); break;
@@ -305,15 +302,9 @@ function CalculatorPanel({ darkMode }) {
     let res;
     try {
       switch (func) {
-        case "sin": 
-          res = angleMode === "deg" ? Math.sin(current * Math.PI / 180) : Math.sin(current); 
-          break;
-        case "cos": 
-          res = angleMode === "deg" ? Math.cos(current * Math.PI / 180) : Math.cos(current); 
-          break;
-        case "tan": 
-          res = angleMode === "deg" ? Math.tan(current * Math.PI / 180) : Math.tan(current); 
-          break;
+        case "sin": res = angleMode === "deg" ? Math.sin(current * Math.PI / 180) : Math.sin(current); break;
+        case "cos": res = angleMode === "deg" ? Math.cos(current * Math.PI / 180) : Math.cos(current); break;
+        case "tan": res = angleMode === "deg" ? Math.tan(current * Math.PI / 180) : Math.tan(current); break;
         case "asin": res = Math.asin(current); break;
         case "acos": res = Math.acos(current); break;
         case "atan": res = Math.atan(current); break;
@@ -330,13 +321,12 @@ function CalculatorPanel({ darkMode }) {
         case "|x|": res = Math.abs(current); break;
         case "±": res = -current; break;
         case "1/x": res = 1 / current; break;
-        case "n!": 
+        case "n!":
           if (current < 0 || !Number.isInteger(current)) { res = NaN; break; }
-          res = 1; for(let i = 2; i <= current; i++) res *= i;
+          res = 1; for (let i = 2; i <= current; i++) res *= i;
           break;
         case "(": setInput(prev => prev + "("); return;
         case ")": setInput(prev => prev + ")"); return;
-        default: return;
       }
       const resStr = res.toString();
       setResult(resStr);
@@ -371,41 +361,23 @@ function CalculatorPanel({ darkMode }) {
     <div>
       {mode === "scientific" && (
         <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
-          <button onClick={() => setAngleMode("deg")} style={{
-            flex: 1, padding: "6px", background: angleMode === "deg" ? "rgba(124,58,237,0.2)" : darkMode ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.03)",
-            border: angleMode === "deg" ? "1px solid #7c3aed" : `1px solid ${darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`, 
-            borderRadius: 8, color: darkMode ? "#fff" : "#333", fontSize: 12, cursor: "pointer"
-          }}>DEG</button>
-          <button onClick={() => setAngleMode("rad")} style={{
-            flex: 1, padding: "6px", background: angleMode === "rad" ? "rgba(124,58,237,0.2)" : darkMode ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.03)",
-            border: angleMode === "rad" ? "1px solid #7c3aed" : `1px solid ${darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`, 
-            borderRadius: 8, color: darkMode ? "#fff" : "#333", fontSize: 12, cursor: "pointer"
-          }}>RAD</button>
+          <button onClick={() => setAngleMode("deg")} style={{ flex: 1, padding: "6px", background: angleMode === "deg" ? "rgba(124,58,237,0.2)" : darkMode ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.03)", border: angleMode === "deg" ? "1px solid #7c3aed" : `1px solid ${darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`, borderRadius: 8, color: darkMode ? "#fff" : "#333", fontSize: 12, cursor: "pointer" }}>DEG</button>
+          <button onClick={() => setAngleMode("rad")} style={{ flex: 1, padding: "6px", background: angleMode === "rad" ? "rgba(124,58,237,0.2)" : darkMode ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.03)", border: angleMode === "rad" ? "1px solid #7c3aed" : `1px solid ${darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`, borderRadius: 8, color: darkMode ? "#fff" : "#333", fontSize: 12, cursor: "pointer" }}>RAD</button>
         </div>
       )}
 
       {memory !== 0 && (
-        <div style={{ fontSize: 11, color: "#a78bfa", marginBottom: 8, fontFamily: "'JetBrains Mono', monospace" }}>
-          M: {memory}
-        </div>
+        <div style={{ fontSize: 11, color: "#a78bfa", marginBottom: 8, fontFamily: "'JetBrains Mono', monospace" }}>M: {memory}</div>
       )}
 
       <div style={{ background: darkMode ? "rgba(0,0,0,0.3)" : "rgba(0,0,0,0.05)", borderRadius: 16, padding: "clamp(16px, 4vw, 20px) clamp(14px, 3vw, 18px)", border: `1px solid ${darkMode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)"}`, marginBottom: 18 }}>
-        <div style={{ fontSize: "clamp(12px, 3vw, 14px)", color: darkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.5)", fontFamily: "'JetBrains Mono', monospace", minHeight: 22, wordBreak: "break-all" }}>
-          {input || "0"}
-        </div>
-        <div style={{ fontSize: "clamp(24px, 6vw, 32px)", fontWeight: 600, color: darkMode ? "#fff" : "#333", fontFamily: "'JetBrains Mono', monospace", letterSpacing: -1, wordBreak: "break-all" }}>
-          {result}
-        </div>
+        <div style={{ fontSize: "clamp(12px, 3vw, 14px)", color: darkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.5)", fontFamily: "'JetBrains Mono', monospace", minHeight: 22, wordBreak: "break-all" }}>{input || "0"}</div>
+        <div style={{ fontSize: "clamp(24px, 6vw, 32px)", fontWeight: 600, color: darkMode ? "#fff" : "#333", fontFamily: "'JetBrains Mono', monospace", letterSpacing: -1, wordBreak: "break-all" }}>{result}</div>
       </div>
 
       <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
         {["normal", "scientific"].map(m => (
-          <button key={m} onClick={() => setMode(m)} style={{
-            flex: 1, padding: "clamp(8px, 2vw, 10px)", background: mode === m ? "linear-gradient(135deg,#7c3aed,#6d28d9)" : darkMode ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.03)",
-            border: mode === m ? "none" : `1px solid ${darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`, borderRadius: 10, color: "#fff", fontSize: "clamp(12px, 3vw, 13px)", fontWeight: 500,
-            cursor: "pointer", fontFamily: "'DM Sans', sans-serif", transition: "all 0.2s", textTransform: "capitalize"
-          }}>{m}</button>
+          <button key={m} onClick={() => setMode(m)} style={{ flex: 1, padding: "clamp(8px, 2vw, 10px)", background: mode === m ? "linear-gradient(135deg,#7c3aed,#6d28d9)" : darkMode ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.03)", border: mode === m ? "none" : `1px solid ${darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`, borderRadius: 10, color: "#fff", fontSize: "clamp(12px, 3vw, 13px)", fontWeight: 500, cursor: "pointer", fontFamily: "'DM Sans', sans-serif", textTransform: "capitalize" }}>{m}</button>
         ))}
       </div>
 
@@ -413,31 +385,24 @@ function CalculatorPanel({ darkMode }) {
         {(mode === "normal" ? normalButtons : scientificButtons).map((row, i) =>
           row.map((btn, j) => (
             <button key={`${i}-${j}`} onClick={() => {
-              if (["MC", "MR", "M+", "M-"].includes(btn)) {
-                handleMemory(btn);
-              } else if (mode === "normal") {
-                handleNormalClick(btn);
-              } else {
+              if (["MC", "MR", "M+", "M-"].includes(btn)) handleMemory(btn);
+              else if (mode === "normal") handleNormalClick(btn);
+              else {
                 if (["sin", "cos", "tan", "asin", "acos", "atan", "√", "∛", "x²", "x³", "10ˣ", "log", "ln", "π", "e", "|x|", "±", "1/x", "n!", "(", ")"].includes(btn)) {
-                  if (btn === "π" || btn === "e") { setInput(prev => prev + btn); }
+                  if (btn === "π" || btn === "e") setInput(prev => prev + btn);
                   else handleScientific(btn);
                 } else handleNormalClick(btn);
               }
             }} style={{
-              padding: "clamp(10px, 3vw, 14px) 0", 
-              background: ["C", "="].includes(btn) ? "linear-gradient(135deg,#7c3aed,#6d28d9)" : 
-                         ["MC", "MR", "M+", "M-"].includes(btn) ? "rgba(167,139,250,0.15)" : darkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
-              border: `1px solid ${darkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"}`, borderRadius: 12, color: darkMode ? "#fff" : "#333", 
-              fontSize: "clamp(12px, 3.5vw, 14px)", fontWeight: 500,
-              cursor: "pointer", fontFamily: btn.match(/[0-9]/) ? "'JetBrains Mono', monospace" : "'DM Sans', sans-serif",
+              padding: "clamp(10px, 3vw, 14px) 0",
+              background: ["C", "="].includes(btn) ? "linear-gradient(135deg,#7c3aed,#6d28d9)" : ["MC", "MR", "M+", "M-"].includes(btn) ? "rgba(167,139,250,0.15)" : darkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
+              border: `1px solid ${darkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"}`, borderRadius: 12, color: darkMode ? "#fff" : "#333",
+              fontSize: "clamp(12px, 3.5vw, 14px)", fontWeight: 500, cursor: "pointer",
+              fontFamily: btn.match(/[0-9]/) ? "'JetBrains Mono', monospace" : "'DM Sans', sans-serif",
               transition: "all 0.15s", gridColumn: btn === "=" ? "span 1" : "auto"
             }}
               onMouseEnter={e => { if (!["C", "="].includes(btn)) e.currentTarget.style.background = "rgba(124,58,237,0.25)"; }}
-              onMouseLeave={e => { 
-                if (!["C", "="].includes(btn)) {
-                  e.currentTarget.style.background = ["MC", "MR", "M+", "M-"].includes(btn) ? "rgba(167,139,250,0.15)" : darkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)";
-                }
-              }}
+              onMouseLeave={e => { if (!["C", "="].includes(btn)) e.currentTarget.style.background = ["MC", "MR", "M+", "M-"].includes(btn) ? "rgba(167,139,250,0.15)" : darkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)"; }}
             >{btn}</button>
           ))
         )}
@@ -447,9 +412,7 @@ function CalculatorPanel({ darkMode }) {
         <div style={{ marginTop: 20, paddingTop: 16, borderTop: `1px solid ${darkMode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)"}` }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
             <div style={{ fontSize: 10, color: darkMode ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.5)", letterSpacing: 1.5, textTransform: "uppercase" }}>Recent</div>
-            <button onClick={() => setHistory([])} style={{
-              background: "transparent", border: "none", color: darkMode ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.3)", fontSize: 10, cursor: "pointer"
-            }}>Clear</button>
+            <button onClick={() => setHistory([])} style={{ background: "transparent", border: "none", color: darkMode ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.3)", fontSize: 10, cursor: "pointer" }}>Clear</button>
           </div>
           {history.map((h, i) => (
             <div key={i} style={{ fontSize: "clamp(11px, 2.5vw, 13px)", color: darkMode ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)", fontFamily: "'JetBrains Mono', monospace", padding: "4px 0", wordBreak: "break-all" }}>{h}</div>
@@ -460,7 +423,6 @@ function CalculatorPanel({ darkMode }) {
   );
 }
 
-// ---------- Target GPA Calculator ----------
 function TargetGPACalculator({ currentGPA, totalCredits, darkMode }) {
   const [targetGPA, setTargetGPA] = useState("");
   const [remainingCredits, setRemainingCredits] = useState("");
@@ -471,40 +433,18 @@ function TargetGPACalculator({ currentGPA, totalCredits, darkMode }) {
     const target = parseFloat(targetGPA) || 0;
     const total = parseFloat(totalCredits) || 0;
     const remaining = parseFloat(remainingCredits) || 0;
-    
-    if (remaining === 0) {
-      setRequiredGPA("N/A");
-      return;
-    }
-    
+    if (remaining === 0) { setRequiredGPA("N/A"); return; }
     const required = (target * (total + remaining) - current * total) / remaining;
     setRequiredGPA(required.toFixed(2));
   };
 
   return (
-    <div style={{ 
-      background: darkMode ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)",
-      border: `1px solid ${darkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"}`,
-      borderRadius: 16, padding: 20, marginTop: 20
-    }}>
+    <div style={{ background: darkMode ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)", border: `1px solid ${darkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"}`, borderRadius: 16, padding: 20, marginTop: 20 }}>
       <h3 style={{ fontSize: 15, marginBottom: 16, color: "#a78bfa" }}>🎯 Target GPA Calculator</h3>
       <div style={{ display: "grid", gap: 12 }}>
-        <input type="number" placeholder="Target GPA" value={targetGPA}
-          onChange={e => setTargetGPA(e.target.value)} style={{
-            background: darkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
-            border: `1px solid ${darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`,
-            borderRadius: 10, padding: "10px", color: darkMode ? "#fff" : "#333"
-          }} />
-        <input type="number" placeholder="Remaining Credits" value={remainingCredits}
-          onChange={e => setRemainingCredits(e.target.value)} style={{
-            background: darkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
-            border: `1px solid ${darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`,
-            borderRadius: 10, padding: "10px", color: darkMode ? "#fff" : "#333"
-          }} />
-        <button onClick={calculateRequired} style={{
-          padding: "10px", background: "linear-gradient(135deg,#7c3aed,#6d28d9)",
-          border: "none", borderRadius: 10, color: "#fff", cursor: "pointer", fontWeight: 500
-        }}>Calculate Required GPA</button>
+        <input type="number" placeholder="Target GPA" value={targetGPA} onChange={e => setTargetGPA(e.target.value)} style={{ background: darkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)", border: `1px solid ${darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`, borderRadius: 10, padding: "10px", color: darkMode ? "#fff" : "#333" }} />
+        <input type="number" placeholder="Remaining Credits" value={remainingCredits} onChange={e => setRemainingCredits(e.target.value)} style={{ background: darkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)", border: `1px solid ${darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`, borderRadius: 10, padding: "10px", color: darkMode ? "#fff" : "#333" }} />
+        <button onClick={calculateRequired} style={{ padding: "10px", background: "linear-gradient(135deg,#7c3aed,#6d28d9)", border: "none", borderRadius: 10, color: "#fff", cursor: "pointer", fontWeight: 500 }}>Calculate Required GPA</button>
         {requiredGPA && (
           <div style={{ textAlign: "center", marginTop: 8 }}>
             <div style={{ fontSize: 12, color: darkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.5)" }}>Required GPA in remaining courses:</div>
@@ -516,7 +456,6 @@ function TargetGPACalculator({ currentGPA, totalCredits, darkMode }) {
   );
 }
 
-// ---------- Export Modal Component ----------
 function ExportModal({ isOpen, onClose, onExport, darkMode }) {
   const [studentName, setStudentName] = useState("");
   const [studentId, setStudentId] = useState("");
@@ -525,72 +464,42 @@ function ExportModal({ isOpen, onClose, onExport, darkMode }) {
   const [exportFormat, setExportFormat] = useState("pdf");
 
   const handleExport = () => {
-    onExport({
-      studentName,
-      studentId,
-      university,
-      semester,
-      format: exportFormat
-    });
+    onExport({ studentName, studentId, university, semester, format: exportFormat });
     onClose();
   };
 
   if (!isOpen) return null;
 
   return (
-    <div style={{
-      position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
-      background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center",
-      zIndex: 1000, backdropFilter: "blur(5px)"
-    }} onClick={onClose}>
-      <div style={{
-        background: darkMode ? "#1a1035" : "#fff", borderRadius: 20, padding: 30,
-        maxWidth: 500, width: "90%", maxHeight: "90vh", overflow: "auto"
-      }} onClick={e => e.stopPropagation()}>
+    <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, backdropFilter: "blur(5px)" }} onClick={onClose}>
+      <div style={{ background: darkMode ? "#1a1035" : "#fff", borderRadius: 20, padding: 30, maxWidth: 500, width: "90%" }} onClick={e => e.stopPropagation()}>
         <h2 style={{ marginBottom: 20, color: darkMode ? "#fff" : "#333" }}>Export Academic Record</h2>
-        
         <div style={{ marginBottom: 16 }}>
           <label style={{ display: "block", marginBottom: 6, color: darkMode ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.7)", fontSize: 13 }}>Student Name *</label>
-          <input type="text" value={studentName} onChange={e => setStudentName(e.target.value)}
-            style={{ width: "100%", padding: 10, borderRadius: 8, border: `1px solid ${darkMode ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)"}`, background: darkMode ? "rgba(255,255,255,0.05)" : "#f5f5f5", color: darkMode ? "#fff" : "#333" }} />
+          <input type="text" value={studentName} onChange={e => setStudentName(e.target.value)} style={{ width: "100%", padding: 10, borderRadius: 8, border: `1px solid ${darkMode ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)"}`, background: darkMode ? "rgba(255,255,255,0.05)" : "#f5f5f5", color: darkMode ? "#fff" : "#333" }} />
         </div>
-
         <div style={{ marginBottom: 16 }}>
           <label style={{ display: "block", marginBottom: 6, color: darkMode ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.7)", fontSize: 13 }}>Student ID</label>
-          <input type="text" value={studentId} onChange={e => setStudentId(e.target.value)}
-            style={{ width: "100%", padding: 10, borderRadius: 8, border: `1px solid ${darkMode ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)"}`, background: darkMode ? "rgba(255,255,255,0.05)" : "#f5f5f5", color: darkMode ? "#fff" : "#333" }} />
+          <input type="text" value={studentId} onChange={e => setStudentId(e.target.value)} style={{ width: "100%", padding: 10, borderRadius: 8, border: `1px solid ${darkMode ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)"}`, background: darkMode ? "rgba(255,255,255,0.05)" : "#f5f5f5", color: darkMode ? "#fff" : "#333" }} />
         </div>
-
         <div style={{ marginBottom: 16 }}>
           <label style={{ display: "block", marginBottom: 6, color: darkMode ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.7)", fontSize: 13 }}>University/College</label>
-          <input type="text" value={university} onChange={e => setUniversity(e.target.value)}
-            style={{ width: "100%", padding: 10, borderRadius: 8, border: `1px solid ${darkMode ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)"}`, background: darkMode ? "rgba(255,255,255,0.05)" : "#f5f5f5", color: darkMode ? "#fff" : "#333" }} />
+          <input type="text" value={university} onChange={e => setUniversity(e.target.value)} style={{ width: "100%", padding: 10, borderRadius: 8, border: `1px solid ${darkMode ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)"}`, background: darkMode ? "rgba(255,255,255,0.05)" : "#f5f5f5", color: darkMode ? "#fff" : "#333" }} />
         </div>
-
         <div style={{ marginBottom: 16 }}>
           <label style={{ display: "block", marginBottom: 6, color: darkMode ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.7)", fontSize: 13 }}>Semester</label>
-          <input type="text" value={semester} onChange={e => setSemester(e.target.value)} placeholder="e.g., Fall 2024"
-            style={{ width: "100%", padding: 10, borderRadius: 8, border: `1px solid ${darkMode ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)"}`, background: darkMode ? "rgba(255,255,255,0.05)" : "#f5f5f5", color: darkMode ? "#fff" : "#333" }} />
+          <input type="text" value={semester} onChange={e => setSemester(e.target.value)} placeholder="e.g., Fall 2024" style={{ width: "100%", padding: 10, borderRadius: 8, border: `1px solid ${darkMode ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)"}`, background: darkMode ? "rgba(255,255,255,0.05)" : "#f5f5f5", color: darkMode ? "#fff" : "#333" }} />
         </div>
-
         <div style={{ marginBottom: 20 }}>
           <label style={{ display: "block", marginBottom: 6, color: darkMode ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.7)", fontSize: 13 }}>Export Format</label>
-          <select value={exportFormat} onChange={e => setExportFormat(e.target.value)}
-            style={{ width: "100%", padding: 10, borderRadius: 8, border: `1px solid ${darkMode ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)"}`, background: darkMode ? "rgba(255,255,255,0.05)" : "#f5f5f5", color: darkMode ? "#fff" : "#333" }}>
+          <select value={exportFormat} onChange={e => setExportFormat(e.target.value)} style={{ width: "100%", padding: 10, borderRadius: 8, border: `1px solid ${darkMode ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)"}`, background: darkMode ? "rgba(255,255,255,0.05)" : "#f5f5f5", color: darkMode ? "#fff" : "#333" }}>
             <option value="pdf">PDF Document</option>
             <option value="csv">CSV Spreadsheet</option>
           </select>
         </div>
-
         <div style={{ display: "flex", gap: 10 }}>
-          <button onClick={handleExport} disabled={!studentName} style={{
-            flex: 1, padding: 12, background: studentName ? "linear-gradient(135deg,#7c3aed,#6d28d9)" : "rgba(124,58,237,0.3)",
-            border: "none", borderRadius: 10, color: "#fff", cursor: studentName ? "pointer" : "not-allowed", fontWeight: 600
-          }}>Export</button>
-          <button onClick={onClose} style={{
-            flex: 1, padding: 12, background: "transparent", border: `1px solid ${darkMode ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)"}`,
-            borderRadius: 10, color: darkMode ? "#fff" : "#333", cursor: "pointer"
-          }}>Cancel</button>
+          <button onClick={handleExport} disabled={!studentName} style={{ flex: 1, padding: 12, background: studentName ? "linear-gradient(135deg,#7c3aed,#6d28d9)" : "rgba(124,58,237,0.3)", border: "none", borderRadius: 10, color: "#fff", cursor: studentName ? "pointer" : "not-allowed", fontWeight: 600 }}>Export</button>
+          <button onClick={onClose} style={{ flex: 1, padding: 12, background: "transparent", border: `1px solid ${darkMode ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)"}`, borderRadius: 10, color: darkMode ? "#fff" : "#333", cursor: "pointer" }}>Cancel</button>
         </div>
       </div>
     </div>
@@ -623,7 +532,7 @@ export default function App() {
   const [contactSent, setContactSent] = useState(false);
   const [contactErr, setContactErr] = useState("");
   const [isSending, setIsSending] = useState(false);
-  
+
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem('darkMode');
     return saved ? JSON.parse(saved) : true;
@@ -649,48 +558,23 @@ export default function App() {
     setCgpaResult(null);
   }, [scale]);
 
-  const addCourse = () => {
-    if (courses.length >= 8) return;
-    setCourses(prev => [...prev, { id: nextCId, code: "", credits: 3, gradeIdx: 0 }]);
-    setNextCId(n => n + 1);
-  };
-  
-  const removeCourse = (id) => {
-    setCourses(prev => prev.filter(c => c.id !== id));
-    setGpaResult(null);
-  };
-  
-  const updateCourse = (id, field, val) => {
-    setCourses(prev => prev.map(c => c.id === id ? { ...c, [field]: val } : c));
-  };
+  const addCourse = () => { if (courses.length >= 8) return; setCourses(prev => [...prev, { id: nextCId, code: "", credits: 3, gradeIdx: 0 }]); setNextCId(n => n + 1); };
+  const removeCourse = (id) => { setCourses(prev => prev.filter(c => c.id !== id)); setGpaResult(null); };
+  const updateCourse = (id, field, val) => { setCourses(prev => prev.map(c => c.id === id ? { ...c, [field]: val } : c)); };
 
   const calcGPA = () => {
     setGpaErr("");
     if (courses.length === 0) { setGpaErr("Add at least one course."); return; }
-    for (const c of courses) {
-      if (!c.code.trim()) { setGpaErr("Please fill in all course codes."); return; }
-    }
+    for (const c of courses) { if (!c.code.trim()) { setGpaErr("Please fill in all course codes."); return; } }
     let tp = 0, tc = 0;
     const gradeScale = SCALES[scale] || GRADES;
-    for (const c of courses) {
-      tp += gradeScale[c.gradeIdx].p * c.credits;
-      tc += c.credits;
-    }
+    for (const c of courses) { tp += gradeScale[c.gradeIdx].p * c.credits; tc += c.credits; }
     const gpa = tc ? tp / tc : 0;
     setGpaResult({ gpa: gpa.toFixed(2), count: courses.length, credits: tc, points: tp });
   };
 
-  const addSem = () => {
-    if (sems.length >= 8) return;
-    setSems(prev => [...prev, { id: nextSId, val: "" }]);
-    setNextSId(n => n + 1);
-  };
-  
-  const removeSem = (id) => {
-    setSems(prev => prev.filter(s => s.id !== id));
-    setCgpaResult(null);
-  };
-  
+  const addSem = () => { if (sems.length >= 8) return; setSems(prev => [...prev, { id: nextSId, val: "" }]); setNextSId(n => n + 1); };
+  const removeSem = (id) => { setSems(prev => prev.filter(s => s.id !== id)); setCgpaResult(null); };
   const updateSem = (id, val) => setSems(prev => prev.map(s => s.id === id ? { ...s, val } : s));
 
   const calcCGPA = () => {
@@ -700,10 +584,7 @@ export default function App() {
     for (const s of sems) {
       if (s.val === "") continue;
       const n = parseFloat(s.val);
-      if (isNaN(n) || n < 0 || n > maxGPA) { 
-        setCgpaErr(`Enter valid GPA values (0.00 – ${maxGPA}.00).`); 
-        return; 
-      }
+      if (isNaN(n) || n < 0 || n > maxGPA) { setCgpaErr(`Enter valid GPA values (0.00 – ${maxGPA}.00).`); return; }
       total += n; count++; if (n > best) best = n;
     }
     if (!count) { setCgpaErr("Please enter at least one semester GPA."); return; }
@@ -713,50 +594,28 @@ export default function App() {
   const submitContact = async () => {
     setContactErr("");
     if (!contact.name.trim() || !contact.email.trim() || !contact.message.trim()) {
-      setContactErr("Please fill in all required fields.");
-      return;
+      setContactErr("Please fill in all required fields."); return;
     }
     if (!/\S+@\S+\.\S+/.test(contact.email)) {
-      setContactErr("Please enter a valid email address.");
-      return;
+      setContactErr("Please enter a valid email address."); return;
     }
-    
     setIsSending(true);
-    
-    // Check if EmailJS is properly configured
+
     if (!EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID || !EMAILJS_PUBLIC_KEY) {
-      console.error("EmailJS configuration missing. Check your .env file.");
-      setContactErr("Email service is not configured. Please contact the administrator.");
-      setIsSending(false);
-      return;
+      setContactErr("Email service not configured."); setIsSending(false); return;
     }
-    
+
     try {
-      const templateParams = {
+      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
         from_name: contact.name,
         from_email: contact.email,
-        subject: contact.subject || "Nexa Calculator Contact Form",
-        message: contact.message,
-        to_name: "Usman Murtaza",
-        reply_to: contact.email
-      };
-      
-      const response = await emailjs.send(
-        EMAILJS_SERVICE_ID,
-        EMAILJS_TEMPLATE_ID,
-        templateParams
-      );
-      
-      if (response.status === 200) {
-        setContactSent(true);
-        setContactErr("");
-        setContact({ name: "", email: "", subject: "", message: "" });
-      } else {
-        throw new Error("Failed to send message");
-      }
-    } catch (err) {
-      console.error("EmailJS Error:", err);
-      setContactErr("Failed to send message. Please try again or contact us directly.");
+        subject: contact.subject || "Nexa Calculator Contact",
+        message: contact.message
+      });
+      setContactSent(true);
+      setContact({ name: "", email: "", subject: "", message: "" });
+    } catch {
+      setContactErr("Failed to send message. Please try again.");
     } finally {
       setIsSending(false);
     }
@@ -767,92 +626,58 @@ export default function App() {
     const data = {
       ...exportData,
       scale,
-      courses: courses.map(c => ({
-        code: c.code || "—",
-        credits: c.credits,
-        grade: gradeScale[c.gradeIdx].g,
-        points: gradeScale[c.gradeIdx].p.toFixed(2)
-      })),
+      courses: courses.map(c => ({ code: c.code || "—", credits: c.credits, grade: gradeScale[c.gradeIdx].g, points: gradeScale[c.gradeIdx].p.toFixed(2) })),
       gpaResult,
-      date: new Date().toLocaleDateString('en-US', { 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
-      })
+      date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
     };
 
     if (exportData.format === "pdf") {
       const doc = new jsPDF();
-      
-      // Modern Header with Gradient Background
+
+      // Header
       doc.setFillColor(124, 58, 237);
       doc.rect(0, 0, 210, 40, 'F');
-      
       doc.setFont("helvetica", "bold");
       doc.setTextColor(255, 255, 255);
       doc.setFontSize(24);
       doc.text("NEXA CALCULATOR", 105, 25, { align: "center" });
-      
       doc.setFontSize(12);
       doc.setTextColor(199, 181, 253);
       doc.text("Academic Excellence Suite", 105, 35, { align: "center" });
-      
-      // Student Information Section
+
       let yPos = 55;
-      
+
+      // Student Info
       doc.setDrawColor(124, 58, 237);
-      doc.setLineWidth(0.5);
       doc.line(15, yPos - 5, 195, yPos - 5);
-      
       doc.setFontSize(16);
       doc.setTextColor(124, 58, 237);
       doc.text("ACADEMIC RECORD", 105, yPos, { align: "center" });
       yPos += 12;
-      
+
       doc.setFontSize(11);
       doc.setTextColor(80, 80, 80);
       doc.setFont("helvetica", "bold");
       doc.text("Student Information", 20, yPos);
       yPos += 8;
-      
       doc.setFont("helvetica", "normal");
       doc.setTextColor(60, 60, 60);
-      doc.text(`Name: ${data.studentName}`, 25, yPos);
-      yPos += 6;
-      
-      if (data.studentId) {
-        doc.text(`Student ID: ${data.studentId}`, 25, yPos);
-        yPos += 6;
-      }
-      
-      if (data.university) {
-        doc.text(`Institution: ${data.university}`, 25, yPos);
-        yPos += 6;
-      }
-      
-      if (data.semester) {
-        doc.text(`Semester: ${data.semester}`, 25, yPos);
-        yPos += 6;
-      }
-      
+      doc.text(`Name: ${data.studentName}`, 25, yPos); yPos += 6;
+      if (data.studentId) { doc.text(`Student ID: ${data.studentId}`, 25, yPos); yPos += 6; }
+      if (data.university) { doc.text(`Institution: ${data.university}`, 25, yPos); yPos += 6; }
+      if (data.semester) { doc.text(`Semester: ${data.semester}`, 25, yPos); yPos += 6; }
       doc.text(`Generated: ${data.date}`, 25, yPos);
-      yPos += 10;
-      
-      // Course Details Section
-      doc.setDrawColor(200, 200, 200);
-      doc.line(20, yPos, 190, yPos);
-      yPos += 8;
-      
+      yPos += 12;
+
+      // Course Table
+      doc.line(20, yPos, 190, yPos); yPos += 8;
       doc.setFont("helvetica", "bold");
       doc.setFontSize(13);
       doc.setTextColor(124, 58, 237);
-      doc.text("Course Details", 20, yPos);
-      yPos += 8;
-      
-      // Table Headers
+      doc.text("Course Details", 20, yPos); yPos += 8;
+
       doc.setFillColor(124, 58, 237);
       doc.rect(20, yPos, 170, 8, 'F');
-      
       doc.setFontSize(10);
       doc.setTextColor(255, 255, 255);
       doc.text("Course Code", 25, yPos + 5.5);
@@ -860,348 +685,169 @@ export default function App() {
       doc.text("Grade", 115, yPos + 5.5);
       doc.text("Points", 155, yPos + 5.5);
       yPos += 10;
-      
-      // Table Rows
+
       doc.setFont("helvetica", "normal");
       doc.setTextColor(60, 60, 60);
-      
       data.courses.forEach((course, index) => {
-        if (yPos > 250) {
-          doc.addPage();
-          yPos = 20;
-        }
-        
-        // Alternate row background
-        if (index % 2 === 0) {
-          doc.setFillColor(245, 245, 250);
-          doc.rect(20, yPos - 4, 170, 7, 'F');
-        }
-        
+        if (yPos > 250) { doc.addPage(); yPos = 20; }
+        if (index % 2 === 0) { doc.setFillColor(245, 245, 250); doc.rect(20, yPos - 4, 170, 7, 'F'); }
         doc.text(course.code, 25, yPos);
         doc.text(course.credits.toString(), 85, yPos);
         doc.text(course.grade, 115, yPos);
         doc.text(course.points, 155, yPos);
         yPos += 7;
       });
-      
-      // Summary Section
+
+      // Summary
       yPos += 10;
-      
       doc.setDrawColor(124, 58, 237);
-      doc.setLineWidth(0.8);
-      doc.line(20, yPos, 190, yPos);
-      yPos += 10;
-      
+      doc.line(20, yPos, 190, yPos); yPos += 10;
       doc.setFont("helvetica", "bold");
       doc.setFontSize(12);
       doc.setTextColor(124, 58, 237);
-      doc.text("Academic Summary", 20, yPos);
-      yPos += 10;
-      
+      doc.text("Academic Summary", 20, yPos); yPos += 10;
+
       doc.setFillColor(249, 248, 255);
       doc.rect(20, yPos - 4, 170, 30, 'F');
-      
       doc.setFontSize(11);
       doc.setTextColor(60, 60, 60);
-      
-      // GPA Box
       doc.setFont("helvetica", "bold");
       doc.text("GPA", 40, yPos + 3);
       doc.setFontSize(18);
       doc.setTextColor(124, 58, 237);
       doc.text(data.gpaResult.gpa, 40, yPos + 15);
-      
       doc.setFontSize(11);
       doc.setTextColor(60, 60, 60);
       doc.text(`out of ${data.scale}`, 40, yPos + 22);
-      
-      // Credits Box
       doc.setFont("helvetica", "bold");
       doc.text("Total Credits", 105, yPos + 3);
       doc.setFontSize(14);
       doc.setTextColor(80, 80, 80);
       doc.text(data.gpaResult.credits.toString(), 105, yPos + 15);
-      
-      // Quality Points Box
       doc.setFont("helvetica", "bold");
       doc.text("Quality Points", 150, yPos + 3);
       doc.setFontSize(14);
       doc.text(data.gpaResult.points.toFixed(2), 150, yPos + 15);
-      
       yPos += 40;
-      
-      // Academic Standing
+
+      // Standing
       const standing = getStanding(parseFloat(data.gpaResult.gpa), data.scale);
-      doc.setFillColor(standing.color.replace('#', '0x') || 0x7c3aed);
+      doc.setFillColor(standing.color === "#a78bfa" ? 167 : standing.color === "#34d399" ? 52 : standing.color === "#60a5fa" ? 96 : standing.color === "#fbbf24" ? 251 : standing.color === "#f87171" ? 248 : 239);
       doc.rect(20, yPos - 4, 170, 12, 'F');
-      
       doc.setFont("helvetica", "bold");
       doc.setFontSize(12);
       doc.setTextColor(255, 255, 255);
       doc.text(`Academic Standing: ${standing.t}`, 105, yPos + 3, { align: "center" });
-      
+
       // Footer
       const pageCount = doc.getNumberOfPages();
       for (let i = 1; i <= pageCount; i++) {
         doc.setPage(i);
-        
         doc.setFontSize(9);
         doc.setTextColor(150, 150, 150);
         doc.text(`Page ${i} of ${pageCount}`, 105, 285, { align: "center" });
-        
         doc.setFontSize(10);
         doc.setTextColor(124, 58, 237);
         doc.text("Crafted by Usman Murtaza • Nexa Calculator", 105, 290, { align: "center" });
         doc.text("nexacalculator.netlify.app", 105, 295, { align: "center" });
       }
-      
+
       doc.save(`Nexa_Academic_Record_${data.studentName.replace(/\s+/g, '_')}.pdf`);
     } else {
-      // CSV Export
-      let csvContent = "NEXA CALCULATOR - ACADEMIC RECORD\n";
-      csvContent += "==========================================\n\n";
-      csvContent += "STUDENT INFORMATION\n";
-      csvContent += `Student Name,${data.studentName}\n`;
-      csvContent += `Student ID,${data.studentId}\n`;
-      csvContent += `University/College,${data.university}\n`;
-      csvContent += `Semester,${data.semester}\n`;
-      csvContent += `Generated,${data.date}\n`;
-      csvContent += `GPA Scale,${data.scale}\n\n`;
-      csvContent += "COURSE DETAILS\n";
-      csvContent += "Course Code,Credits,Grade,Grade Points\n";
-      
-      data.courses.forEach(course => {
-        csvContent += `${course.code},${course.credits},${course.grade},${course.points}\n`;
-      });
-      
-      csvContent += "\nACADEMIC SUMMARY\n";
-      csvContent += `GPA,${data.gpaResult.gpa} (out of ${data.scale})\n`;
-      csvContent += `Total Credits,${data.gpaResult.credits}\n`;
-      csvContent += `Quality Points,${data.gpaResult.points.toFixed(2)}\n`;
-      
-      const standing = getStanding(parseFloat(data.gpaResult.gpa), data.scale);
-      csvContent += `Academic Standing,${standing.t}\n\n`;
-      csvContent += "==========================================\n";
-      csvContent += "Generated by Nexa Calculator - Crafted by Usman Murtaza\n";
-      csvContent += "nexacalculator.netlify.app";
-      
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement("a");
-      const url = URL.createObjectURL(blob);
-      link.setAttribute("href", url);
-      link.setAttribute("download", `Nexa_Academic_Record_${data.studentName.replace(/\s+/g, '_')}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      let csv = "NEXA CALCULATOR - ACADEMIC RECORD\n==========================================\n\nSTUDENT INFORMATION\n";
+      csv += `Student Name,${data.studentName}\nStudent ID,${data.studentId}\nUniversity,${data.university}\nSemester,${data.semester}\nDate,${data.date}\nScale,${data.scale}\n\nCOURSE DETAILS\nCode,Credits,Grade,Points\n`;
+      data.courses.forEach(c => csv += `${c.code},${c.credits},${c.grade},${c.points}\n`);
+      csv += `\nACADEMIC SUMMARY\nGPA,${data.gpaResult.gpa}\nCredits,${data.gpaResult.credits}\nPoints,${data.gpaResult.points.toFixed(2)}\n\nGenerated by Nexa Calculator - Crafted by Usman Murtaza`;
+
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `Nexa_Record_${data.studentName.replace(/\s+/g, '_')}.csv`;
+      a.click();
     }
   };
 
-  const inputStyle = {
-    width: "100%", background: darkMode ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.02)",
-    border: `1px solid ${darkMode ? "rgba(255,255,255,0.09)" : "rgba(0,0,0,0.09)"}`,
-    borderRadius: 12, padding: "12px 14px", color: darkMode ? "#fff" : "#333", fontSize: 14,
-    fontFamily: "'DM Sans', sans-serif", outline: "none", transition: "border-color 0.2s", display: "block"
-  };
+  const inputStyle = { width: "100%", background: darkMode ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.02)", border: `1px solid ${darkMode ? "rgba(255,255,255,0.09)" : "rgba(0,0,0,0.09)"}`, borderRadius: 12, padding: "12px 14px", color: darkMode ? "#fff" : "#333", fontSize: 14, fontFamily: "'DM Sans', sans-serif", outline: "none", transition: "border-color 0.2s", display: "block" };
 
-  if (!isLoaded) {
-    return (
-      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", background: darkMode ? "#080617" : "#f5f5f5" }}>
-        <div style={{
-          width: "50px", height: "50px", border: "3px solid rgba(124, 58, 237, 0.1)",
-          borderRadius: "50%", borderTopColor: "#7c3aed", animation: "spin 1s ease-in-out infinite"
-        }} />
-      </div>
-    );
-  }
+  if (!isLoaded) return <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", background: darkMode ? "#080617" : "#f5f5f5" }}><div style={{ width: "50px", height: "50px", border: "3px solid rgba(124, 58, 237, 0.1)", borderRadius: "50%", borderTopColor: "#7c3aed", animation: "spin 1s ease-in-out infinite" }} /></div>;
 
   return (
-    <div style={{ 
-      fontFamily: "'DM Sans', sans-serif", 
-      background: darkMode ? "#080617" : "#f5f5f5", 
-      color: darkMode ? "#fff" : "#333", 
-      minHeight: "100vh",
-      transition: "all 0.3s",
-      margin: 0,
-      padding: 0
-    }}>
+    <div style={{ fontFamily: "'DM Sans', sans-serif", background: darkMode ? "#080617" : "#f5f5f5", color: darkMode ? "#fff" : "#333", minHeight: "100vh", transition: "all 0.3s", margin: 0, padding: 0 }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap');
-        
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { margin: 0; padding: 0; overflow-x: hidden; }
-        
         @keyframes slideIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
         @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
         @keyframes spin { to { transform: rotate(360deg); } }
-        
         select option { background: #1a1035; color: #fff; }
         input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.2); }
-        textarea { resize: vertical; }
-        
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #7c3aed44; border-radius: 4px; }
-        
-        @media (max-width: 768px) {
-          .header-container { flex-direction: column; align-items: flex-start !important; gap: 12px; }
-          .tab-buttons { justify-content: space-around; }
-        }
-        
-        @media (max-width: 480px) {
-          .semester-grid { grid-template-columns: 1fr !important; }
-          .contact-grid { grid-template-columns: 1fr !important; }
-        }
+        @media (max-width: 768px) { .header-container { flex-direction: column; align-items: flex-start !important; gap: 12px; } }
+        @media (max-width: 480px) { .semester-grid { grid-template-columns: 1fr !important; } .contact-grid { grid-template-columns: 1fr !important; } }
       `}</style>
 
-      <ExportModal 
-        isOpen={showExportModal} 
-        onClose={() => setShowExportModal(false)} 
-        onExport={handleExport}
-        darkMode={darkMode}
-      />
+      <ExportModal isOpen={showExportModal} onClose={() => setShowExportModal(false)} onExport={handleExport} darkMode={darkMode} />
 
-      <div style={{ 
-        background: darkMode ? "linear-gradient(180deg,#0f0829 0%,#080617 100%)" : "linear-gradient(180deg,#fff 0%,#f5f5f5 100%)", 
-        borderBottom: `1px solid ${darkMode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)"}`, 
-        padding: "clamp(16px, 4vw, 20px) clamp(16px, 4vw, 20px) 0" 
-      }}>
+      {/* Header */}
+      <div style={{ background: darkMode ? "linear-gradient(180deg,#0f0829 0%,#080617 100%)" : "linear-gradient(180deg,#fff 0%,#f5f5f5 100%)", borderBottom: `1px solid ${darkMode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)"}`, padding: "clamp(16px, 4vw, 20px) clamp(16px, 4vw, 20px) 0" }}>
         <div className="header-container" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "clamp(14px, 3vw, 18px) 0 0" }}>
           <div>
-            <h1 style={{ 
-              fontFamily: "'Playfair Display', serif", 
-              fontSize: "clamp(24px, 6vw, 32px)", 
-              fontWeight: 800, 
-              letterSpacing: "-0.02em",
-              background: darkMode ? "linear-gradient(135deg, #ffffff 0%, #c4b5fd 50%, #a78bfa 100%)" : "linear-gradient(135deg, #333 0%, #7c3aed 50%, #6d28d9 100%)",
-              backgroundSize: "200% 200%",
-              animation: "gradientShift 3s ease infinite",
-              WebkitBackgroundClip: "text", 
-              WebkitTextFillColor: "transparent",
-              textShadow: darkMode ? "0 0 30px rgba(167, 139, 250, 0.3)" : "none",
-              margin: "0 0 4px 0"
-            }}>
-              Nexa Calculator
-            </h1>
-            <p style={{ 
-              fontSize: "clamp(11px, 2.5vw, 13px)", 
-              color: darkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.5)", 
-              letterSpacing: "0.15em", 
-              textTransform: "uppercase", 
-              margin: 0,
-              fontWeight: 500,
-              fontFamily: "'DM Sans', sans-serif"
-            }}>
-              Academic Excellence Suite • GPA • CGPA • Scientific
-            </p>
+            <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(24px, 6vw, 32px)", fontWeight: 800, letterSpacing: "-0.02em", background: darkMode ? "linear-gradient(135deg, #ffffff 0%, #c4b5fd 50%, #a78bfa 100%)" : "linear-gradient(135deg, #333 0%, #7c3aed 50%, #6d28d9 100%)", backgroundSize: "200% 200%", animation: "gradientShift 3s ease infinite", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", margin: "0 0 4px 0" }}>Nexa Calculator</h1>
+            <p style={{ fontSize: "clamp(11px, 2.5vw, 13px)", color: darkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.5)", letterSpacing: "0.15em", textTransform: "uppercase", margin: 0, fontWeight: 500 }}>Academic Excellence Suite • GPA • CGPA • Scientific</p>
           </div>
           <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-            <button onClick={() => setDarkMode(!darkMode)} style={{
-              background: "transparent", border: "none", fontSize: 24, cursor: "pointer",
-              transition: "transform 0.3s", padding: "5px"
-            }} aria-label="Toggle theme">
-              {darkMode ? "🌙" : "☀️"}
-            </button>
-            <div style={{ 
-              display: "flex", alignItems: "center", gap: 8, 
-              background: darkMode ? "rgba(124,58,237,0.15)" : "rgba(124,58,237,0.08)", 
-              border: `1px solid ${darkMode ? "rgba(124,58,237,0.3)" : "rgba(124,58,237,0.2)"}`, 
-              borderRadius: 30, padding: "clamp(6px, 2vw, 8px) clamp(12px, 3vw, 16px)",
-              backdropFilter: "blur(10px)", boxShadow: darkMode ? "0 4px 15px rgba(124, 58, 237, 0.2)" : "none"
-            }}>
-              <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#a78bfa", animation: "pulse 2s infinite", boxShadow: "0 0 15px #a78bfa" }} />
+            <button onClick={() => setDarkMode(!darkMode)} style={{ background: "transparent", border: "none", fontSize: 24, cursor: "pointer" }}>{darkMode ? "🌙" : "☀️"}</button>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, background: darkMode ? "rgba(124,58,237,0.15)" : "rgba(124,58,237,0.08)", border: `1px solid ${darkMode ? "rgba(124,58,237,0.3)" : "rgba(124,58,237,0.2)"}`, borderRadius: 30, padding: "clamp(6px, 2vw, 8px) clamp(12px, 3vw, 16px)", backdropFilter: "blur(10px)" }}>
+              <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#a78bfa", animation: "pulse 2s infinite" }} />
               <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "clamp(13px, 3vw, 15px)", fontWeight: 600, color: darkMode ? "#c4b5fd" : "#7c3aed" }}>{visitors.toLocaleString()}</span>
-              <span style={{ fontSize: "clamp(10px, 2vw, 12px)", color: darkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.5)", letterSpacing: 0.5, fontWeight: 400 }}>active</span>
+              <span style={{ fontSize: "clamp(10px, 2vw, 12px)", color: darkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.5)" }}>active</span>
             </div>
           </div>
         </div>
-
-        <nav className="tab-buttons" style={{ display: "flex", gap: "clamp(8px, 2vw, 16px)", marginTop: "clamp(16px, 4vw, 24px)", flexWrap: "wrap" }}>
-          {["gpa", "cgpa", "calculator"].map((t) => (
-            <button key={t} onClick={() => setTab(t)} style={{
-              padding: "clamp(10px, 2.5vw, 14px) clamp(20px, 5vw, 28px)", fontSize: "clamp(14px, 3vw, 16px)", fontWeight: 600, cursor: "pointer",
-              background: tab === t ? "linear-gradient(135deg, rgba(124,58,237,0.2), rgba(167,139,250,0.1))" : "transparent", 
-              border: "none", borderBottom: tab === t ? "3px solid #7c3aed" : "3px solid transparent",
-              color: tab === t ? (darkMode ? "#fff" : "#333") : (darkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)"), 
-              transition: "all 0.3s", fontFamily: "'DM Sans', sans-serif", letterSpacing: "0.02em", textTransform: "capitalize",
-              borderRadius: "8px 8px 0 0", position: "relative", top: tab === t ? "0px" : "2px"
-            }}>
+        <nav style={{ display: "flex", gap: "clamp(8px, 2vw, 16px)", marginTop: "clamp(16px, 4vw, 24px)", flexWrap: "wrap" }}>
+          {["gpa", "cgpa", "calculator"].map(t => (
+            <button key={t} onClick={() => setTab(t)} style={{ padding: "clamp(10px, 2.5vw, 14px) clamp(20px, 5vw, 28px)", fontSize: "clamp(14px, 3vw, 16px)", fontWeight: 600, cursor: "pointer", background: tab === t ? "linear-gradient(135deg, rgba(124,58,237,0.2), rgba(167,139,250,0.1))" : "transparent", border: "none", borderBottom: tab === t ? "3px solid #7c3aed" : "3px solid transparent", color: tab === t ? (darkMode ? "#fff" : "#333") : (darkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)"), transition: "all 0.3s", fontFamily: "'DM Sans', sans-serif", textTransform: "capitalize", borderRadius: "8px 8px 0 0" }}>
               {t === "gpa" ? "📊 Semester GPA" : t === "cgpa" ? "📈 Cumulative CGPA" : "🔢 Scientific Calculator"}
             </button>
           ))}
         </nav>
       </div>
 
+      {/* Scale Selector */}
       {(tab === "gpa" || tab === "cgpa") && (
         <div style={{ padding: "clamp(12px, 3vw, 16px) clamp(16px, 4vw, 24px) 0", display: "flex", gap: 12, alignItems: "center" }}>
           <span style={{ fontSize: 14, fontWeight: 500, color: darkMode ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.6)" }}>GPA Scale:</span>
-          <select value={scale} onChange={e => setScale(e.target.value)} style={{
-            background: darkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)",
-            border: `1px solid ${darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`,
-            borderRadius: 8, padding: "8px 16px", color: darkMode ? "#fff" : "#333", fontSize: 14, cursor: "pointer", fontWeight: 500
-          }}>
+          <select value={scale} onChange={e => setScale(e.target.value)} style={{ background: darkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)", border: `1px solid ${darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`, borderRadius: 8, padding: "8px 16px", color: darkMode ? "#fff" : "#333", fontSize: 14, cursor: "pointer", fontWeight: 500 }}>
             <option value="4.0">4.0 Scale</option>
             <option value="5.0">5.0 Scale</option>
             <option value="10.0">10.0 Scale</option>
           </select>
           {(tab === "gpa" && gpaResult) && (
-            <button onClick={() => setShowExportModal(true)} style={{
-              marginLeft: "auto", padding: "8px 16px", background: "rgba(124,58,237,0.15)",
-              border: "1px solid rgba(124,58,237,0.3)", borderRadius: 8, color: "#a78bfa",
-              fontSize: 13, cursor: "pointer", fontWeight: 600, transition: "all 0.3s"
-            }}
-            onMouseEnter={e => { e.currentTarget.style.background = "rgba(124,58,237,0.25)"; }}
-            onMouseLeave={e => { e.currentTarget.style.background = "rgba(124,58,237,0.15)"; }}
-            >📥 Export Academic Record</button>
+            <button onClick={() => setShowExportModal(true)} style={{ marginLeft: "auto", padding: "8px 16px", background: "rgba(124,58,237,0.15)", border: "1px solid rgba(124,58,237,0.3)", borderRadius: 8, color: "#a78bfa", fontSize: 13, cursor: "pointer", fontWeight: 600 }}>📥 Export Academic Record</button>
           )}
         </div>
       )}
 
+      {/* Main Content */}
       <main style={{ padding: "clamp(16px, 4vw, 24px) clamp(16px, 4vw, 24px)" }}>
         {tab === "gpa" && (
           <div>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16, flexWrap: "wrap", gap: 10 }}>
               <h2 style={{ fontSize: "clamp(12px, 2.5vw, 14px)", fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: darkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.5)", margin: 0 }}>Current Courses & Grades</h2>
               <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-                <button onClick={() => setShowTargetGPA(!showTargetGPA)} style={{
-                  padding: "6px 14px", background: "rgba(124,58,237,0.12)", border: "1px solid rgba(124,58,237,0.25)",
-                  borderRadius: 20, color: "#a78bfa", fontSize: 12, cursor: "pointer", fontWeight: 500
-                }}>
-                  {showTargetGPA ? "Hide" : "Show"} Target GPA
-                </button>
-                <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 13, color: "#7c3aed", background: "rgba(124,58,237,0.12)", border: "1px solid rgba(124,58,237,0.25)", padding: "5px 14px", borderRadius: 20, fontWeight: 500 }}>
-                  {courses.length} / 8 courses
-                </div>
+                <button onClick={() => setShowTargetGPA(!showTargetGPA)} style={{ padding: "6px 14px", background: "rgba(124,58,237,0.12)", border: "1px solid rgba(124,58,237,0.25)", borderRadius: 20, color: "#a78bfa", fontSize: 12, cursor: "pointer", fontWeight: 500 }}>{showTargetGPA ? "Hide" : "Show"} Target GPA</button>
+                <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 13, color: "#7c3aed", background: "rgba(124,58,237,0.12)", border: "1px solid rgba(124,58,237,0.25)", padding: "5px 14px", borderRadius: 20, fontWeight: 500 }}>{courses.length} / 8 courses</div>
               </div>
             </div>
-
-            {courses.map((c, i) => (
-              <CourseCard key={c.id} id={c.id} index={i} removable={i >= 3} onRemove={removeCourse} data={c} onChange={updateCourse} scale={scale} darkMode={darkMode} />
-            ))}
-
-            {courses.length < 8 && (
-              <button onClick={addCourse} style={{
-                width: "100%", padding: "clamp(11px, 2.5vw, 13px)", border: "2px dashed rgba(124,58,237,0.4)",
-                borderRadius: 14, background: "transparent", color: "#a78bfa", fontSize: "clamp(14px, 3vw, 15px)",
-                fontWeight: 600, cursor: "pointer", marginBottom: 16, fontFamily: "'DM Sans',sans-serif",
-                display: "flex", alignItems: "center", justifyContent: "center", gap: 8, transition: "all 0.3s"
-              }}>
-                <span style={{ fontSize: 22, lineHeight: 1 }}>+</span> Add New Course
-              </button>
-            )}
-
-            <button onClick={calcGPA} style={{
-              width: "100%", padding: "clamp(14px, 3vw, 17px)", background: "linear-gradient(135deg,#7c3aed,#6d28d9)",
-              color: "#fff", border: "none", borderRadius: 14, fontSize: "clamp(16px, 3.5vw, 17px)", fontWeight: 600,
-              cursor: "pointer", fontFamily: "'DM Sans',sans-serif", letterSpacing: 0.5, transition: "all 0.3s",
-              boxShadow: "0 8px 20px rgba(124, 58, 237, 0.3)"
-            }}>
-              Calculate Semester GPA
-            </button>
-
+            {courses.map((c, i) => <CourseCard key={c.id} id={c.id} index={i} removable={i >= 3} onRemove={removeCourse} data={c} onChange={updateCourse} scale={scale} darkMode={darkMode} />)}
+            {courses.length < 8 && <button onClick={addCourse} style={{ width: "100%", padding: "clamp(11px, 2.5vw, 13px)", border: "2px dashed rgba(124,58,237,0.4)", borderRadius: 14, background: "transparent", color: "#a78bfa", fontSize: "clamp(14px, 3vw, 15px)", fontWeight: 600, cursor: "pointer", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}><span style={{ fontSize: 22 }}>+</span> Add New Course</button>}
+            <button onClick={calcGPA} style={{ width: "100%", padding: "clamp(14px, 3vw, 17px)", background: "linear-gradient(135deg,#7c3aed,#6d28d9)", color: "#fff", border: "none", borderRadius: 14, fontSize: "clamp(16px, 3.5vw, 17px)", fontWeight: 600, cursor: "pointer", boxShadow: "0 8px 20px rgba(124, 58, 237, 0.3)" }}>Calculate Semester GPA</button>
             {gpaErr && <div style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.25)", borderRadius: 12, padding: "12px 16px", fontSize: 13, color: "#fca5a5", marginTop: 12 }}>⚠️ {gpaErr}</div>}
-
             {gpaResult && (
               <>
                 <ResultCard gpa={gpaResult.gpa} courses={gpaResult.count} credits={gpaResult.credits} points={gpaResult.points} scale={scale} darkMode={darkMode} />
@@ -1215,56 +861,19 @@ export default function App() {
         {tab === "cgpa" && (
           <div>
             <h2 style={{ fontSize: "clamp(12px, 2.5vw, 14px)", fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: darkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.5)", margin: "0 0 16px 0" }}>Semester GPAs</h2>
-            
             <div className="semester-grid" style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "clamp(10px, 2vw, 14px)", marginBottom: 16 }}>
               {sems.map((s, i) => (
-                <div key={s.id} style={{
-                  background: darkMode ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)", 
-                  border: `1px solid ${darkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"}`,
-                  borderRadius: 16, padding: "clamp(16px, 3vw, 20px) clamp(14px, 3vw, 18px)", position: "relative"
-                }}>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-                    <div style={{ fontSize: "clamp(11px, 2.5vw, 13px)", fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: darkMode ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.5)" }}>Semester {i + 1}</div>
-                    {i >= 2 && (
-                      <button onClick={() => removeSem(s.id)} style={{
-                        background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)",
-                        color: "#f87171", borderRadius: 8, width: 26, height: 26, cursor: "pointer",
-                        fontSize: 14, display: "flex", alignItems: "center", justifyContent: "center"
-                      }}>×</button>
-                    )}
+                <div key={s.id} style={{ background: darkMode ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)", border: `1px solid ${darkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"}`, borderRadius: 16, padding: "clamp(16px, 3vw, 20px)" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12 }}>
+                    <span style={{ fontSize: "clamp(11px, 2.5vw, 13px)", fontWeight: 600, color: darkMode ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.5)" }}>Semester {i + 1}</span>
+                    {i >= 2 && <button onClick={() => removeSem(s.id)} style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)", color: "#f87171", borderRadius: 8, width: 26, height: 26, cursor: "pointer" }}>×</button>}
                   </div>
-                  <input
-                    type="number" min="0" max={scale} step="0.01" placeholder="0.00"
-                    value={s.val} onChange={e => updateSem(s.id, e.target.value)}
-                    style={{
-                      width: "100%", background: "transparent", border: "none",
-                      borderBottom: `2px solid ${darkMode ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.15)"}`, 
-                      color: darkMode ? "#fff" : "#333", fontSize: "clamp(22px, 5vw, 26px)", 
-                      fontFamily: "'JetBrains Mono',monospace", fontWeight: 600, padding: "6px 0", outline: "none"
-                    }}
-                  />
+                  <input type="number" min="0" max={scale} step="0.01" placeholder="0.00" value={s.val} onChange={e => updateSem(s.id, e.target.value)} style={{ width: "100%", background: "transparent", border: "none", borderBottom: `2px solid ${darkMode ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.15)"}`, color: darkMode ? "#fff" : "#333", fontSize: "clamp(22px, 5vw, 26px)", fontFamily: "'JetBrains Mono',monospace", fontWeight: 600, padding: "6px 0", outline: "none" }} />
                 </div>
               ))}
             </div>
-
-            {sems.length < 8 && (
-              <button onClick={addSem} style={{
-                width: "100%", padding: "clamp(11px, 2.5vw, 13px)", border: "2px dashed rgba(124,58,237,0.4)",
-                borderRadius: 14, background: "transparent", color: "#a78bfa", fontSize: "clamp(14px, 3vw, 15px)",
-                fontWeight: 600, cursor: "pointer", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "center", gap: 8
-              }}>
-                <span style={{ fontSize: 22 }}>+</span> Add Semester
-              </button>
-            )}
-
-            <button onClick={calcCGPA} style={{
-              width: "100%", padding: "clamp(14px, 3vw, 17px)", background: "linear-gradient(135deg,#7c3aed,#6d28d9)",
-              color: "#fff", border: "none", borderRadius: 14, fontSize: "clamp(16px, 3.5vw, 17px)", fontWeight: 600,
-              cursor: "pointer", boxShadow: "0 8px 20px rgba(124, 58, 237, 0.3)"
-            }}>
-              Calculate Cumulative CGPA
-            </button>
-
+            {sems.length < 8 && <button onClick={addSem} style={{ width: "100%", padding: "clamp(11px, 2.5vw, 13px)", border: "2px dashed rgba(124,58,237,0.4)", borderRadius: 14, background: "transparent", color: "#a78bfa", fontSize: "clamp(14px, 3vw, 15px)", fontWeight: 600, cursor: "pointer", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}><span style={{ fontSize: 22 }}>+</span> Add Semester</button>}
+            <button onClick={calcCGPA} style={{ width: "100%", padding: "clamp(14px, 3vw, 17px)", background: "linear-gradient(135deg,#7c3aed,#6d28d9)", color: "#fff", border: "none", borderRadius: 14, fontSize: "clamp(16px, 3.5vw, 17px)", fontWeight: 600, cursor: "pointer", boxShadow: "0 8px 20px rgba(124, 58, 237, 0.3)" }}>Calculate Cumulative CGPA</button>
             {cgpaErr && <div style={{ color: "#fca5a5", marginTop: 12 }}>⚠️ {cgpaErr}</div>}
             {cgpaResult && <CGPAResultCard cgpa={cgpaResult.cgpa} sems={cgpaResult.sems} total={cgpaResult.total} best={cgpaResult.best} scale={scale} darkMode={darkMode} />}
           </div>
@@ -1273,6 +882,7 @@ export default function App() {
         {tab === "calculator" && <CalculatorPanel darkMode={darkMode} />}
       </main>
 
+      {/* Contact Section */}
       <div style={{ margin: "0 clamp(16px, 4vw, 24px)", padding: "clamp(28px, 5vw, 36px) 0 0", borderTop: `1px solid ${darkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"}` }}>
         <h2 style={{ fontFamily: "'Playfair Display',serif", fontSize: "clamp(28px, 6vw, 36px)", fontWeight: 700, background: darkMode ? "linear-gradient(135deg, #fff, #c4b5fd)" : "linear-gradient(135deg, #333, #7c3aed)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", marginBottom: "8px" }}>Get in Touch</h2>
         <p style={{ fontSize: "clamp(14px, 3vw, 16px)", color: darkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.5)", marginBottom: 24 }}>Have questions or feedback? We'd love to hear from you.</p>
@@ -1281,38 +891,26 @@ export default function App() {
           <div style={{ background: "rgba(52,211,153,0.08)", border: "1px solid rgba(52,211,153,0.2)", borderRadius: 20, padding: "clamp(28px, 5vw, 36px)", textAlign: "center" }}>
             <div style={{ fontSize: 48, marginBottom: 16 }}>✓</div>
             <div style={{ fontSize: 22, fontWeight: 700, color: "#34d399" }}>Message Sent Successfully!</div>
-            <button onClick={() => { setContactSent(false); setContact({ name: "", email: "", subject: "", message: "" }); }} style={{
-              marginTop: 24, padding: "12px 28px", background: "rgba(52,211,153,0.12)", border: "1px solid rgba(52,211,153,0.3)",
-              borderRadius: 12, color: "#34d399", fontSize: 15, fontWeight: 600, cursor: "pointer"
-            }}>Send Another Message</button>
+            <button onClick={() => { setContactSent(false); setContact({ name: "", email: "", subject: "", message: "" }); }} style={{ marginTop: 24, padding: "12px 28px", background: "rgba(52,211,153,0.12)", border: "1px solid rgba(52,211,153,0.3)", borderRadius: 12, color: "#34d399", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>Send Another Message</button>
           </div>
         ) : (
           <div style={{ background: darkMode ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.02)", border: `1px solid ${darkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"}`, borderRadius: 24, padding: "clamp(24px, 4vw, 32px)" }}>
             <div className="contact-grid" style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16, marginBottom: 18 }}>
-              <div><input type="text" placeholder="Your name *" value={contact.name} onChange={e => setContact(p => ({ ...p, name: e.target.value }))} style={inputStyle} /></div>
-              <div><input type="email" placeholder="Email address *" value={contact.email} onChange={e => setContact(p => ({ ...p, email: e.target.value }))} style={inputStyle} /></div>
+              <input type="text" placeholder="Your name *" value={contact.name} onChange={e => setContact(p => ({ ...p, name: e.target.value }))} style={inputStyle} />
+              <input type="email" placeholder="Email address *" value={contact.email} onChange={e => setContact(p => ({ ...p, email: e.target.value }))} style={inputStyle} />
             </div>
-            <div style={{ marginBottom: 18 }}><input type="text" placeholder="Subject" value={contact.subject} onChange={e => setContact(p => ({ ...p, subject: e.target.value }))} style={inputStyle} /></div>
-            <div style={{ marginBottom: 24 }}><textarea rows={5} placeholder="Write your message here... *" value={contact.message} onChange={e => setContact(p => ({ ...p, message: e.target.value }))} style={{ ...inputStyle, minHeight: 120 }} /></div>
+            <input type="text" placeholder="Subject" value={contact.subject} onChange={e => setContact(p => ({ ...p, subject: e.target.value }))} style={{ ...inputStyle, marginBottom: 18 }} />
+            <textarea rows={5} placeholder="Write your message here... *" value={contact.message} onChange={e => setContact(p => ({ ...p, message: e.target.value }))} style={{ ...inputStyle, minHeight: 120, marginBottom: 24 }} />
             {contactErr && <div style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.25)", borderRadius: 12, padding: "14px 18px", fontSize: 14, color: "#fca5a5", marginBottom: 18 }}>⚠️ {contactErr}</div>}
-            <button onClick={submitContact} disabled={isSending} style={{
-              width: "100%", padding: "clamp(14px, 3vw, 17px)", background: isSending ? "rgba(124,58,237,0.5)" : "linear-gradient(135deg,#7c3aed,#6d28d9)",
-              color: "#fff", border: "none", borderRadius: 14, fontSize: "clamp(15px, 3.5vw, 17px)", fontWeight: 600,
-              cursor: isSending ? "not-allowed" : "pointer", boxShadow: isSending ? "none" : "0 8px 20px rgba(124, 58, 237, 0.3)"
-            }}>
-              {isSending ? "Sending..." : "Send Message"}
-            </button>
+            <button onClick={submitContact} disabled={isSending} style={{ width: "100%", padding: "clamp(14px, 3vw, 17px)", background: isSending ? "rgba(124,58,237,0.5)" : "linear-gradient(135deg,#7c3aed,#6d28d9)", color: "#fff", border: "none", borderRadius: 14, fontSize: "clamp(15px, 3.5vw, 17px)", fontWeight: 600, cursor: isSending ? "not-allowed" : "pointer", boxShadow: isSending ? "none" : "0 8px 20px rgba(124, 58, 237, 0.3)" }}>{isSending ? "Sending..." : "Send Message"}</button>
           </div>
         )}
       </div>
 
+      {/* Footer */}
       <footer style={{ textAlign: "center", padding: "clamp(28px, 5vw, 36px) clamp(16px, 4vw, 24px)", marginTop: "clamp(28px, 5vw, 36px)", borderTop: `1px solid ${darkMode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)"}` }}>
-        <p style={{ margin: "0 0 8px 0", fontSize: "clamp(15px, 3.5vw, 17px)", color: darkMode ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.6)" }}>
-          Crafted by <a href="https://usmanmurtaza.netlify.app" target="_blank" rel="noopener noreferrer" style={{ color: "#a78bfa", fontWeight: 700, textDecoration: "none" }}>Usman Murtaza</a>
-        </p>
-        <p style={{ margin: 0, fontSize: "clamp(11px, 2.5vw, 12px)", color: darkMode ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.25)", letterSpacing: 1.5, textTransform: "uppercase", fontWeight: 500 }}>
-          Nexa Calculator v2.0 — Academic Excellence Suite
-        </p>
+        <p style={{ margin: "0 0 8px 0", fontSize: "clamp(15px, 3.5vw, 17px)", color: darkMode ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.6)" }}>Crafted with by <a href="https://usmanmurtaza.netlify.app" target="_blank" rel="noopener noreferrer" style={{ color: "#a78bfa", fontWeight: 700, textDecoration: "none" }}>Usman Murtaza</a></p>
+        <p style={{ margin: 0, fontSize: "clamp(11px, 2.5vw, 12px)", color: darkMode ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.25)", letterSpacing: 1.5, textTransform: "uppercase", fontWeight: 500 }}>Nexa Calculator v1.1.0 — Academic Excellence Suite</p>
       </footer>
     </div>
   );
