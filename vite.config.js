@@ -23,18 +23,15 @@ export default defineConfig({
       output: {
         manualChunks: {
           'react-vendor': ['react', 'react-dom'],
-          'utils': ['jspdf', 'xlsx', '@emailjs/browser']
+          'pdf-lib': ['jspdf'],
+          'email-lib': ['@emailjs/browser']
         }
       }
     },
     chunkSizeWarningLimit: 1000,
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true
-      }
-    }
+    minify: 'esbuild', // Use esbuild instead of terser (faster and built-in)
+    sourcemap: false,
+    target: 'es2020'
   },
   server: {
     port: 3000,

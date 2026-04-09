@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import emailjs from "@emailjs/browser";
 import { jsPDF } from "jspdf";
-import * as XLSX from 'xlsx';
 
 // Lazy load components for better performance
 const CourseCard = lazy(() => Promise.resolve(({ id, index, removable, onRemove, data, onChange, scale, darkMode }) => {
