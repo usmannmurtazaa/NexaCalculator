@@ -8,9 +8,9 @@
 </div>
 
 <div align="center">
-  <img src="https://img.shields.io/github/stars/usmanmurtaza/GPAandCGPA_Calculator?style=social" alt="GitHub Stars" />
-  <img src="https://img.shields.io/github/forks/usmanmurtaza/GPAandCGPA_Calculator?style=social" alt="GitHub Forks" />
-  <img src="https://img.shields.io/github/issues/usmanmurtaza/GPAandCGPA_Calculator?style=social" alt="GitHub Issues" />
+  <img src="https://img.shields.io/github/stars/usmanmurtaza/NexaCalculator?style=social" alt="GitHub Stars" />
+  <img src="https://img.shields.io/github/forks/usmanmurtaza/NexaCalculator?style=social" alt="GitHub Forks" />
+  <img src="https://img.shields.io/github/issues/usmanmurtaza/NexaCalculator?style=social" alt="GitHub Issues" />
 </div>
 
 <br />
@@ -32,7 +32,7 @@
 <br />
 
 <p align="center">
-  <img src="https://via.placeholder.com/800x400/080617/7c3aed?text=GPA+%26+CGPA+Calculator+Screenshot" alt="GPA Calculator Screenshot" width="800" />
+  <img src="./images/NexaCalculator.png" alt="Nexa Calculator Screenshot" width="800" />
 </p>
 
 ## 📋 Overview
@@ -178,7 +178,7 @@ Experience the application live: **[GPA & CGPA Calculator Demo] (https://nexacal
 
 | GPA Calculator | CGPA Calculator | Scientific Calculator |
 |:---:|:---:|:---:|
-| <img src="https://via.placeholder.com/300x600/1a1035/7c3aed?text=GPA+Tab" width="250" /> | <img src="https://via.placeholder.com/300x600/1a1035/7c3aed?text=CGPA+Tab" width="250" /> | <img src="https://via.placeholder.com/300x600/1a1035/7c3aed?text=Calculator+Tab" width="250" /> |
+| <img src="./images/GPA.png" width="250" /> | <img src="./images/CGPA.png" width="250" /> | <img src="./images/Scientific.png" width="250" /> |
 
 ---
 
@@ -309,5 +309,5 @@ Portfolio: https://usmanmurtaza.netlify.app/
 #### 1️⃣ Clone the Repository
 
 ```bash
-git clone https://github.com/usmannmurtazaa/GPAandCGPA_Calculator.git
+git clone https://github.com/usmannmurtazaa/NexaCalculator.git
 cd GPAandCGPA_Calculator
