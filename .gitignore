@@ -1,10 +1,12 @@
 # Dependencies
 node_modules
-/.pnp
+.pnp
 .pnp.js
 
-# Build outputs
-build
+# Testing
+coverage
+
+# Production
 dist
 dist-ssr
 *.local
@@ -15,8 +17,18 @@ dist-ssr
 .env.development.local
 .env.test.local
 .env.production.local
-.env.production
-.env*.local
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
 
 # Logs
 npm-debug.log*
@@ -24,43 +36,3 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
-
-# OS files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-*.swp
-*.swo
-*~
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-# Testing
-coverage
-.nyc_output
-
-# Temporary files
-*.tmp
-*.temp
-.cache
-
-# Vite specific
-.vite
-vite.config.js.timestamp-*
-vite.config.ts.timestamp-*
-
-# Optional: If you want to ignore package-lock.json
-# package-lock.json
-# yarn.lock
