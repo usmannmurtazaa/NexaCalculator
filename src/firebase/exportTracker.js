@@ -1,40 +1,64 @@
-// src/firebase/exportTracker.js
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from './firebase';
+import { firestore } from './firebase';
+import { logEvent } from './analytics';
 
 /**
- * Save export details to Firestore for analytics dashboard.
- * Returns a promise that resolves with the document reference.
+ * Save export activity to Firestore and log analytics event.
  */
-export async function trackExport(data) {
-  try {
-    // Validate required fields
-    const safeData = {
-      studentName: String(data.studentName || '').trim(),
-      studentId: String(data.studentId || '').trim(),
-      university: String(data.university || '').trim(),
-      semester: String(data.semester || '').trim(),
-      scale: String(data.scale || ''),
-      gpa: Number(data.gpa) || 0,
-      credits: Number(data.credits) || 0,
-      date: String(data.date || ''),
-      exportType: String(data.exportType || ''), // 'pdf' or 'csv'
-      timestamp: serverTimestamp(), // Firestore server timestamp
-      deviceInfo: {
-        userAgent: String(data.deviceInfo?.userAgent || navigator.userAgent),
-        platform: String(data.deviceInfo?.platform || navigator.platform),
-        language: String(data.deviceInfo?.language || navigator.language),
-        screenWidth: Number(data.deviceInfo?.screenWidth) || window.screen.width,
-        screenHeight: Number(data.deviceInfo?.screenHeight) || window.screen.height,
-      },
-    };
-
-    const docRef = await addDoc(collection(db, 'exports'), safeData);
-    console.log('Export tracked with ID:', docRef.id);
-    return docRef;
-  } catch (error) {
-    console.error('Failed to track export:', error);
-    // Silently fail - don't interrupt user flow
-    return null;
+export async function trackExport({
+  studentName,
+  studentId,
+  university,
+  semester,
+  scale,
+  gpa,
+  credits,
+  date,
+  exportType,
+  timestamp,
+  deviceInfo,
+}) {
+  // Firestore
+  if (firestore) {
+    try {
+      const exportsCollection = collection(firestore, 'exports');
+      await addDoc(exportsCollection, {
+        studentName,
+        studentId,
+        university,
+        semester,
+        scale,
+        gpa,
+        credits,
+        date,
+        exportType,
+        timestamp: serverTimestamp(), // server timestamp for consistency
+        deviceInfo,
+        createdAt: new Date().toISOString(),
+      });
+    } catch (error) {
+      console.error('Firestore export tracking error:', error);
+    }
   }
+
+  // Analytics event (always fires if analytics is loaded)
+  logEvent('export_tracked', {
+    export_type: exportType,
+    scale,
+    gpa,
+    timestamp,
+  });
+}
+
+/**
+ * Collect device/browser info (same as elsewhere, but placed here for independence).
+ */
+export function getDeviceInfo() {
+  return {
+    userAgent: navigator.userAgent,
+    platform: navigator.platform,
+    language: navigator.language,
+    screenWidth: window.screen.width,
+    screenHeight: window.screen.height,
+  };
 }
