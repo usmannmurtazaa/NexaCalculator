@@ -6,6 +6,7 @@ import { logEvent } from '../firebase/analytics';
 import { trackExport } from '../firebase/exportTracker';
 import CGPAResultCard from './CGPAResultCard';
 import ExportModal from './ExportModal';
+import Toast from './Toast';
 import theme from '../constants/theme';
 
 export default function CGPACalculator({ scale, darkMode }) {
@@ -21,9 +22,10 @@ export default function CGPACalculator({ scale, darkMode }) {
 
   const [calculating, setCalculating] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+  const [toast, setToast] = useState({ message: '', type: '' });
   const isDark = darkMode;
 
-  // Firebase: track CGPA calculation
   const handleCalculate = useCallback(() => {
     setCalculating(true);
     setTimeout(() => {
@@ -37,15 +39,14 @@ export default function CGPACalculator({ scale, darkMode }) {
     }, 50);
   }, [calculate, scale, sems.length]);
 
-  // Export handler (consistent with GPA)
   const handleExport = useCallback(
-    (exportData) => {
+    async (exportData) => {
+      setIsExporting(true);
+      setToast({ message: '', type: '' });
       const data = {
         ...exportData,
         scale,
-        semesters: sems.map((s) => ({
-          gpa: s.val,
-        })),
+        semesters: sems.map((s) => ({ gpa: s.val })),
         cgpaResult: result,
         date: new Date().toLocaleDateString('en-US', {
           year: 'numeric',
@@ -54,37 +55,47 @@ export default function CGPACalculator({ scale, darkMode }) {
         }),
       };
 
-      if (exportData.format === 'pdf') {
-        generatePDF(data);
-      } else {
-        downloadCSV(data);
+      try {
+        if (exportData.format === 'pdf') {
+          await generatePDF(data);
+        } else {
+          downloadCSV(data);
+        }
+
+        await trackExport({
+          studentName: exportData.studentName || '',
+          studentId: exportData.studentId || '',
+          university: exportData.university || '',
+          semester: exportData.semester || 'All Semesters',
+          scale,
+          gpa: result?.cgpa || 0,
+          credits: result?.total || 0,
+          date: data.date,
+          exportType: exportData.format,
+          timestamp: new Date().toISOString(),
+          deviceInfo: {
+            userAgent: navigator.userAgent,
+            platform: navigator.platform,
+            language: navigator.language,
+            screenWidth: window.screen.width,
+            screenHeight: window.screen.height,
+          },
+        });
+
+        logEvent('export_triggered', {
+          format: exportData.format,
+          type: 'cgpa',
+          cgpa: result?.cgpa,
+        });
+
+        setShowExportModal(false);
+        setToast({ message: 'Export completed successfully!', type: 'success' });
+      } catch (err) {
+        console.error('Export failed:', err);
+        setToast({ message: 'Export failed. Please try again.', type: 'error' });
+      } finally {
+        setIsExporting(false);
       }
-
-      trackExport({
-        studentName: exportData.studentName || '',
-        studentId: exportData.studentId || '',
-        university: exportData.university || '',
-        semester: exportData.semester || 'All Semesters',
-        scale,
-        gpa: result?.cgpa || 0,
-        credits: result?.total || 0,
-        date: data.date,
-        exportType: exportData.format,
-        timestamp: new Date().toISOString(),
-        deviceInfo: {
-          userAgent: navigator.userAgent,
-          platform: navigator.platform,
-          language: navigator.language,
-          screenWidth: window.screen.width,
-          screenHeight: window.screen.height,
-        },
-      });
-
-      logEvent('export_triggered', {
-        format: exportData.format,
-        type: 'cgpa',
-        cgpa: result?.cgpa,
-      });
     },
     [sems, scale, result]
   );
@@ -117,10 +128,17 @@ export default function CGPACalculator({ scale, darkMode }) {
 
   return (
     <div className="animate-fade-up">
+      <Toast
+        message={toast.message}
+        type={toast.type}
+        onClose={() => setToast({ message: '', type: '' })}
+        darkMode={darkMode}
+      />
       <ExportModal
         isOpen={showExportModal}
         onClose={() => setShowExportModal(false)}
         onExport={handleExport}
+        isExporting={isExporting}
         darkMode={darkMode}
       />
 

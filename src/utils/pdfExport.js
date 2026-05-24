@@ -1,5 +1,4 @@
 import { getStanding } from '../constants/grades';
-import { trackExport } from '../firebase/exportTracker';
 
 function hexToRgb(hex) {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -10,11 +9,8 @@ function hexToRgb(hex) {
 
 function buildPDF(doc, data) {
   const { studentName, studentId, university, semester, date, scale, courses, gpaResult } = data;
-
-  // Ensure courses is an array
   const safeCourses = Array.isArray(courses) ? courses : [];
 
-  // Header
   doc.setFillColor(124, 58, 237);
   doc.rect(0, 0, 210, 40, 'F');
   doc.setFont('helvetica', 'bold');
@@ -26,8 +22,6 @@ function buildPDF(doc, data) {
   doc.text('Academic Excellence Suite', 105, 35, { align: 'center' });
 
   let yPos = 55;
-
-  // Section title
   doc.setDrawColor(124, 58, 237);
   doc.line(15, yPos - 5, 195, yPos - 5);
   doc.setFontSize(16);
@@ -35,7 +29,6 @@ function buildPDF(doc, data) {
   doc.text('ACADEMIC RECORD', 105, yPos, { align: 'center' });
   yPos += 12;
 
-  // Student Information
   doc.setFontSize(11);
   doc.setTextColor(80, 80, 80);
   doc.setFont('helvetica', 'bold');
@@ -45,22 +38,12 @@ function buildPDF(doc, data) {
   doc.setTextColor(60, 60, 60);
   doc.text(`Name: ${studentName}`, 25, yPos);
   yPos += 6;
-  if (studentId) {
-    doc.text(`Student ID: ${studentId}`, 25, yPos);
-    yPos += 6;
-  }
-  if (university) {
-    doc.text(`Institution: ${university}`, 25, yPos);
-    yPos += 6;
-  }
-  if (semester) {
-    doc.text(`Semester: ${semester}`, 25, yPos);
-    yPos += 6;
-  }
+  if (studentId) { doc.text(`Student ID: ${studentId}`, 25, yPos); yPos += 6; }
+  if (university) { doc.text(`Institution: ${university}`, 25, yPos); yPos += 6; }
+  if (semester) { doc.text(`Semester: ${semester}`, 25, yPos); yPos += 6; }
   doc.text(`Generated: ${date}`, 25, yPos);
   yPos += 12;
 
-  // Course Table
   doc.line(20, yPos, 190, yPos);
   yPos += 8;
   doc.setFont('helvetica', 'bold');
@@ -82,14 +65,8 @@ function buildPDF(doc, data) {
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(60, 60, 60);
   safeCourses.forEach((course, index) => {
-    if (yPos > 250) {
-      doc.addPage();
-      yPos = 20;
-    }
-    if (index % 2 === 0) {
-      doc.setFillColor(245, 245, 250);
-      doc.rect(20, yPos - 4, 170, 7, 'F');
-    }
+    if (yPos > 250) { doc.addPage(); yPos = 20; }
+    if (index % 2 === 0) { doc.setFillColor(245, 245, 250); doc.rect(20, yPos - 4, 170, 7, 'F'); }
     doc.text(String(course.code || '—'), 25, yPos);
     doc.text(String(course.credits || 0), 85, yPos);
     doc.text(String(course.grade || '—'), 115, yPos);
@@ -97,9 +74,7 @@ function buildPDF(doc, data) {
     yPos += 7;
   });
 
-  // Academic Summary
   yPos += 10;
-  doc.setDrawColor(124, 58, 237);
   doc.line(20, yPos, 190, yPos);
   yPos += 10;
   doc.setFont('helvetica', 'bold');
@@ -131,7 +106,6 @@ function buildPDF(doc, data) {
   doc.text((gpaResult?.points || 0).toFixed(2), 150, yPos + 15);
   yPos += 40;
 
-  // Standing
   const standing = getStanding(parseFloat(gpaResult?.gpa || 0), scale);
   const [r, g, b] = hexToRgb(standing.color);
   doc.setFillColor(r, g, b);
@@ -141,7 +115,6 @@ function buildPDF(doc, data) {
   doc.setTextColor(255, 255, 255);
   doc.text(`Academic Standing: ${standing.t}`, 105, yPos + 3, { align: 'center' });
 
-  // Footer
   const pageCount = doc.getNumberOfPages();
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
@@ -158,31 +131,7 @@ function buildPDF(doc, data) {
 }
 
 export async function generatePDF(data) {
-  const { default: jsPDF } = await import('jspdf');
+  const { jsPDF } = await import('jspdf');
   const doc = new jsPDF();
   buildPDF(doc, data);
-
-  trackExport({
-    studentName: data.studentName,
-    studentId: data.studentId,
-    university: data.university,
-    semester: data.semester,
-    scale: data.scale,
-    gpa: data.gpaResult?.gpa,
-    credits: data.gpaResult?.credits,
-    date: data.date,
-    exportType: 'pdf',
-    timestamp: new Date().toISOString(),
-    deviceInfo: getDeviceInfo(),
-  });
-}
-
-function getDeviceInfo() {
-  return {
-    userAgent: navigator.userAgent,
-    platform: navigator.platform,
-    language: navigator.language,
-    screenWidth: window.screen.width,
-    screenHeight: window.screen.height,
-  };
 }

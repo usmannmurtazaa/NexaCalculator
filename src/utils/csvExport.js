@@ -1,5 +1,3 @@
-import { trackExport } from '../firebase/exportTracker';
-
 export function escapeCSV(field) {
   if (field === null || field === undefined) return '';
   const str = String(field);
@@ -50,28 +48,4 @@ export function downloadCSV(data) {
   a.click();
   document.body.removeChild(a);
   setTimeout(() => URL.revokeObjectURL(url), 5000);
-
-  trackExport({
-    studentName: data.studentName,
-    studentId: data.studentId || '',
-    university: data.university || '',
-    semester: data.semester || '',
-    scale: data.scale,
-    gpa: data.gpaResult?.gpa,
-    credits: data.gpaResult?.credits,
-    date: data.date,
-    exportType: 'csv',
-    timestamp: new Date().toISOString(),
-    deviceInfo: getDeviceInfo(),
-  });
-}
-
-function getDeviceInfo() {
-  return {
-    userAgent: navigator.userAgent,
-    platform: navigator.platform,
-    language: navigator.language,
-    screenWidth: window.screen.width,
-    screenHeight: window.screen.height,
-  };
 }

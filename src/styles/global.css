@@ -1,9 +1,5 @@
-/* ============================================
-   Nexa Calculator - Premium Global Styles
-   ============================================ */
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap');
 
-/* ---------- Light Theme (default) ---------- */
 :root {
   --color-primary: #7c3aed;
   --color-primary-light: #9f67ff;
@@ -29,7 +25,6 @@
   --transition-slow: 0.3s ease;
 }
 
-/* Dark Theme Override */
 html.dark {
   --color-primary: #7c3aed;
   --color-primary-light: #a78bfa;
@@ -49,7 +44,6 @@ html.dark {
   --shadow-lg: 0 12px 32px rgba(0,0,0,0.45);
 }
 
-/* Reset & Base */
 * { margin:0; padding:0; box-sizing:border-box; }
 *::before, *::after { box-sizing:border-box; }
 
@@ -79,13 +73,11 @@ body {
   flex-direction: column;
 }
 
-/* Typography */
 h1,h2,h3,h4 { font-family: var(--font-display); font-weight:600; line-height:1.3; letter-spacing:-0.02em; }
 h1 { font-size: clamp(2rem,5vw,3.2rem); }
 h2 { font-size: clamp(1.6rem,4vw,2.5rem); }
 h3 { font-size: clamp(1.3rem,3vw,2rem); }
 
-/* Utilities */
 .glass {
   background: var(--bg-glass);
   backdrop-filter: blur(16px);
@@ -114,7 +106,6 @@ h3 { font-size: clamp(1.3rem,3vw,2rem); }
 }
 .btn-primary:hover { box-shadow: 0 6px 20px rgba(124,58,237,0.5); transform: translateY(-1px); }
 
-/* Input */
 .input-field {
   width:100%; padding:12px 16px; background:var(--bg-surface);
   border:1px solid var(--border-light); border-radius:var(--radius-md);
@@ -123,7 +114,6 @@ h3 { font-size: clamp(1.3rem,3vw,2rem); }
 }
 .input-field:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(124,58,237,0.15); }
 
-/* Animations */
 @keyframes spin { to { transform:rotate(360deg); } }
 @keyframes slideIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
 @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
@@ -140,13 +130,11 @@ h3 { font-size: clamp(1.3rem,3vw,2rem); }
   animation: spin 1s linear infinite;
 }
 
-/* Scrollbar */
 ::-webkit-scrollbar { width:6px; }
 ::-webkit-scrollbar-track { background:transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(124,58,237,0.3); border-radius:4px; }
 * { scrollbar-width:thin; scrollbar-color: rgba(124,58,237,0.3) transparent; }
 
-/* Theme transition helper */
 .theme-transition {
   transition: background-color var(--transition-slow),
               color var(--transition-slow),
@@ -154,8 +142,22 @@ h3 { font-size: clamp(1.3rem,3vw,2rem); }
               box-shadow var(--transition-slow);
 }
 
-/* Responsive */
 @media (max-width: 480px) {
   .btn { width:100%; justify-content:center; }
   .input-field { padding:10px 14px; font-size:16px; }
+}
+
+/* Responsive Modal Overrides (for ExportModal) */
+@media (max-width: 640px) {
+  .export-modal-content {
+    width: 95vw !important;
+    max-height: 85vh !important;
+  }
+  .export-modal-buttons {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .export-modal-buttons button {
+    width: 100%;
+  }
 }

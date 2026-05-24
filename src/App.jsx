@@ -79,7 +79,6 @@ export default function App() {
         overflow: 'hidden',
       }}
     >
-      {/* Animated background mesh */}
       <div
         aria-hidden="true"
         style={{

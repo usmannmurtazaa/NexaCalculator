@@ -5,21 +5,22 @@ export function useDarkMode() {
   const [darkMode, setDarkMode] = useState(() => {
     try {
       const saved = localStorage.getItem('darkMode');
-      return saved ? JSON.parse(saved) : true;
+      return saved !== null ? JSON.parse(saved) : true;
     } catch {
       return true;
     }
   });
 
-  // Apply theme to <html> for CSS variable switching and smooth transitions
   useEffect(() => {
-    document.documentElement.classList.toggle('dark', darkMode);
-    document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light');
-    document.body.classList.toggle('dark', darkMode);
-    document.body.classList.add('theme-transition');
+    const root = document.documentElement;
+    if (darkMode) {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+    }
+    root.setAttribute('data-theme', darkMode ? 'dark' : 'light');
   }, [darkMode]);
 
-  // Persist
   useEffect(() => {
     try {
       localStorage.setItem('darkMode', JSON.stringify(darkMode));
@@ -30,14 +31,6 @@ export function useDarkMode() {
     });
     setUserProperties({ prefers_dark_mode: darkMode });
   }, [darkMode]);
-
-  useEffect(() => {
-    logEvent('user_preference_loaded', {
-      dark_mode: darkMode,
-      timestamp: new Date().toISOString(),
-    });
-    setUserProperties({ prefers_dark_mode: darkMode });
-  }, []);
 
   const toggle = useCallback(() => setDarkMode(prev => !prev), []);
 
