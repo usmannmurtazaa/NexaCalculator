@@ -11,15 +11,14 @@ export default function ExportModal({ isOpen, onClose, onExport, isExporting, da
   const modalRef = useRef(null);
   const isDark = darkMode;
 
+  // Lock body scroll
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
+    if (isOpen) document.body.style.overflow = 'hidden';
+    else document.body.style.overflow = '';
     return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
 
+  // Escape to close
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape' && !isExporting) onClose();
@@ -28,6 +27,7 @@ export default function ExportModal({ isOpen, onClose, onExport, isExporting, da
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose, isExporting]);
 
+  // Reset on open
   useEffect(() => {
     if (isOpen) {
       setStudentName('');
@@ -47,7 +47,6 @@ export default function ExportModal({ isOpen, onClose, onExport, isExporting, da
       semester: semester.trim(),
       format: exportFormat,
     });
-    // Do NOT close modal here; parent will close on success/failure
   };
 
   if (!isOpen) return null;
@@ -64,7 +63,6 @@ export default function ExportModal({ isOpen, onClose, onExport, isExporting, da
         alignItems: 'center',
         justifyContent: 'center',
         zIndex: 1000,
-        animation: 'fadeDown 0.2s ease',
         padding: '16px',
       }}
       onClick={isExporting ? undefined : onClose}
@@ -82,49 +80,81 @@ export default function ExportModal({ isOpen, onClose, onExport, isExporting, da
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
           border: `1px solid ${isDark ? 'rgba(167,139,250,0.2)' : 'rgba(124,58,237,0.15)'}`,
-          borderRadius: theme.borderRadius.xl,
-          padding: 'clamp(20px, 6vw, 32px)',
-          maxWidth: 500,
+          borderRadius: 24,
           width: '100%',
+          maxWidth: 520,
+          maxHeight: '90vh',
+          display: 'flex',
+          flexDirection: 'column',
           boxShadow: isDark
-            ? '0 24px 64px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05)'
-            : '0 24px 64px rgba(0,0,0,0.15), 0 0 0 1px rgba(124,58,237,0.08)',
+            ? '0 24px 64px rgba(0,0,0,0.5)'
+            : '0 24px 64px rgba(0,0,0,0.15)',
           animation: 'scaleIn 0.25s ease',
-          position: 'relative',
+          overflow: 'hidden',
         }}
       >
-        <button
-          onClick={onClose}
-          disabled={isExporting}
-          aria-label="Close export modal"
+        {/* Sticky Header */}
+        <div
           style={{
-            position: 'absolute',
-            top: 12,
-            right: 12,
-            background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
-            border: 'none',
-            borderRadius: '50%',
-            width: 32,
-            height: 32,
+            padding: '20px 24px 16px',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center',
-            cursor: isExporting ? 'not-allowed' : 'pointer',
-            color: isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)',
-            fontSize: 18,
-            transition: 'all 0.2s ease',
+            justifyContent: 'space-between',
+            borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}`,
+            background: isDark ? 'rgba(30,20,60,0.8)' : 'rgba(255,255,255,0.8)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
           }}
         >
-          ✕
-        </button>
+          <h2
+            id="export-modal-title"
+            style={{
+              fontFamily: theme.fonts.heading,
+              fontSize: 'clamp(18px, 4vw, 22px)',
+              fontWeight: 700,
+              color: isDark ? '#f1f0ff' : '#1a1035',
+              margin: 0,
+            }}
+          >
+            Export Academic Record
+          </h2>
+          <button
+            onClick={onClose}
+            disabled={isExporting}
+            aria-label="Close"
+            style={{
+              background: 'transparent',
+              border: 'none',
+              fontSize: 22,
+              color: isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.4)',
+              cursor: isExporting ? 'not-allowed' : 'pointer',
+              padding: 4,
+              lineHeight: 1,
+            }}
+          >
+            ✕
+          </button>
+        </div>
 
-        <h2 id="export-modal-title" style={{ fontFamily: theme.fonts.heading, fontSize: 'clamp(20px, 5vw, 24px)', fontWeight: 700, color: isDark ? '#f1f0ff' : '#1a1035', marginBottom: 24, letterSpacing: '-0.02em' }}>
-          Export Academic Record
-        </h2>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        {/* Scrollable Form Body */}
+        <div
+          style={{
+            flex: 1,
+            overflowY: 'auto',
+            padding: '20px 24px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 18,
+          }}
+        >
+          {/* Student Name */}
           <div>
-            <label htmlFor="export-student-name" style={{ display: 'block', marginBottom: 6, color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)', fontSize: 13, fontWeight: 500 }}>Student Name *</label>
+            <label
+              htmlFor="export-student-name"
+              style={{ display: 'block', marginBottom: 6, color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)', fontSize: 13, fontWeight: 500 }}
+            >
+              Student Name *
+            </label>
             <input
               id="export-student-name"
               type="text"
@@ -133,25 +163,30 @@ export default function ExportModal({ isOpen, onClose, onExport, isExporting, da
               placeholder="e.g. John Doe"
               required
               style={inputStyle(isDark, !studentName)}
-              onFocus={(e) => (e.target.style.borderColor = '#7c3aed')}
-              onBlur={(e) => (e.target.style.borderColor = isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)')}
               disabled={isExporting}
             />
             {!studentName && <span style={{ fontSize: 11, color: '#f87171', marginTop: 4, display: 'block' }}>Required</span>}
           </div>
+
+          {/* Student ID */}
           <div>
             <label htmlFor="export-student-id" style={{ display: 'block', marginBottom: 6, color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)', fontSize: 13, fontWeight: 500 }}>Student ID</label>
-            <input id="export-student-id" type="text" value={studentId} onChange={(e) => setStudentId(e.target.value)} placeholder="e.g. 2024CS-045" style={inputStyle(isDark)} onFocus={(e) => (e.target.style.borderColor = '#7c3aed')} onBlur={(e) => (e.target.style.borderColor = isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)')} disabled={isExporting} />
-          </div>
-          <div>
-            <label htmlFor="export-university" style={{ display: 'block', marginBottom: 6, color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)', fontSize: 13, fontWeight: 500 }}>University/College</label>
-            <input id="export-university" type="text" value={university} onChange={(e) => setUniversity(e.target.value)} placeholder="e.g. MIT" style={inputStyle(isDark)} onFocus={(e) => (e.target.style.borderColor = '#7c3aed')} onBlur={(e) => (e.target.style.borderColor = isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)')} disabled={isExporting} />
-          </div>
-          <div>
-            <label htmlFor="export-semester" style={{ display: 'block', marginBottom: 6, color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)', fontSize: 13, fontWeight: 500 }}>Semester</label>
-            <input id="export-semester" type="text" value={semester} onChange={(e) => setSemester(e.target.value)} placeholder="e.g., Fall 2024" style={inputStyle(isDark)} onFocus={(e) => (e.target.style.borderColor = '#7c3aed')} onBlur={(e) => (e.target.style.borderColor = isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)')} disabled={isExporting} />
+            <input id="export-student-id" type="text" value={studentId} onChange={(e) => setStudentId(e.target.value)} placeholder="e.g. 2024CS-045" style={inputStyle(isDark)} disabled={isExporting} />
           </div>
 
+          {/* University */}
+          <div>
+            <label htmlFor="export-university" style={{ display: 'block', marginBottom: 6, color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)', fontSize: 13, fontWeight: 500 }}>University/College</label>
+            <input id="export-university" type="text" value={university} onChange={(e) => setUniversity(e.target.value)} placeholder="e.g. MIT" style={inputStyle(isDark)} disabled={isExporting} />
+          </div>
+
+          {/* Semester */}
+          <div>
+            <label htmlFor="export-semester" style={{ display: 'block', marginBottom: 6, color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)', fontSize: 13, fontWeight: 500 }}>Semester</label>
+            <input id="export-semester" type="text" value={semester} onChange={(e) => setSemester(e.target.value)} placeholder="e.g. Fall 2024" style={inputStyle(isDark)} disabled={isExporting} />
+          </div>
+
+          {/* Export Format Toggle */}
           <div>
             <label style={{ display: 'block', marginBottom: 8, color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)', fontSize: 13, fontWeight: 500 }}>Format</label>
             <div style={{ display: 'flex', gap: 8 }}>
@@ -163,14 +198,12 @@ export default function ExportModal({ isOpen, onClose, onExport, isExporting, da
                   disabled={isExporting}
                   style={{
                     flex: 1,
-                    padding: '10px 16px',
+                    padding: '12px 16px',
                     borderRadius: 12,
                     border: `1px solid ${
                       exportFormat === format
                         ? 'rgba(124,58,237,0.5)'
-                        : isDark
-                        ? 'rgba(255,255,255,0.1)'
-                        : 'rgba(0,0,0,0.1)'
+                        : isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
                     }`,
                     background: exportFormat === format
                       ? isDark ? 'rgba(124,58,237,0.15)' : 'rgba(124,58,237,0.08)'
@@ -195,14 +228,25 @@ export default function ExportModal({ isOpen, onClose, onExport, isExporting, da
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: 12, marginTop: 24 }}>
+        {/* Sticky Footer with buttons */}
+        <div
+          style={{
+            padding: '16px 24px 20px',
+            borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}`,
+            display: 'flex',
+            gap: 12,
+            background: isDark ? 'rgba(30,20,60,0.8)' : 'rgba(255,255,255,0.8)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
+          }}
+        >
           <button
             onClick={handleExport}
             disabled={!studentName.trim() || isExporting}
             style={{
               flex: 2,
               padding: '14px',
-              background: studentName.trim() && !isExporting
+              background: (studentName.trim() && !isExporting)
                 ? 'linear-gradient(135deg, #7c3aed, #6d28d9)'
                 : 'rgba(124,58,237,0.25)',
               border: 'none',
@@ -268,6 +312,5 @@ function inputStyle(isDark, isError = false) {
     outline: 'none',
     transition: 'border-color 0.2s ease',
     boxShadow: isDark ? 'inset 0 2px 4px rgba(0,0,0,0.2)' : 'inset 0 2px 4px rgba(0,0,0,0.02)',
-    opacity: isError ? 0.8 : 1,
   };
 }
