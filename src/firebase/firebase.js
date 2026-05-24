@@ -2,7 +2,7 @@ import { initializeApp } from 'firebase/app';
 import { getAnalytics } from 'firebase/analytics';
 import { getFirestore } from 'firebase/firestore';
 
-// Replace with your own Firebase config from the console
+// Safe config reading
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
@@ -13,15 +13,25 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
-// Initialise Firebase only in browser (not during SSR)
+// Only initialize if essential config is present
+const requiredFields = ['projectId', 'apiKey', 'appId'];
+const isConfigValid = requiredFields.every(
+  (field) => firebaseConfig[field] && firebaseConfig[field].length > 0
+);
+
 let app;
 let analytics = null;
 let firestore = null;
 
-if (typeof window !== 'undefined') {
-  app = initializeApp(firebaseConfig);
-  analytics = getAnalytics(app);
-  firestore = getFirestore(app);
+if (typeof window !== 'undefined' && isConfigValid) {
+  try {
+    app = initializeApp(firebaseConfig);
+    analytics = getAnalytics(app);
+    firestore = getFirestore(app);
+  } catch (error) {
+    console.warn('Firebase initialization failed:', error);
+    // Leave analytics & firestore as null
+  }
 }
 
 export { analytics, firestore };
