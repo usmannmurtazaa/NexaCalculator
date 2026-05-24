@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import theme from '../constants/theme';
 
-export default function ExportModal({ isOpen, onClose, onExport, darkMode }) {
+export default function ExportModal({ isOpen, onClose, onExport, isExporting, darkMode }) {
   const [studentName, setStudentName] = useState('');
   const [studentId, setStudentId] = useState('');
   const [university, setUniversity] = useState('');
@@ -11,30 +11,23 @@ export default function ExportModal({ isOpen, onClose, onExport, darkMode }) {
   const modalRef = useRef(null);
   const isDark = darkMode;
 
-  // Lock body scroll when modal is open
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
     }
-    return () => {
-      document.body.style.overflow = '';
-    };
+    return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
 
-  // Close on Escape key
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape' && !isExporting) onClose();
     };
-    if (isOpen) {
-      window.addEventListener('keydown', handleKeyDown);
-    }
+    if (isOpen) window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, isExporting]);
 
-  // Reset fields when modal opens
   useEffect(() => {
     if (isOpen) {
       setStudentName('');
@@ -46,7 +39,7 @@ export default function ExportModal({ isOpen, onClose, onExport, darkMode }) {
   }, [isOpen]);
 
   const handleExport = () => {
-    if (!studentName.trim()) return;
+    if (!studentName.trim() || isExporting) return;
     onExport({
       studentName: studentName.trim(),
       studentId: studentId.trim(),
@@ -54,7 +47,7 @@ export default function ExportModal({ isOpen, onClose, onExport, darkMode }) {
       semester: semester.trim(),
       format: exportFormat,
     });
-    onClose();
+    // Do NOT close modal here; parent will close on success/failure
   };
 
   if (!isOpen) return null;
@@ -74,7 +67,7 @@ export default function ExportModal({ isOpen, onClose, onExport, darkMode }) {
         animation: 'fadeDown 0.2s ease',
         padding: '16px',
       }}
-      onClick={onClose}
+      onClick={isExporting ? undefined : onClose}
       role="dialog"
       aria-modal="true"
       aria-labelledby="export-modal-title"
@@ -100,9 +93,9 @@ export default function ExportModal({ isOpen, onClose, onExport, darkMode }) {
           position: 'relative',
         }}
       >
-        {/* Close button (X) */}
         <button
           onClick={onClose}
+          disabled={isExporting}
           aria-label="Close export modal"
           style={{
             position: 'absolute',
@@ -116,55 +109,22 @@ export default function ExportModal({ isOpen, onClose, onExport, darkMode }) {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            cursor: 'pointer',
+            cursor: isExporting ? 'not-allowed' : 'pointer',
             color: isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)',
             fontSize: 18,
             transition: 'all 0.2s ease',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = isDark
-              ? 'rgba(255,255,255,0.1)'
-              : 'rgba(0,0,0,0.1)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = isDark
-              ? 'rgba(255,255,255,0.05)'
-              : 'rgba(0,0,0,0.05)';
           }}
         >
           ✕
         </button>
 
-        <h2
-          id="export-modal-title"
-          style={{
-            fontFamily: theme.fonts.heading,
-            fontSize: 'clamp(20px, 5vw, 24px)',
-            fontWeight: 700,
-            color: isDark ? '#f1f0ff' : '#1a1035',
-            marginBottom: 24,
-            letterSpacing: '-0.02em',
-          }}
-        >
+        <h2 id="export-modal-title" style={{ fontFamily: theme.fonts.heading, fontSize: 'clamp(20px, 5vw, 24px)', fontWeight: 700, color: isDark ? '#f1f0ff' : '#1a1035', marginBottom: 24, letterSpacing: '-0.02em' }}>
           Export Academic Record
         </h2>
 
-        {/* Form fields */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          {/* Student Name (required) */}
           <div>
-            <label
-              htmlFor="export-student-name"
-              style={{
-                display: 'block',
-                marginBottom: 6,
-                color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)',
-                fontSize: 13,
-                fontWeight: 500,
-              }}
-            >
-              Student Name *
-            </label>
+            <label htmlFor="export-student-name" style={{ display: 'block', marginBottom: 6, color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)', fontSize: 13, fontWeight: 500 }}>Student Name *</label>
             <input
               id="export-student-name"
               type="text"
@@ -174,128 +134,33 @@ export default function ExportModal({ isOpen, onClose, onExport, darkMode }) {
               required
               style={inputStyle(isDark, !studentName)}
               onFocus={(e) => (e.target.style.borderColor = '#7c3aed')}
-              onBlur={(e) =>
-                (e.target.style.borderColor = isDark
-                  ? 'rgba(255,255,255,0.12)'
-                  : 'rgba(0,0,0,0.12)')
-              }
+              onBlur={(e) => (e.target.style.borderColor = isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)')}
+              disabled={isExporting}
             />
-            {!studentName && (
-              <span style={{ fontSize: 11, color: '#f87171', marginTop: 4, display: 'block' }}>
-                Required
-              </span>
-            )}
+            {!studentName && <span style={{ fontSize: 11, color: '#f87171', marginTop: 4, display: 'block' }}>Required</span>}
+          </div>
+          <div>
+            <label htmlFor="export-student-id" style={{ display: 'block', marginBottom: 6, color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)', fontSize: 13, fontWeight: 500 }}>Student ID</label>
+            <input id="export-student-id" type="text" value={studentId} onChange={(e) => setStudentId(e.target.value)} placeholder="e.g. 2024CS-045" style={inputStyle(isDark)} onFocus={(e) => (e.target.style.borderColor = '#7c3aed')} onBlur={(e) => (e.target.style.borderColor = isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)')} disabled={isExporting} />
+          </div>
+          <div>
+            <label htmlFor="export-university" style={{ display: 'block', marginBottom: 6, color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)', fontSize: 13, fontWeight: 500 }}>University/College</label>
+            <input id="export-university" type="text" value={university} onChange={(e) => setUniversity(e.target.value)} placeholder="e.g. MIT" style={inputStyle(isDark)} onFocus={(e) => (e.target.style.borderColor = '#7c3aed')} onBlur={(e) => (e.target.style.borderColor = isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)')} disabled={isExporting} />
+          </div>
+          <div>
+            <label htmlFor="export-semester" style={{ display: 'block', marginBottom: 6, color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)', fontSize: 13, fontWeight: 500 }}>Semester</label>
+            <input id="export-semester" type="text" value={semester} onChange={(e) => setSemester(e.target.value)} placeholder="e.g., Fall 2024" style={inputStyle(isDark)} onFocus={(e) => (e.target.style.borderColor = '#7c3aed')} onBlur={(e) => (e.target.style.borderColor = isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)')} disabled={isExporting} />
           </div>
 
-          {/* Student ID */}
           <div>
-            <label
-              htmlFor="export-student-id"
-              style={{
-                display: 'block',
-                marginBottom: 6,
-                color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)',
-                fontSize: 13,
-                fontWeight: 500,
-              }}
-            >
-              Student ID
-            </label>
-            <input
-              id="export-student-id"
-              type="text"
-              value={studentId}
-              onChange={(e) => setStudentId(e.target.value)}
-              placeholder="e.g. 2024CS-045"
-              style={inputStyle(isDark)}
-              onFocus={(e) => (e.target.style.borderColor = '#7c3aed')}
-              onBlur={(e) =>
-                (e.target.style.borderColor = isDark
-                  ? 'rgba(255,255,255,0.12)'
-                  : 'rgba(0,0,0,0.12)')
-              }
-            />
-          </div>
-
-          {/* University */}
-          <div>
-            <label
-              htmlFor="export-university"
-              style={{
-                display: 'block',
-                marginBottom: 6,
-                color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)',
-                fontSize: 13,
-                fontWeight: 500,
-              }}
-            >
-              University/College
-            </label>
-            <input
-              id="export-university"
-              type="text"
-              value={university}
-              onChange={(e) => setUniversity(e.target.value)}
-              placeholder="e.g. MIT"
-              style={inputStyle(isDark)}
-              onFocus={(e) => (e.target.style.borderColor = '#7c3aed')}
-              onBlur={(e) =>
-                (e.target.style.borderColor = isDark
-                  ? 'rgba(255,255,255,0.12)'
-                  : 'rgba(0,0,0,0.12)')
-              }
-            />
-          </div>
-
-          {/* Semester */}
-          <div>
-            <label
-              htmlFor="export-semester"
-              style={{
-                display: 'block',
-                marginBottom: 6,
-                color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)',
-                fontSize: 13,
-                fontWeight: 500,
-              }}
-            >
-              Semester
-            </label>
-            <input
-              id="export-semester"
-              type="text"
-              value={semester}
-              onChange={(e) => setSemester(e.target.value)}
-              placeholder="e.g., Fall 2024"
-              style={inputStyle(isDark)}
-              onFocus={(e) => (e.target.style.borderColor = '#7c3aed')}
-              onBlur={(e) =>
-                (e.target.style.borderColor = isDark
-                  ? 'rgba(255,255,255,0.12)'
-                  : 'rgba(0,0,0,0.12)')
-              }
-            />
-          </div>
-
-          {/* Export Format Toggle */}
-          <div>
-            <label
-              style={{
-                display: 'block',
-                marginBottom: 8,
-                color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)',
-                fontSize: 13,
-                fontWeight: 500,
-              }}
-            >
-              Format
-            </label>
+            <label style={{ display: 'block', marginBottom: 8, color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)', fontSize: 13, fontWeight: 500 }}>Format</label>
             <div style={{ display: 'flex', gap: 8 }}>
               {['pdf', 'csv'].map((format) => (
                 <button
                   key={format}
-                  onClick={() => setExportFormat(format)}
+                  onClick={() => !isExporting && setExportFormat(format)}
                   aria-pressed={exportFormat === format}
+                  disabled={isExporting}
                   style={{
                     flex: 1,
                     padding: '10px 16px',
@@ -307,16 +172,13 @@ export default function ExportModal({ isOpen, onClose, onExport, darkMode }) {
                         ? 'rgba(255,255,255,0.1)'
                         : 'rgba(0,0,0,0.1)'
                     }`,
-                    background:
-                      exportFormat === format
-                        ? isDark
-                          ? 'rgba(124,58,237,0.15)'
-                          : 'rgba(124,58,237,0.08)'
-                        : 'transparent',
+                    background: exportFormat === format
+                      ? isDark ? 'rgba(124,58,237,0.15)' : 'rgba(124,58,237,0.08)'
+                      : 'transparent',
                     color: exportFormat === format ? '#a78bfa' : isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)',
                     fontWeight: 600,
                     fontSize: 14,
-                    cursor: 'pointer',
+                    cursor: isExporting ? 'not-allowed' : 'pointer',
                     transition: 'all 0.2s ease',
                     textTransform: 'uppercase',
                     letterSpacing: '0.03em',
@@ -333,15 +195,14 @@ export default function ExportModal({ isOpen, onClose, onExport, darkMode }) {
           </div>
         </div>
 
-        {/* Action buttons */}
         <div style={{ display: 'flex', gap: 12, marginTop: 24 }}>
           <button
             onClick={handleExport}
-            disabled={!studentName.trim()}
+            disabled={!studentName.trim() || isExporting}
             style={{
               flex: 2,
               padding: '14px',
-              background: studentName.trim()
+              background: studentName.trim() && !isExporting
                 ? 'linear-gradient(135deg, #7c3aed, #6d28d9)'
                 : 'rgba(124,58,237,0.25)',
               border: 'none',
@@ -349,25 +210,27 @@ export default function ExportModal({ isOpen, onClose, onExport, darkMode }) {
               color: '#fff',
               fontWeight: 600,
               fontSize: 15,
-              cursor: studentName.trim() ? 'pointer' : 'not-allowed',
-              boxShadow: studentName.trim()
-                ? '0 8px 20px rgba(124,58,237,0.3)'
-                : 'none',
+              cursor: (studentName.trim() && !isExporting) ? 'pointer' : 'not-allowed',
+              boxShadow: (studentName.trim() && !isExporting) ? '0 8px 20px rgba(124,58,237,0.3)' : 'none',
               transition: 'all 0.25s ease',
-            }}
-            onMouseEnter={(e) => {
-              if (studentName.trim())
-                e.currentTarget.style.boxShadow = '0 12px 28px rgba(124,58,237,0.45)';
-            }}
-            onMouseLeave={(e) => {
-              if (studentName.trim())
-                e.currentTarget.style.boxShadow = '0 8px 20px rgba(124,58,237,0.3)';
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 8,
             }}
           >
-            Export {exportFormat.toUpperCase()}
+            {isExporting ? (
+              <>
+                <div className="loading-spinner" style={{ width: 18, height: 18, borderWidth: 2 }} />
+                Exporting...
+              </>
+            ) : (
+              `Export ${exportFormat.toUpperCase()}`
+            )}
           </button>
           <button
             onClick={onClose}
+            disabled={isExporting}
             style={{
               flex: 1,
               padding: '14px',
@@ -377,16 +240,8 @@ export default function ExportModal({ isOpen, onClose, onExport, darkMode }) {
               color: isDark ? '#f1f0ff' : '#1a1035',
               fontWeight: 500,
               fontSize: 15,
-              cursor: 'pointer',
+              cursor: isExporting ? 'not-allowed' : 'pointer',
               transition: 'all 0.25s ease',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = isDark
-                ? 'rgba(255,255,255,0.05)'
-                : 'rgba(0,0,0,0.03)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'transparent';
             }}
           >
             Cancel
@@ -397,18 +252,13 @@ export default function ExportModal({ isOpen, onClose, onExport, darkMode }) {
   );
 }
 
-// Helper for consistent input styling
 function inputStyle(isDark, isError = false) {
   return {
     width: '100%',
     padding: '12px 16px',
     borderRadius: 12,
     border: `1px solid ${
-      isError
-        ? 'rgba(239,68,68,0.5)'
-        : isDark
-        ? 'rgba(255,255,255,0.12)'
-        : 'rgba(0,0,0,0.12)'
+      isError ? 'rgba(239,68,68,0.5)' : isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)'
     }`,
     background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.7)',
     backdropFilter: 'blur(8px)',
@@ -417,8 +267,7 @@ function inputStyle(isDark, isError = false) {
     fontWeight: 500,
     outline: 'none',
     transition: 'border-color 0.2s ease',
-    boxShadow: isDark
-      ? 'inset 0 2px 4px rgba(0,0,0,0.2)'
-      : 'inset 0 2px 4px rgba(0,0,0,0.02)',
+    boxShadow: isDark ? 'inset 0 2px 4px rgba(0,0,0,0.2)' : 'inset 0 2px 4px rgba(0,0,0,0.02)',
+    opacity: isError ? 0.8 : 1,
   };
 }

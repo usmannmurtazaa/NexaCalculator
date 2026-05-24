@@ -19,7 +19,6 @@ export default function App() {
   const [scale, setScale] = useState('4.0');
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Firebase analytics tracking
   useEffect(() => {
     setIsLoaded(true);
     logEvent('app_loaded', {
@@ -29,7 +28,6 @@ export default function App() {
     setUserProperties({ prefers_dark_mode: darkMode });
   }, []);
 
-  // Track tab changes
   useEffect(() => {
     if (isLoaded) {
       logEvent('tab_changed', {
@@ -40,7 +38,6 @@ export default function App() {
     }
   }, [tab, scale, isLoaded]);
 
-  // Track scale changes separately (only for GPA/CGPA tabs)
   const handleScaleChange = useCallback(
     (e) => {
       const newScale = e.target.value;
@@ -55,7 +52,6 @@ export default function App() {
     [scale, tab]
   );
 
-  // Memoized toggle for dark mode with tracking
   const handleToggleDarkMode = useCallback(() => {
     toggleDarkMode();
     logEvent('dark_mode_toggled', {
@@ -70,6 +66,7 @@ export default function App() {
 
   return (
     <div
+      className={`theme-transition ${darkMode ? 'dark' : ''}`}
       style={{
         fontFamily: theme.fonts.body,
         background: darkMode
@@ -82,7 +79,7 @@ export default function App() {
         overflow: 'hidden',
       }}
     >
-      {/* Premium animated background mesh */}
+      {/* Animated background mesh */}
       <div
         aria-hidden="true"
         style={{
@@ -105,7 +102,6 @@ export default function App() {
         html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
         body { margin: 0; padding: 0; overflow-x: hidden; font-feature-settings: 'ss01', 'ss03', 'cv01'; }
         
-        /* Enhanced animations */
         @keyframes slideIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
@@ -114,7 +110,6 @@ export default function App() {
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         
-        /* Glassmorphism base */
         .glass {
           background: rgba(255, 255, 255, 0.03);
           backdrop-filter: blur(12px);
@@ -123,20 +118,17 @@ export default function App() {
           box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
         
-        /* Scrollbar styling */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #7c3aed44; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #7c3aed66; }
         
-        /* Focus styles for accessibility */
         button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
           outline: 2px solid #7c3aed;
           outline-offset: 2px;
           border-radius: 4px;
         }
         
-        /* Mobile first responsive utilities */
         @media (max-width: 768px) {
           .header-container { flex-direction: column; align-items: flex-start !important; gap: 12px; }
           .scale-selector-wrapper { width: 100%; justify-content: flex-start; flex-wrap: wrap; }
@@ -152,16 +144,10 @@ export default function App() {
         }
       `}</style>
 
-      {/* App content with relative z-index */}
       <div style={{ position: 'relative', zIndex: 1 }}>
-        <Header
-          darkMode={darkMode}
-          toggleDarkMode={handleToggleDarkMode}
-          visitors={visitors}
-        />
+        <Header darkMode={darkMode} toggleDarkMode={handleToggleDarkMode} visitors={visitors} />
         <Navigation tab={tab} setTab={setTab} darkMode={darkMode} />
 
-        {/* GPA Scale Selector - only for GPA/CGPA tabs */}
         {(tab === 'gpa' || tab === 'cgpa') && (
           <div
             className="scale-selector-wrapper"
@@ -175,14 +161,7 @@ export default function App() {
               animation: 'fadeDown 0.4s ease-out',
             }}
           >
-            <span
-              style={{
-                fontSize: 'clamp(13px, 2vw, 14px)',
-                fontWeight: 500,
-                color: darkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.65)',
-                letterSpacing: '0.01em',
-              }}
-            >
+            <span style={{ fontSize: 'clamp(13px, 2vw, 14px)', fontWeight: 500, color: darkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.65)', letterSpacing: '0.01em' }}>
               GPA Scale
             </span>
             <select
@@ -191,9 +170,7 @@ export default function App() {
               aria-label="Select GPA scale"
               className="glass"
               style={{
-                background: darkMode
-                  ? 'rgba(255,255,255,0.05)'
-                  : 'rgba(255,255,255,0.7)',
+                background: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.7)',
                 backdropFilter: 'blur(12px)',
                 WebkitBackdropFilter: 'blur(12px)',
                 border: `1px solid ${darkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)'}`,
@@ -203,15 +180,11 @@ export default function App() {
                 fontSize: 'clamp(14px, 2vw, 15px)',
                 fontWeight: 500,
                 cursor: 'pointer',
-                boxShadow: darkMode
-                  ? '0 4px 12px rgba(0,0,0,0.15)'
-                  : '0 4px 12px rgba(0,0,0,0.05)',
+                boxShadow: darkMode ? '0 4px 12px rgba(0,0,0,0.15)' : '0 4px 12px rgba(0,0,0,0.05)',
                 transition: 'all 0.25s ease',
                 outline: 'none',
                 appearance: 'none',
-                backgroundImage: `url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='${
-                  darkMode ? '%23ffffff99' : '%231a103599'
-                }' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")`,
+                backgroundImage: `url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='${darkMode ? '%23ffffff99' : '%231a103599'}' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")`,
                 backgroundRepeat: 'no-repeat',
                 backgroundPosition: 'right 12px center',
                 paddingRight: '36px',
@@ -226,7 +199,6 @@ export default function App() {
           </div>
         )}
 
-        {/* Main content area */}
         <main
           className="main-content"
           style={{
