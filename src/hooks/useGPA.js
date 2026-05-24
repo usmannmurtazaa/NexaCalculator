@@ -44,22 +44,26 @@ export function useGPA(scale) {
 
   const calculate = useCallback(() => {
     setError('');
-    if (courses.length === 0) {
+    const currentCourses = courses; // stable reference
+    if (!currentCourses || currentCourses.length === 0) {
       setError('Add at least one course.');
       return;
     }
 
-    for (const c of courses) {
-      if (!c.code.trim()) {
+    for (const c of currentCourses) {
+      if (!c.code || !c.code.trim()) {
         setError('Please fill in all course codes.');
         return;
       }
     }
 
     const gradeScale = SCALES[scale] || GRADES;
-    let tp = 0, tc = 0;
-    for (const c of courses) {
-      tp += gradeScale[c.gradeIdx].p * c.credits;
+    let tp = 0,
+      tc = 0;
+    for (const c of currentCourses) {
+      const grade = gradeScale[c.gradeIdx];
+      if (!grade) continue;
+      tp += grade.p * c.credits;
       tc += c.credits;
     }
 
@@ -68,14 +72,14 @@ export function useGPA(scale) {
 
     setResult({
       gpa: gpaStr,
-      count: courses.length,
+      count: currentCourses.length,
       credits: tc,
       points: tp,
     });
 
     logEvent('gpa_calculated', {
       scale,
-      courses_count: courses.length,
+      courses_count: currentCourses.length,
       total_credits: tc,
       total_points: tp,
       gpa: parseFloat(gpaStr),

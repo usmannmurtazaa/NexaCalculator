@@ -1,9 +1,6 @@
-import { getStanding } from './grades';
+import { getStanding } from '../constants/grades';
 import { trackExport } from '../firebase/exportTracker';
 
-/**
- * Convert hex color to RGB array.
- */
 function hexToRgb(hex) {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result
@@ -11,13 +8,11 @@ function hexToRgb(hex) {
     : [0, 0, 0];
 }
 
-/**
- * Build and download the PDF document.
- * This function assumes a pre‑initialised jsPDF instance (`doc`) is passed.
- * Used internally by `generatePDF` for code splitting.
- */
 function buildPDF(doc, data) {
   const { studentName, studentId, university, semester, date, scale, courses, gpaResult } = data;
+
+  // Ensure courses is an array
+  const safeCourses = Array.isArray(courses) ? courses : [];
 
   // Header
   doc.setFillColor(124, 58, 237);
@@ -86,7 +81,7 @@ function buildPDF(doc, data) {
 
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(60, 60, 60);
-  courses.forEach((course, index) => {
+  safeCourses.forEach((course, index) => {
     if (yPos > 250) {
       doc.addPage();
       yPos = 20;
@@ -95,10 +90,10 @@ function buildPDF(doc, data) {
       doc.setFillColor(245, 245, 250);
       doc.rect(20, yPos - 4, 170, 7, 'F');
     }
-    doc.text(course.code, 25, yPos);
-    doc.text(course.credits.toString(), 85, yPos);
-    doc.text(course.grade, 115, yPos);
-    doc.text(course.points, 155, yPos);
+    doc.text(String(course.code || '—'), 25, yPos);
+    doc.text(String(course.credits || 0), 85, yPos);
+    doc.text(String(course.grade || '—'), 115, yPos);
+    doc.text(String(course.points || '0'), 155, yPos);
     yPos += 7;
   });
 
@@ -121,7 +116,7 @@ function buildPDF(doc, data) {
   doc.text('GPA', 40, yPos + 3);
   doc.setFontSize(18);
   doc.setTextColor(124, 58, 237);
-  doc.text(String(gpaResult.gpa), 40, yPos + 15);
+  doc.text(String(gpaResult?.gpa || '—'), 40, yPos + 15);
   doc.setFontSize(11);
   doc.setTextColor(60, 60, 60);
   doc.text(`out of ${scale}`, 40, yPos + 22);
@@ -129,15 +124,15 @@ function buildPDF(doc, data) {
   doc.text('Total Credits', 105, yPos + 3);
   doc.setFontSize(14);
   doc.setTextColor(80, 80, 80);
-  doc.text(String(gpaResult.credits), 105, yPos + 15);
+  doc.text(String(gpaResult?.credits || 0), 105, yPos + 15);
   doc.setFont('helvetica', 'bold');
   doc.text('Quality Points', 150, yPos + 3);
   doc.setFontSize(14);
-  doc.text(parseFloat(gpaResult.points).toFixed(2), 150, yPos + 15);
+  doc.text((gpaResult?.points || 0).toFixed(2), 150, yPos + 15);
   yPos += 40;
 
-  // Academic Standing
-  const standing = getStanding(parseFloat(gpaResult.gpa), scale);
+  // Standing
+  const standing = getStanding(parseFloat(gpaResult?.gpa || 0), scale);
   const [r, g, b] = hexToRgb(standing.color);
   doc.setFillColor(r, g, b);
   doc.rect(20, yPos - 4, 170, 12, 'F');
@@ -146,7 +141,7 @@ function buildPDF(doc, data) {
   doc.setTextColor(255, 255, 255);
   doc.text(`Academic Standing: ${standing.t}`, 105, yPos + 3, { align: 'center' });
 
-  // Footer (applied to all pages)
+  // Footer
   const pageCount = doc.getNumberOfPages();
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
@@ -159,30 +154,22 @@ function buildPDF(doc, data) {
     doc.text('nexacalculator.netlify.app', 105, 295, { align: 'center' });
   }
 
-  // Save
   doc.save(`Nexa_Academic_Record_${studentName.replace(/\s+/g, '_')}.pdf`);
 }
 
-/**
- * Public wrapper – dynamically imports jsPDF (code splitting),
- * builds the PDF, and sends analytics to Firebase.
- */
 export async function generatePDF(data) {
-  // Dynamic import for jsPDF (heavy library)
   const { default: jsPDF } = await import('jspdf');
-
   const doc = new jsPDF();
   buildPDF(doc, data);
 
-  // Firebase export tracking
   trackExport({
     studentName: data.studentName,
     studentId: data.studentId,
     university: data.university,
     semester: data.semester,
     scale: data.scale,
-    gpa: data.gpaResult.gpa,
-    credits: data.gpaResult.credits,
+    gpa: data.gpaResult?.gpa,
+    credits: data.gpaResult?.credits,
     date: data.date,
     exportType: 'pdf',
     timestamp: new Date().toISOString(),
@@ -190,9 +177,6 @@ export async function generatePDF(data) {
   });
 }
 
-/**
- * Collects browser/device metadata for analytics.
- */
 function getDeviceInfo() {
   return {
     userAgent: navigator.userAgent,

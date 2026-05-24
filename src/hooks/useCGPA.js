@@ -39,12 +39,13 @@ export function useCGPA(scale) {
 
   const calculate = useCallback(() => {
     setError('');
+    const currentSems = sems; // stable reference
     const maxGPA = parseFloat(scale);
     let total = 0,
       count = 0,
       best = 0;
 
-    for (const s of sems) {
+    for (const s of currentSems) {
       if (s.val === '') continue;
       const n = parseFloat(s.val);
       if (isNaN(n) || n < 0 || n > maxGPA) {
