@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { logEvent, setUserProperties } from '../firebase/analytics';
 
 export function useDarkMode() {
@@ -7,11 +7,19 @@ export function useDarkMode() {
       const saved = localStorage.getItem('darkMode');
       return saved ? JSON.parse(saved) : true;
     } catch {
-      return true; // fallback dark
+      return true;
     }
   });
 
-  // Persist preference and log to Firebase
+  // Apply theme class to <html> and <body> for CSS variable switching
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', darkMode);
+    document.body.classList.toggle('dark', darkMode);
+    // Ensure body background transition is smooth
+    document.body.classList.add('theme-transition');
+  }, [darkMode]);
+
+  // Persist preference
   useEffect(() => {
     try {
       localStorage.setItem('darkMode', JSON.stringify(darkMode));
@@ -19,7 +27,6 @@ export function useDarkMode() {
       // storage unavailable – silent fail
     }
 
-    // Firebase analytics
     logEvent('dark_mode_changed', {
       mode: darkMode ? 'dark' : 'light',
       timestamp: new Date().toISOString(),
@@ -36,5 +43,7 @@ export function useDarkMode() {
     setUserProperties({ prefers_dark_mode: darkMode });
   }, []); // only on mount
 
-  return [darkMode, setDarkMode];
+  const toggle = useCallback(() => setDarkMode(prev => !prev), []);
+
+  return [darkMode, toggle];
 }
