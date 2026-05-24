@@ -25,6 +25,8 @@ const theme = {
     xl: 20,
     xxl: 24,
     xxxl: 32,
+    xxxxl: 48,
+    section: 'clamp(32px, 6vw, 64px)',
   },
   borderRadius: {
     sm: 8,
@@ -37,6 +39,17 @@ const theme = {
     heading: "'Playfair Display', serif",
     body: "'DM Sans', sans-serif",
     mono: "'JetBrains Mono', monospace",
+  },
+  shadows: {
+    sm: '0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06)',
+    md: '0 4px 12px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',
+    lg: '0 12px 32px rgba(0,0,0,0.08), 0 4px 8px rgba(0,0,0,0.04)',
+    xl: '0 20px 48px rgba(0,0,0,0.12), 0 8px 16px rgba(0,0,0,0.04)',
+    glow: '0 0 20px rgba(124, 58, 237, 0.15)',
+    darkSm: '0 1px 3px rgba(0,0,0,0.2), 0 1px 2px rgba(0,0,0,0.3)',
+    darkMd: '0 4px 12px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2)',
+    darkLg: '0 12px 32px rgba(0,0,0,0.4), 0 4px 8px rgba(0,0,0,0.2)',
+    darkGlow: '0 0 24px rgba(124, 58, 237, 0.25)',
   },
   animation: '0.3s ease',
 };

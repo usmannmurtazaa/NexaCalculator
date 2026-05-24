@@ -2,8 +2,9 @@
 
 <div align="center">
   <img src="https://img.shields.io/badge/React-18.3.1-61DAFB?style=for-the-badge&logo=react&logoColor=white" alt="React" />
-  <img src="https://img.shields.io/badge/Vite-6.0.1-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite" />
+  <img src="https://img.shields.io/badge/Vite-8.0.14-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite" />
   <img src="https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" alt="JavaScript" />
+  <img src="https://img.shields.io/badge/Firebase-12.13.0-FFCA28?style=for-the-badge&logo=firebase&logoColor=black" alt="Firebase" />
   <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License" />
   <img src="https://img.shields.io/badge/Version-2.0.0-blue?style=for-the-badge" alt="Version" />
 </div>
@@ -40,19 +41,20 @@
 
 ## 📋 Overview
 
-**Nexa Calculator** is a sophisticated, all-in-one academic calculator built with React and Vite. It empowers students to calculate semester GPA, cumulative CGPA, and perform advanced scientific calculations. Featuring an elegant dark/light theme with real-time grade tracking, academic standing evaluation, PDF export capabilities, and seamless user experience.
+**Nexa Calculator** is a production‑ready, all‑in‑one academic calculator built with React + Vite and powered by Firebase analytics. It delivers a premium SaaS experience with glassmorphism UI, smooth animations, and full mobile responsiveness. Students can calculate semester GPA, cumulative CGPA, and perform advanced scientific calculations, while every interaction is tracked for insights.
 
 ### 🎯 Key Highlights
 
-- **3-in-1 Academic Tool**: GPA Calculator, CGPA Calculator, and Scientific Calculator in one application
-- **Multiple GPA Scales**: Support for 4.0, 5.0, and 10.0 grading scales
-- **Professional UI/UX**: Modern design with dark/light mode toggle and smooth animations
-- **Mobile-First Design**: Fully responsive across all devices and screen sizes
-- **Real-time Calculations**: Instant feedback with animated numerical displays
-- **Academic Insights**: Automatic standing evaluation (Dean's List, Probation, etc.)
-- **Export Functionality**: Download academic records as PDF or CSV
-- **Contact Integration**: Built-in contact form with EmailJS for user communication
-- **SEO Optimized**: Comprehensive meta tags and structured data for search engines
+- **3‑in‑1 Academic Tool** – GPA, CGPA, and Scientific Calculator in one polished interface
+- **Multiple GPA Scales** – 4.0, 5.0, and 10.0 grading systems supported
+- **Premium UI/UX** – Glassmorphism, modern gradients, dark/light mode, fluid animations
+- **Mobile‑First** – Fully responsive across all devices and screen sizes
+- **Real‑time Feedback** – Animated numerical counters and progress bars
+- **Academic Insights** – Automatic standing evaluation (Dean’s List, Probation, etc.)
+- **Professional Exports** – PDF & CSV with Firebase activity tracking
+- **Firebase Integration** – Analytics, visitor metrics, export tracking, device/browser logging
+- **Contact System** – EmailJS‑powered form with validation and success states
+- **SEO Optimized** – Structured data, meta tags, and canonical URLs
 
 ---
 
@@ -60,296 +62,85 @@
 
 ### 📊 Semester GPA Calculator
 
-<table>
-  <tr>
-    <td width="50%">
-      <ul>
-        <li>✅ Support for up to <strong>8 courses</strong> per semester</li>
-        <li>✅ Multiple grading scales: <strong>4.0, 5.0, and 10.0</strong></li>
-        <li>✅ <strong>Credit hour</strong> selection (1-6 credits)</li>
-        <li>✅ <strong>Course code</strong> input for easy identification</li>
-        <li>✅ <strong>Quality points</strong> automatic calculation</li>
-        <li>✅ <strong>Animated GPA display</strong> with smooth transitions</li>
-        <li>✅ <strong>Target GPA Calculator</strong> - Plan your academic goals</li>
-      </ul>
-    </td>
-    <td width="50%">
-      <ul>
-        <li>✅ <strong>Academic standing</strong> evaluation:
-          <ul>
-            <li>🏆 Outstanding — Dean's List (92.5%+)</li>
-            <li>⭐ Very Good Standing (75%+)</li>
-            <li>👍 Good Standing (62.5%+)</li>
-            <li>📊 Satisfactory (50%+)</li>
-            <li>⚠️ Below Average (25%+)</li>
-            <li>🚫 Academic Probation (<25%)</li>
-          </ul>
-        </li>
-        <li>✅ <strong>Visual progress bar</strong> showing GPA performance</li>
-        <li>✅ Dynamic course addition/removal</li>
-        <li>✅ <strong>Export academic record</strong> as PDF or CSV</li>
-      </ul>
-    </td>
-  </tr>
-</table>
+- Up to **8 courses** per semester
+- Credit hour selection (1‑6 credits)
+- Course code input for identification
+- Quality points auto‑computed
+- Animated GPA display with smooth transitions
+- **Target GPA Calculator** – Plan your academic goals
+- **Academic standing** evaluation:
+  - 🏆 Outstanding — Dean’s List (92.5%+)
+  - ⭐ Very Good Standing (75%+)
+  - 👍 Good Standing (62.5%+)
+  - 📊 Satisfactory (50%+)
+  - ⚠️ Below Average (25%+)
+  - 🚫 Academic Probation (<25%)
+- Visual progress bar with color feedback
+- Export to **PDF / CSV** with Firebase tracking
 
 ### 📈 Cumulative CGPA Calculator
 
-<table>
-  <tr>
-    <td width="50%">
-      <ul>
-        <li>✅ Support for up to <strong>8 semesters</strong></li>
-        <li>✅ Individual semester GPA input</li>
-        <li>✅ <strong>Automatic CGPA calculation</strong></li>
-        <li>✅ <strong>Best semester tracking</strong></li>
-        <li>✅ Multiple scale support (4.0, 5.0, 10.0)</li>
-      </ul>
-    </td>
-    <td width="50%">
-      <ul>
-        <li>✅ <strong>Total GPA sum</strong> display</li>
-        <li>✅ Real-time validation for input values</li>
-        <li>✅ Comprehensive academic summary</li>
-        <li>✅ Same academic standing evaluation as GPA</li>
-        <li>✅ Interactive semester management</li>
-      </ul>
-    </td>
-  </tr>
-</table>
+- Up to **8 semesters** of GPA values
+- Automatic CGPA calculation
+- Best semester tracking
+- Total GPA sum display
+- Real‑time input validation
+- Same academic standing evaluation
+- Export with full student metadata
 
 ### 🧮 Scientific Calculator
 
-<table>
-  <tr>
-    <td width="33%">
-      <h4>📟 Normal Mode</h4>
-      <ul>
-        <li>➕ Addition & Subtraction</li>
-        <li>✖️ Multiplication & Division</li>
-        <li>📊 Percentage calculations</li>
-        <li>🔢 Decimal support</li>
-        <li>💾 Memory functions (MC, MR, M+, M-)</li>
-        <li>📋 Calculation history</li>
-      </ul>
-    </td>
-    <td width="33%">
-      <h4>🔬 Scientific Mode</h4>
-      <ul>
-        <li>📐 sin, cos, tan (DEG/RAD)</li>
-        <li>📐 asin, acos, atan</li>
-        <li>√ Square root & ∛ Cube root</li>
-        <li>x² Square & x³ Cube</li>
-        <li>📊 log, ln, 10ˣ</li>
-        <li>π Pi & e constants</li>
-      </ul>
-    </td>
-    <td width="34%">
-      <h4>📝 Advanced Features</h4>
-      <ul>
-        <li>|x| Absolute value</li>
-        <li>n! Factorial</li>
-        <li>1/x Reciprocal</li>
-        <li>± Sign toggle</li>
-        <li>⌫ Backspace support</li>
-        <li>🔄 Clear function</li>
-        <li>🎨 Themed interface</li>
-      </ul>
-    </td>
-  </tr>
-</table>
+- Normal mode: basic arithmetic, memory functions (MC, MR, M+, M‑), percentage
+- Scientific mode: sin, cos, tan (deg/rad), inverse trig, sqrt, cbrt, powers, log, ln, π, e, absolute value, factorial, reciprocal, sign toggle
+- Calculation history with clear option
+- Glassmorphism‑styled button grid
+
+### 🎨 Premium UI/UX
+
+- Dark/Light mode (persisted in localStorage)
+- Glassmorphism cards, buttons, inputs, modals
+- Smooth CSS animations (fade, slide, scale, shimmer)
+- Interactive hover states and focus indicators
+- Accessibility: ARIA roles, screen‑reader support, keyboard navigation
+- Responsive grids and clamp‑based typography
+- Professional loading skeletons and spinners
+
+### 🔥 Firebase Integration
+
+- **Analytics** – Track page loads, tab switches, GPA/CGPA calculations, dark mode toggles, exports
+- **Firestore** – Ready for storing export records (scalable schema)
+- **Export Tracker** – Logs student name, ID, university, semester, GPA, credits, date, export type, timestamp, device info
+- **Visitor Analytics** – Simulates active users with milestone events
+- All Firebase functions are modular, async, and error‑handled
 
 ### 📧 Contact System
 
-- **EmailJS Integration**: Direct messaging to administrator
-- **Form Validation**: Required field checking and email format validation
-- **Success Feedback**: Confirmation message with re-send option
-- **Error Handling**: User-friendly error messages
-- **Loading States**: Visual feedback during submission
-- **Responsive Design**: Optimized for all screen sizes
-
-### 🎨 UI/UX Excellence
-
-| Feature | Description |
-|---------|-------------|
-| 🌓 **Dark/Light Mode** | Toggle between dark and light themes (saved to localStorage) |
-| ✨ **Animations** | Smooth transitions, fade effects, and slide animations |
-| 📱 **Responsive** | Mobile-first design that adapts to any screen |
-| 🎯 **Interactive** | Hover effects, focus states, and visual feedback |
-| 📊 **Visitor Counter** | Simulated real-time visitor count |
-| 🔢 **Animated Numbers** | Smooth counting animations for results |
-| 📑 **Tab Navigation** | Intuitive switching between calculator modes |
-| 📥 **Export Modal** | Professional export interface with student details |
+- EmailJS for direct messaging (kept only for contact form)
+- Required field validation and email format check
+- Success confirmation with “Send Another Message” button
+- Loading spinner on submit
+- Firebase logs contact form submissions
 
 ---
 
 ## 🚀 Live Demo
 
-Experience the application live: **[Nexa Calculator](https://nexacalculator.netlify.app/)**
-
-### Quick Preview
-
-| GPA Calculator | CGPA Calculator | Scientific Calculator |
-|:---:|:---:|:---:|
-| <img src="./images/GPA.png" width="250" /> | <img src="./images/CGPA.png" width="250" /> | <img src="./images/Scientific.png" width="250" /> |
+**[https://nexacalculator.netlify.app/](https://nexacalculator.netlify.app/)**
 
 ---
 
 ## 🛠️ Technology Stack
 
-<details>
-<summary><strong>Click to expand</strong></summary>
-
-### Core Technologies
-
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| **React** | 18.3.1 | Frontend UI framework |
-| **Vite** | 6.0.1 | Build tool and development server |
-| **JavaScript** | ES6+ | Programming language |
-| **EmailJS** | 4.4.1 | Email service integration |
-| **jsPDF** | 2.5.2 | PDF generation for exports |
-
-### UI & Styling
-
 | Technology | Purpose |
 |------------|---------|
-| **Inline CSS** | Component-specific styling |
-| **Google Fonts** | Typography (DM Sans, Playfair Display, JetBrains Mono) |
-| **CSS Animations** | Keyframe animations for UI effects |
-| **CSS Grid/Flexbox** | Responsive layout system |
-
-### Development Tools
-
-| Tool | Purpose |
-|------|---------|
-| **@vitejs/plugin-react** | React support for Vite |
-| **vite-plugin-compression** | Gzip/Brotli compression for production |
-| **Terser** | JavaScript minification |
-
-### Deployment Platforms
-
-| Platform | Status |
-|----------|--------|
-| **Netlify** | ✅ Deployed |
-| **Vercel** | ✅ Compatible |
-| **GitHub Pages** | ✅ Compatible |
-| **Any Static Host** | ✅ Compatible |
-
-</details>
-
----
-
-**🔮 Roadmap & Future Enhancements**
-
-**v2.1.0 (Coming Soon)**
-
-PWA implementation for offline use
-
-Save calculations to localStorage
-
-Keyboard shortcuts for calculator
-
-More export format options
-
----
-
-**v2.2.0 (Planned)**
-
-Multiple grading system presets
-
-Course weightage customization
-
-Grade prediction calculator
-
-Semester-by-semester graph visualization
-
-Cumulative statistics dashboard
-
----
-
-**v2.3.0 (Future)**
-
-User accounts and cloud sync
-
-Multi-language support (i18n)
-
-University API integrations
-
-Advanced statistics and analytics
-
----
-
-**Long-term Vision**
-
-Mobile app (React Native)
-
-Desktop application (Electron)
-
-Browser extension
-
-Academic planning tools
-
-Study schedule integration
-
----
-
-**👨‍💻 Author**
-
-<div align="center"> <img src="https://github.com/usmannmurtazaa.png" width="100" height="100" style="border-radius: 50%;" /> <h3>Usman Murtaza</h3> </div><div align="center"> <a href="https://github.com/usmannmurtazaa"> <img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white" alt="GitHub" /> </a> <a href="https://linkedin.com/in/usman-murtaza"> <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" /> </a> <a href="https://usmanmurtaza.netlify.app"> <img src="https://img.shields.io/badge/Portfolio-000000?style=for-the-badge&logo=About.me&logoColor=white" alt="Portfolio" /> </a> <a href="mailto:usmanmurtaza@example.com"> <img src="https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white" alt="Email" /> </a> </div>
-
----
-
-**📄 License**
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-MIT License
-
-Copyright (c) 2026 Usman Murtaza
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions...
-
----
-
-**🙏 Acknowledgments**
-
-1. Google Fonts for typography
-
-2. EmailJS for email integration
-
-3. jsPDF for PDF generation
-
-4. Vite Team for the amazing build tool
-
-5. React Community for inspiration and support
-
----
-
-**📊 Project Stats**
-
-<div align="center"> <img src="https://img.shields.io/github/languages/count/usmannmurtazaa/NexaCalculator?style=flat-square" alt="Languages" /> <img src="https://img.shields.io/github/languages/top/usmannmurtazaa/NexaCalculator?style=flat-square" alt="Top Language" /> <img src="https://img.shields.io/github/repo-size/usmannmurtazaa/NexaCalculator?style=flat-square" alt="Repo Size" /> <img src="https://img.shields.io/github/last-commit/usmannmurtazaa/NexaCalculator?style=flat-square" alt="Last Commit" /> </div>
-
----
-
-**⭐ Support**
-
-If you find this project helpful, please consider:
-
-⭐ Starring the repository
-
-🐛 Reporting bugs
-
-💡 Suggesting new features
-
-📢 Sharing with others
-
-<div align="center"> <h3>Made with ❤️ by Usman Murtaza</h3> <p>© 2026 Nexa Calculator. All rights reserved.</p> </div> ```
+| **React 18** | UI library |
+| **Vite 8** | Build tool and dev server |
+| **JavaScript ES6+** | Language |
+| **Firebase 12** | Analytics, Firestore, export tracking |
+| **EmailJS** | Contact form emails |
+| **jsPDF** | PDF export (dynamic import for code splitting) |
+| **Google Fonts** | DM Sans, Playfair Display, JetBrains Mono |
+| **CSS Animations** | Custom keyframes and transitions |
 
 ---
 
@@ -357,14 +148,153 @@ If you find this project helpful, please consider:
 
 ### Prerequisites
 
-- **Node.js** (v18.0.0 or higher)
-- **npm** (v8.0.0 or higher) or **yarn** (v1.22.0 or higher)
-- **Git** (for cloning the repository)
+- Node.js ≥ 18
+- npm or yarn
+- A Firebase project (optional for analytics; the app works without it)
 
-### Step-by-Step Setup
-
-#### 1️⃣ Clone the Repository
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/usmannmurtazaa/NexaCalculator.git
 cd NexaCalculator
+```
+
+### 2. Install dependencies
+
+```bash
+npm install
+```
+
+### 3. Firebase configuration (optional but recommended)
+
+Create a Firebase project at [console.firebase.google.com](https://console.firebase.google.com) and enable **Analytics** and **Firestore** (if desired).
+
+Create `src/firebase/firebase.js` with your config:
+
+```js
+import { initializeApp } from 'firebase/app';
+import { getAnalytics } from 'firebase/analytics';
+import { getFirestore } from 'firebase/firestore';
+
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "...",
+  appId: "...",
+  measurementId: "G-..."
+};
+
+const app = initializeApp(firebaseConfig);
+export const analytics = getAnalytics(app);
+export const firestore = getFirestore(app);
+export default app;
+```
+
+The app will still work without Firebase; analytics calls are safely wrapped.
+
+### 4. EmailJS setup
+
+Create a `.env` file in the project root:
+
+```env
+VITE_EMAILJS_SERVICE_ID=your_service_id
+VITE_EMAILJS_TEMPLATE_ID=your_template_id
+VITE_EMAILJS_PUBLIC_KEY=your_public_key
+```
+
+### 5. Start development server
+
+```bash
+npm run dev
+```
+
+---
+
+## 📖 Usage
+
+1. **Choose a tab** – GPA, CGPA, or Scientific Calculator.
+2. **Select your scale** – 4.0, 5.0, or 10.0.
+3. **Add courses / semesters** – Fill in details and calculate.
+4. **View results** – GPA with standing, progress bar, target GPA calculator.
+5. **Export** – Click “Export Academic Record” to save as PDF or CSV (data logged to Firebase).
+6. **Contact** – Use the contact form to send feedback.
+
+---
+
+## 🧱 Project Structure
+
+```
+src/
+├── App.jsx
+├── main.jsx
+├── constants/
+│   ├── grades.js
+│   ├── limits.js
+│   └── theme.js
+├── hooks/
+│   ├── useGPA.js
+│   ├── useCGPA.js
+│   ├── useContactForm.js
+│   ├── useVisitors.js
+│   └── useDarkMode.js
+├── utils/
+│   ├── gpa.js
+│   ├── pdfExport.js
+│   └── csvExport.js
+├── firebase/
+│   ├── firebase.js
+│   ├── analytics.js
+│   └── exportTracker.js
+├── components/
+│   ├── Header.jsx
+│   ├── Navigation.jsx
+│   ├── GPACalculator.jsx
+│   ├── CGPACalculator.jsx
+│   ├── CalculatorPanel.jsx
+│   ├── ContactSection.jsx
+│   ├── Footer.jsx
+│   ├── LoadingSpinner.jsx
+│   ├── CourseCard.jsx
+│   ├── ResultCard.jsx
+│   ├── CGPAResultCard.jsx
+│   ├── GradeExtras.jsx   (ProgressBar + TargetGPACalculator)
+│   ├── ExportModal.jsx
+│   └── AnimatedNumber.jsx
+└── styles/
+    └── global.css
+```
+
+---
+
+## 🔮 Roadmap
+
+- **PWA** – Installable offline app
+- **LocalStorage history** – Save past calculations
+- **User accounts** – Cloud sync (Firebase Auth)
+- **Graphs** – GPA trends across semesters
+- **i18n** – Multi‑language support
+
+---
+
+## 👨‍💻 Author
+
+**Usman Murtaza**
+
+[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/usmannmurtazaa)
+[![Portfolio](https://img.shields.io/badge/Portfolio-000000?style=for-the-badge&logo=About.me&logoColor=white)](https://usmanmurtaza.netlify.app)
+[![Email](https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:usmanmurtaza@example.com)
+
+---
+
+## 📄 License
+
+MIT License – see the [LICENSE](LICENSE) file for details.
+
+---
+
+## ⭐ Support
+
+If you find this project helpful, please consider starring the repository, reporting bugs, or sharing it with others. Contributions are welcome!
+```
