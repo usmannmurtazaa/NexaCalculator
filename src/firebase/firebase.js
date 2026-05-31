@@ -35,20 +35,22 @@ if (typeof window !== 'undefined' && isConfigValid) {
     firestore = getFirestore(app);
   } catch (error) {
     // Non‑fatal: Firebase is optional for core features
-    console.warn('Firebase initialization failed:', error.message);
+    if (import.meta.env.DEV) {
+      console.warn('Firebase initialization failed:', error.message);
+    }
     // Ensure they stay null
     app = null;
     analytics = null;
     firestore = null;
   }
 } else if (typeof window !== 'undefined') {
-  console.warn('Firebase configuration is incomplete. Analytics and exports are disabled.');
+  // Only warn in development
+  if (import.meta.env.DEV) {
+    console.warn('Firebase configuration is incomplete. Analytics and exports are disabled.');
+  }
 }
 
 // ── Helper ─────────────────────────────────────────────────────────
-/**
- * Check whether Firebase is fully available (app + analytics + firestore).
- */
 export function isFirebaseReady() {
   return !!(app && analytics && firestore);
 }

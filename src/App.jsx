@@ -104,22 +104,15 @@ export default function App() {
 
   const handleToggleDarkMode = useCallback(() => {
     toggleDarkMode();
-    // Log the new *intended* mode (opposite of current before toggle)
     logEvent('dark_mode_toggled', {
       new_mode: !darkMode,
       timestamp: new Date().toISOString(),
     });
   }, [darkMode, toggleDarkMode]);
 
-  // Compute theme variables once per darkMode change
+  // ── All useMemo hooks (called unconditionally) ──────────────────────────
   const themeVars = useMemo(() => generateThemeVars(darkMode), [darkMode]);
 
-  // Loading state (pre-content)
-  if (!isLoaded) {
-    return <LoadingSpinner darkMode={darkMode} />;
-  }
-
-  // ── Scale Selector sub-component (memoized) ───────────────────────────────
   const ScaleSelector = useMemo(
     () => (
       <div
@@ -182,6 +175,11 @@ export default function App() {
     [scale, handleScaleChange, darkMode]
   );
 
+  // Loading state (all hooks already called)
+  if (!isLoaded) {
+    return <LoadingSpinner darkMode={darkMode} />;
+  }
+
   return (
     <div
       id="nexa-app-root"
@@ -212,10 +210,8 @@ export default function App() {
         }}
       />
 
-      {/* Global critical styles – moved from inline <style> for maintainability */}
+      {/* Global critical styles – fonts removed (loaded by index.html) */}
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap');
-
         *, *::before, *::after {
           margin: 0;
           padding: 0;
@@ -364,7 +360,6 @@ export default function App() {
 
         <Navigation tab={tab} setTab={setTab} darkMode={darkMode} />
 
-        {/* Scale selector – only for GPA/CGPA tabs */}
         {(tab === 'gpa' || tab === 'cgpa') && ScaleSelector}
 
         <main
