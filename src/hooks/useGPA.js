@@ -1,21 +1,28 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { GRADES, SCALES } from '../utils/grades';
 import { MAX_COURSES } from '../constants/limits';
 import { logEvent } from '../firebase/analytics';
 
-function createInitialCourses() {
-  return [
-    { id: 1, code: '', credits: 3, gradeIdx: 0 },
-    { id: 2, code: '', credits: 3, gradeIdx: 0 },
-    { id: 3, code: '', credits: 3, gradeIdx: 0 },
-  ];
-}
+// ── Helpers ──────────────────────────────────────────────────────────
+const createInitialCourses = () => [
+  { id: 1, code: '', credits: 3, gradeIdx: 0 },
+  { id: 2, code: '', credits: 3, gradeIdx: 0 },
+  { id: 3, code: '', credits: 3, gradeIdx: 0 },
+];
 
+/**
+ * useGPA – manage course list and compute semester GPA.
+ *
+ * @param {string} scale – GPA scale (e.g., '4.0')
+ * @returns {object} { courses, addCourse, removeCourse, updateCourse, reset, calculate, result, error }
+ */
 export function useGPA(scale) {
   const [courses, setCourses] = useState(createInitialCourses);
   const [nextId, setNextId] = useState(4);
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
+
+  const maxScale = useMemo(() => parseFloat(scale), [scale]);
 
   const addCourse = useCallback(() => {
     if (courses.length >= MAX_COURSES) return;
@@ -31,9 +38,9 @@ export function useGPA(scale) {
     (id) => {
       setCourses((prev) => prev.filter((c) => c.id !== id));
       setResult(null);
-      logEvent('course_removed', { removedId: id });
+      logEvent('course_removed', { removedId: id, remaining: courses.length - 1 });
     },
-    []
+    [courses.length]
   );
 
   const updateCourse = useCallback((id, field, val) => {
@@ -42,50 +49,72 @@ export function useGPA(scale) {
     );
   }, []);
 
+  // Reset to initial state
+  const reset = useCallback(() => {
+    setCourses(createInitialCourses());
+    setNextId(4);
+    setResult(null);
+    setError('');
+  }, []);
+
   const calculate = useCallback(() => {
     setError('');
-    const currentCourses = courses; // stable reference
-    if (!currentCourses || currentCourses.length === 0) {
+
+    if (!courses || courses.length === 0) {
       setError('Add at least one course.');
       return;
     }
 
-    for (const c of currentCourses) {
-      if (!c.code || !c.code.trim()) {
-        setError('Please fill in all course codes.');
-        return;
-      }
+    // Validate course codes
+    const missingCodes = courses.filter((c) => !c.code || !c.code.trim());
+    if (missingCodes.length > 0) {
+      const indices = missingCodes
+        .map((c) => courses.indexOf(c) + 1)
+        .join(', ');
+      setError(`Please fill in course code(s) for course(s): ${indices}.`);
+      return;
     }
 
     const gradeScale = SCALES[scale] || GRADES;
-    let tp = 0,
-      tc = 0;
-    for (const c of currentCourses) {
+    let totalPoints = 0;
+    let totalCredits = 0;
+
+    for (const c of courses) {
       const grade = gradeScale[c.gradeIdx];
       if (!grade) continue;
-      tp += grade.p * c.credits;
-      tc += c.credits;
+      totalPoints += grade.p * c.credits;
+      totalCredits += c.credits;
     }
 
-    const gpa = tc ? tp / tc : 0;
+    const gpa = totalCredits ? totalPoints / totalCredits : 0;
     const gpaStr = gpa.toFixed(2);
+    const totalPointsFixed = totalPoints.toFixed(2);
 
     setResult({
       gpa: gpaStr,
-      count: currentCourses.length,
-      credits: tc,
-      points: tp,
+      count: courses.length,
+      credits: totalCredits,
+      points: totalPointsFixed,
     });
 
     logEvent('gpa_calculated', {
       scale,
-      courses_count: currentCourses.length,
-      total_credits: tc,
-      total_points: tp,
+      courses_count: courses.length,
+      total_credits: totalCredits,
+      total_points: totalPointsFixed,
       gpa: parseFloat(gpaStr),
       timestamp: new Date().toISOString(),
     });
   }, [courses, scale]);
 
-  return { courses, addCourse, removeCourse, updateCourse, calculate, result, error };
+  return {
+    courses,
+    addCourse,
+    removeCourse,
+    updateCourse,
+    reset, // new
+    calculate,
+    result,
+    error,
+  };
 }

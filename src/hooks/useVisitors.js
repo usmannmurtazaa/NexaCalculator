@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { logEvent } from '../firebase/analytics';
 
 /**
@@ -10,31 +10,36 @@ import { logEvent } from '../firebase/analytics';
  */
 export function useVisitors(initial = 1312) {
   const [visitors, setVisitors] = useState(initial);
+  const visitorsRef = useRef(visitors); // always reflects latest value
   const intervalRef = useRef(null);
 
+  // Keep ref in sync
   useEffect(() => {
-    // Log initial visitor session
+    visitorsRef.current = visitors;
+  }, [visitors]);
+
+  useEffect(() => {
+    // Log initial session
     logEvent('visitor_active', {
-      initial_count: visitors,
+      initial_count: visitorsRef.current,
       timestamp: new Date().toISOString(),
     });
 
-    // Periodic visitor count increase simulation
+    // Periodic update
     intervalRef.current = setInterval(() => {
       setVisitors((prev) => {
-        // More realistic organic growth pattern
+        // Realistic organic growth pattern
         if (Math.random() > 0.6) {
           const increment = Math.floor(Math.random() * 2) + 1;
           const newCount = prev + increment;
 
-          // Log significant milestones (every 10 new visitors)
-          if (newCount % 10 === 0) {
+          // Milestone logging (every 10 new visitors) using the current prev value before update
+          if ((prev + 1) % 10 === 0) { // slightly simpler: check after increment
             logEvent('visitor_milestone', {
               count: newCount,
               timestamp: new Date().toISOString(),
             });
           }
-
           return newCount;
         }
         return prev;
@@ -45,12 +50,13 @@ export function useVisitors(initial = 1312) {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }
+      // Use ref to get the final accurate count
       logEvent('visitor_session_end', {
-        final_count: visitors,
+        final_count: visitorsRef.current,
         timestamp: new Date().toISOString(),
       });
     };
-  }, []); // Run only on mount/unmount
+  }, []); // Runs only on mount/unmount
 
   return visitors;
 }

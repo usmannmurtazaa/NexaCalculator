@@ -20,10 +20,12 @@ export function useContactForm() {
   const [error, setError] = useState('');
   const [sending, setSending] = useState(false);
 
+  // Validate and submit
   const submit = useCallback(async () => {
     setError('');
     const { name, email, message } = contact;
 
+    // Trim and validate
     if (!name.trim() || !email.trim() || !message.trim()) {
       setError('Please fill in all required fields.');
       return;
@@ -33,28 +35,36 @@ export function useContactForm() {
       return;
     }
     if (!SERVICE_ID || !TEMPLATE_ID || !PUBLIC_KEY) {
-      setError('Email service not configured.');
+      setError('Email service is not configured. Please try again later.');
       return;
     }
 
     setSending(true);
     try {
       await emailjs.send(SERVICE_ID, TEMPLATE_ID, {
-        from_name: name,
-        from_email: email,
-        subject: contact.subject || 'Nexa Calculator Contact',
-        message,
+        from_name: name.trim(),
+        from_email: email.trim(),
+        subject: contact.subject.trim() || 'Nexa Calculator Contact',
+        message: message.trim(),
       });
       setSent(true);
       logEvent('contact_form_submitted', {
         timestamp: new Date().toISOString(),
       });
-    } catch {
+    } catch (err) {
+      console.error('EmailJS error:', err);
       setError('Failed to send message. Please try again.');
     } finally {
       setSending(false);
     }
   }, [contact]);
+
+  // Reset form to initial state
+  const reset = useCallback(() => {
+    setContact(INITIAL_STATE);
+    setSent(false);
+    setError('');
+  }, []);
 
   return {
     contact,
@@ -62,8 +72,8 @@ export function useContactForm() {
     sent,
     setSent,
     error,
-    setError,
     sending,
     submit,
+    reset,          // new convenience function
   };
 }

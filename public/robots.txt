@@ -1,11 +1,12 @@
 # robots.txt for Nexa Calculator (https://nexacalculator.netlify.app)
-# Allow all crawlers, disallow any dynamic API endpoint, point to sitemap.
+# Last updated: 2026-05-31
 
 User-agent: *
 Allow: /
-Disallow: /api/
-Sitemap: https://nexacalculator.netlify.app/sitemap.xml
+Disallow: /api/          # Optional: protect any future API endpoints
 
 User-agent: Googlebot
 Allow: /
-Crawl-delay: 1
+Crawl-delay: 1           # Optional: light rate‑limit for Googlebot
+
+Sitemap: https://nexacalculator.netlify.app/sitemap.xml

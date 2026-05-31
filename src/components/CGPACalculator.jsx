@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useCGPA } from '../hooks/useCGPA';
 import { generatePDF } from '../utils/pdfExport';
 import { downloadCSV } from '../utils/csvExport';
@@ -26,9 +26,125 @@ export default function CGPACalculator({ scale, darkMode }) {
   const [toast, setToast] = useState({ message: '', type: '' });
   const isDark = darkMode;
 
+  // ── Memoized styles ──────────────────────────────────────────────────
+  const sectionTitleStyle = useMemo(
+    () => ({
+      fontSize: 'clamp(13px, 2.5vw, 14px)',
+      fontWeight: 600,
+      letterSpacing: '1.5px',
+      textTransform: 'uppercase',
+      color: isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.6)',
+      margin: '0 0 18px 0',
+    }),
+    [isDark]
+  );
+
+  const semesterCardStyle = useMemo(
+    () => ({
+      background: isDark
+        ? 'rgba(30, 20, 60, 0.45)'
+        : 'rgba(255, 255, 255, 0.75)',
+      backdropFilter: 'blur(12px)',
+      WebkitBackdropFilter: 'blur(12px)',
+      border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}`,
+      borderRadius: 16,
+      boxShadow: isDark
+        ? '0 8px 24px rgba(0,0,0,0.25)'
+        : '0 8px 24px rgba(0,0,0,0.06)',
+      padding: 'clamp(18px, 4vw, 22px)',
+      transition: 'all 0.25s ease',
+    }),
+    [isDark]
+  );
+
+  const addButtonStyle = useMemo(
+    () => ({
+      width: '100%',
+      padding: 'clamp(12px, 2.5vw, 14px)',
+      border: `2px dashed ${isDark ? 'rgba(124,58,237,0.3)' : 'rgba(124,58,237,0.25)'}`,
+      borderRadius: 14,
+      background: 'transparent',
+      color: isDark ? '#c4b5fd' : '#7c3aed',
+      fontSize: 'clamp(14px, 3vw, 15px)',
+      fontWeight: 600,
+      cursor: 'pointer',
+      marginBottom: 20,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 8,
+      transition: 'all 0.25s ease',
+    }),
+    [isDark]
+  );
+
+  const calculateButtonStyle = useMemo(
+    () => ({
+      width: '100%',
+      padding: 'clamp(14px, 3vw, 17px)',
+      background: calculating
+        ? 'linear-gradient(135deg, #6d28d9, #5b21b6)'
+        : 'linear-gradient(135deg, #7c3aed, #6d28d9)',
+      color: '#fff',
+      border: 'none',
+      borderRadius: 14,
+      fontSize: 'clamp(16px, 3.5vw, 17px)',
+      fontWeight: 600,
+      cursor: calculating ? 'progress' : 'pointer',
+      boxShadow: '0 8px 24px rgba(124, 58, 237, 0.35)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 10,
+      transition: 'all 0.3s ease',
+      transform: calculating ? 'scale(0.98)' : 'scale(1)',
+      opacity: calculating ? 0.9 : 1,
+    }),
+    [calculating]
+  );
+
+  const exportButtonStyle = useMemo(
+    () => ({
+      padding: '10px 22px',
+      background: isDark ? 'rgba(124,58,237,0.1)' : 'rgba(124,58,237,0.06)',
+      border: `1px solid ${isDark ? 'rgba(124,58,237,0.3)' : 'rgba(124,58,237,0.25)'}`,
+      borderRadius: 10,
+      color: isDark ? '#c4b5fd' : '#7c3aed',
+      fontSize: 14,
+      fontWeight: 600,
+      cursor: 'pointer',
+      backdropFilter: 'blur(8px)',
+      boxShadow: isDark ? '0 4px 12px rgba(0,0,0,0.2)' : '0 4px 12px rgba(0,0,0,0.04)',
+      transition: 'all 0.25s ease',
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: 8,
+    }),
+    [isDark]
+  );
+
+  const errorBoxStyle = useMemo(
+    () => ({
+      background: 'rgba(239,68,68,0.08)',
+      border: '1px solid rgba(239,68,68,0.25)',
+      borderRadius: 12,
+      padding: '12px 16px',
+      fontSize: 13,
+      color: '#fca5a5',
+      marginTop: 16,
+      backdropFilter: 'blur(8px)',
+    }),
+    []
+  );
+
+  // ── Handlers ──────────────────────────────────────────────────────────
   const handleCalculate = useCallback(() => {
+    if (sems.length === 0) {
+      setToast({ message: 'Add at least one semester GPA to calculate CGPA.', type: 'info' });
+      return;
+    }
     setCalculating(true);
-    setTimeout(() => {
+    requestAnimationFrame(() => {
       calculate();
       logEvent('cgpa_calculated', {
         scale,
@@ -36,7 +152,7 @@ export default function CGPACalculator({ scale, darkMode }) {
         timestamp: new Date().toISOString(),
       });
       setCalculating(false);
-    }, 50);
+    });
   }, [calculate, scale, sems.length]);
 
   const handleExport = useCallback(
@@ -100,32 +216,16 @@ export default function CGPACalculator({ scale, darkMode }) {
     [sems, scale, result]
   );
 
-  const styles = {
-    sectionTitle: {
-      color: isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.6)',
-    },
-    card: {
-      background: isDark
-        ? 'rgba(30, 20, 60, 0.45)'
-        : 'rgba(255, 255, 255, 0.75)',
-      backdropFilter: 'blur(12px)',
-      WebkitBackdropFilter: 'blur(12px)',
-      border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}`,
-      borderRadius: 16,
-      boxShadow: isDark
-        ? '0 8px 24px rgba(0,0,0,0.25)'
-        : '0 8px 24px rgba(0,0,0,0.06)',
-    },
-    addButton: {
-      borderColor: isDark ? 'rgba(124,58,237,0.3)' : 'rgba(124,58,237,0.25)',
-      color: isDark ? '#c4b5fd' : '#7c3aed',
-    },
-    calculateButton: {
-      background: 'linear-gradient(135deg, #7c3aed, #6d28d9)',
-      boxShadow: '0 8px 24px rgba(124, 58, 237, 0.35)',
-    },
-  };
+  // ── Remove button hover handlers ─────────────────────────────────────
+  const handleRemoveEnter = useCallback((e) => {
+    e.currentTarget.style.background = 'rgba(239,68,68,0.25)';
+  }, []);
 
+  const handleRemoveLeave = useCallback((e) => {
+    e.currentTarget.style.background = 'rgba(239,68,68,0.12)';
+  }, []);
+
+  // ── Render ───────────────────────────────────────────────────────────
   return (
     <div className="animate-fade-up">
       <Toast
@@ -134,6 +234,7 @@ export default function CGPACalculator({ scale, darkMode }) {
         onClose={() => setToast({ message: '', type: '' })}
         darkMode={darkMode}
       />
+
       <ExportModal
         isOpen={showExportModal}
         onClose={() => setShowExportModal(false)}
@@ -142,18 +243,27 @@ export default function CGPACalculator({ scale, darkMode }) {
         darkMode={darkMode}
       />
 
-      <h2
-        style={{
-          fontSize: 'clamp(13px, 2.5vw, 14px)',
-          fontWeight: 600,
-          letterSpacing: '1.5px',
-          textTransform: 'uppercase',
-          color: styles.sectionTitle.color,
-          margin: '0 0 18px 0',
-        }}
-      >
+      <h2 style={sectionTitleStyle}>
         Semester GPAs
       </h2>
+
+      {/* Empty state */}
+      {sems.length === 0 && (
+        <div
+          style={{
+            textAlign: 'center',
+            padding: '40px 20px',
+            background: isDark ? 'rgba(255,255,255,0.02)' : 'rgba(255,255,255,0.4)',
+            borderRadius: 16,
+            border: `1px dashed ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'}`,
+            marginBottom: 20,
+          }}
+        >
+          <p style={{ color: isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.5)', margin: 0, fontWeight: 500 }}>
+            No semester GPAs added yet. Click "Add Semester" to begin.
+          </p>
+        </div>
+      )}
 
       <div
         className="semester-grid"
@@ -165,7 +275,24 @@ export default function CGPACalculator({ scale, darkMode }) {
         }}
       >
         {sems.map((s, i) => (
-          <div key={s.id} style={{ ...styles.card, padding: 'clamp(18px, 4vw, 22px)' }}>
+          <div
+            key={s.id}
+            style={semesterCardStyle}
+            role="group"
+            aria-label={`Semester ${i + 1}`}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = isDark
+                ? 'rgba(167,139,250,0.4)'
+                : 'rgba(124,58,237,0.3)';
+              e.currentTarget.style.transform = 'translateY(-2px)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = isDark
+                ? 'rgba(255,255,255,0.08)'
+                : 'rgba(0,0,0,0.06)';
+              e.currentTarget.style.transform = 'translateY(0)';
+            }}
+          >
             <div
               style={{
                 display: 'flex',
@@ -204,14 +331,13 @@ export default function CGPACalculator({ scale, darkMode }) {
                     fontSize: 16,
                     fontWeight: 500,
                   }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'rgba(239,68,68,0.25)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'rgba(239,68,68,0.12)';
-                  }}
+                  onMouseEnter={handleRemoveEnter}
+                  onMouseLeave={handleRemoveLeave}
                 >
-                  ×
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
                 </button>
               )}
             </div>
@@ -239,11 +365,13 @@ export default function CGPACalculator({ scale, darkMode }) {
               }}
               onFocus={(e) => {
                 e.target.style.borderBottomColor = '#7c3aed';
+                e.target.style.boxShadow = '0 2px 0 0 rgba(124,58,237,0.3)';
               }}
               onBlur={(e) => {
                 e.target.style.borderBottomColor = isDark
                   ? 'rgba(255,255,255,0.15)'
                   : 'rgba(0,0,0,0.15)';
+                e.target.style.boxShadow = 'none';
               }}
             />
           </div>
@@ -253,23 +381,7 @@ export default function CGPACalculator({ scale, darkMode }) {
       {sems.length < 8 && (
         <button
           onClick={addSem}
-          style={{
-            width: '100%',
-            padding: 'clamp(12px, 2.5vw, 14px)',
-            border: `2px dashed ${styles.addButton.borderColor}`,
-            borderRadius: 14,
-            background: 'transparent',
-            color: styles.addButton.color,
-            fontSize: 'clamp(14px, 3vw, 15px)',
-            fontWeight: 600,
-            cursor: 'pointer',
-            marginBottom: 20,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 8,
-            transition: 'all 0.25s ease',
-          }}
+          style={addButtonStyle}
           onMouseEnter={(e) => {
             e.currentTarget.style.background = isDark
               ? 'rgba(124,58,237,0.06)'
@@ -278,50 +390,37 @@ export default function CGPACalculator({ scale, darkMode }) {
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.background = 'transparent';
-            e.currentTarget.style.borderColor = styles.addButton.borderColor;
+            e.currentTarget.style.borderColor = isDark
+              ? 'rgba(124,58,237,0.3)'
+              : 'rgba(124,58,237,0.25)';
           }}
+          aria-label="Add new semester"
         >
-          <span style={{ fontSize: 22, lineHeight: 1 }}>+</span> Add Semester
+          <span style={{ fontSize: 22, lineHeight: 1 }} aria-hidden="true">+</span>
+          Add Semester
         </button>
       )}
 
       <button
         onClick={handleCalculate}
         disabled={calculating}
-        style={{
-          width: '100%',
-          padding: 'clamp(14px, 3vw, 17px)',
-          background: calculating
-            ? 'linear-gradient(135deg, #6d28d9, #5b21b6)'
-            : styles.calculateButton.background,
-          color: '#fff',
-          border: 'none',
-          borderRadius: 14,
-          fontSize: 'clamp(16px, 3.5vw, 17px)',
-          fontWeight: 600,
-          cursor: calculating ? 'wait' : 'pointer',
-          boxShadow: styles.calculateButton.boxShadow,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 10,
-          transition: 'all 0.3s ease',
-          transform: calculating ? 'scale(0.98)' : 'scale(1)',
-        }}
+        style={calculateButtonStyle}
         onMouseEnter={(e) => {
           if (!calculating)
             e.currentTarget.style.boxShadow = '0 12px 28px rgba(124, 58, 237, 0.45)';
         }}
         onMouseLeave={(e) => {
           if (!calculating)
-            e.currentTarget.style.boxShadow = styles.calculateButton.boxShadow;
+            e.currentTarget.style.boxShadow = '0 8px 24px rgba(124, 58, 237, 0.35)';
         }}
+        aria-busy={calculating}
       >
         {calculating ? (
           <>
             <div
               className="loading-spinner"
               style={{ width: 20, height: 20, borderWidth: 2 }}
+              aria-hidden="true"
             />
             Calculating...
           </>
@@ -331,18 +430,7 @@ export default function CGPACalculator({ scale, darkMode }) {
       </button>
 
       {error && (
-        <div
-          style={{
-            background: 'rgba(239,68,68,0.08)',
-            border: '1px solid rgba(239,68,68,0.25)',
-            borderRadius: 12,
-            padding: '12px 16px',
-            fontSize: 13,
-            color: '#fca5a5',
-            marginTop: 16,
-            backdropFilter: 'blur(8px)',
-          }}
-        >
+        <div style={errorBoxStyle} role="alert">
           ⚠️ {error}
         </div>
       )}
@@ -360,26 +448,7 @@ export default function CGPACalculator({ scale, darkMode }) {
           <div style={{ marginTop: 20, textAlign: 'right' }}>
             <button
               onClick={() => setShowExportModal(true)}
-              style={{
-                padding: '10px 22px',
-                background: isDark
-                  ? 'rgba(124,58,237,0.1)'
-                  : 'rgba(124,58,237,0.06)',
-                border: `1px solid ${isDark ? 'rgba(124,58,237,0.3)' : 'rgba(124,58,237,0.25)'}`,
-                borderRadius: 10,
-                color: isDark ? '#c4b5fd' : '#7c3aed',
-                fontSize: 14,
-                fontWeight: 600,
-                cursor: 'pointer',
-                backdropFilter: 'blur(8px)',
-                boxShadow: isDark
-                  ? '0 4px 12px rgba(0,0,0,0.2)'
-                  : '0 4px 12px rgba(0,0,0,0.04)',
-                transition: 'all 0.25s ease',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 8,
-              }}
+              style={exportButtonStyle}
               onMouseEnter={(e) => {
                 e.currentTarget.style.background = isDark
                   ? 'rgba(124,58,237,0.2)'
@@ -390,6 +459,7 @@ export default function CGPACalculator({ scale, darkMode }) {
                   ? 'rgba(124,58,237,0.1)'
                   : 'rgba(124,58,237,0.06)';
               }}
+              aria-label="Export academic record as PDF or CSV"
             >
               <svg
                 width="16"

@@ -1,17 +1,76 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 
-/**
- * GradeProgressBar – Animated progress bar showing GPA relative to scale.
- * Includes markers, percentage label, and smooth glow effects.
- */
+// ── GradeProgressBar ──────────────────────────────────────────────────
 export function GradeProgressBar({ gpa, scale, darkMode }) {
   const max = parseFloat(scale);
   const numericGpa = parseFloat(gpa) || 0;
-  const pct = Math.min((numericGpa / max) * 100, 100);
-  const markers = [0, max * 0.5, max * 0.75, max];
+  const pct = useMemo(() => Math.min((numericGpa / max) * 100, 100), [numericGpa, max]);
+
+  const markers = useMemo(() => [0, max * 0.5, max * 0.75, max], [max]);
+
+  // Colour gradient based on percentage
+  const barGradient = useMemo(() => {
+    if (pct >= 70) return 'linear-gradient(90deg, #7c3aed, #a78bfa)';
+    if (pct >= 40) return 'linear-gradient(90deg, #f59e0b, #fbbf24)';
+    return 'linear-gradient(90deg, #ef4444, #f87171)';
+  }, [pct]);
+
+  const barShadow = useMemo(() => {
+    if (pct >= 70) return '0 0 12px rgba(124,58,237,0.5)';
+    if (pct >= 40) return '0 0 12px rgba(245,158,11,0.5)';
+    return '0 0 12px rgba(239,68,68,0.5)';
+  }, [pct]);
+
   const subCol = darkMode ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)';
   const isHigh = pct >= 70;
   const isMedium = pct >= 40;
+
+  // Memoised styles for the container
+  const containerStyle = useMemo(
+    () => ({
+      marginTop: 24,
+      padding: '0 4px',
+      width: '100%',
+    }),
+    []
+  );
+
+  const labelRowStyle = useMemo(
+    () => ({
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'baseline',
+      marginBottom: 8,
+    }),
+    []
+  );
+
+  const trackStyle = useMemo(
+    () => ({
+      height: 8,
+      background: darkMode
+        ? 'rgba(255,255,255,0.07)'
+        : 'rgba(0,0,0,0.07)',
+      borderRadius: 10,
+      overflow: 'hidden',
+      boxShadow: darkMode
+        ? 'inset 0 1px 3px rgba(0,0,0,0.3)'
+        : 'inset 0 1px 3px rgba(0,0,0,0.05)',
+    }),
+    [darkMode]
+  );
+
+  const fillStyle = useMemo(
+    () => ({
+      height: '100%',
+      width: `${pct}%`,
+      background: barGradient,
+      borderRadius: 10,
+      transition: 'width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)',
+      boxShadow: barShadow,
+    }),
+    [pct, barGradient, barShadow]
+  );
 
   return (
     <div
@@ -20,100 +79,178 @@ export function GradeProgressBar({ gpa, scale, darkMode }) {
       aria-valuemin={0}
       aria-valuemax={max}
       aria-label={`GPA progress: ${numericGpa.toFixed(2)} out of ${max}`}
-      style={{
-        marginTop: 24,
-        padding: '0 4px',
-        width: '100%',
-      }}
+      style={containerStyle}
     >
       {/* Percentage label */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'baseline',
-        marginBottom: 8,
-      }}>
-        <div style={{
-          fontSize: 12,
-          fontWeight: 600,
-          color: subCol,
-          textTransform: 'uppercase',
-          letterSpacing: '0.05em',
-        }}>
+      <div style={labelRowStyle}>
+        <span
+          style={{
+            fontSize: 12,
+            fontWeight: 600,
+            color: subCol,
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+          }}
+        >
           Progress
-        </div>
-        <div style={{
-          fontSize: 'clamp(11px, 2vw, 13px)',
-          fontWeight: 700,
-          color: isHigh ? '#10b981' : isMedium ? '#f59e0b' : '#ef4444',
-        }}>
+        </span>
+        <span
+          style={{
+            fontSize: 'clamp(11px, 2vw, 13px)',
+            fontWeight: 700,
+            color: isHigh ? '#10b981' : isMedium ? '#f59e0b' : '#ef4444',
+          }}
+          aria-live="polite"
+        >
           {numericGpa.toFixed(2)} / {max} ({pct.toFixed(0)}%)
-        </div>
+        </span>
       </div>
 
       {/* Markers */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        fontSize: 10,
-        color: subCol,
-        marginBottom: 6,
-        letterSpacing: 0.5,
-      }}>
+      <div
+        aria-hidden="true"
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          fontSize: 10,
+          color: subCol,
+          marginBottom: 6,
+          letterSpacing: 0.5,
+        }}
+      >
         {markers.map((m, i) => (
           <span key={i}>{m.toFixed(2)}</span>
         ))}
       </div>
 
-      {/* Bar */}
-      <div
-        style={{
-          height: 8,
-          background: darkMode
-            ? 'rgba(255,255,255,0.07)'
-            : 'rgba(0,0,0,0.07)',
-          borderRadius: 10,
-          overflow: 'hidden',
-          boxShadow: darkMode
-            ? 'inset 0 1px 3px rgba(0,0,0,0.3)'
-            : 'inset 0 1px 3px rgba(0,0,0,0.05)',
-        }}
-      >
-        <div
-          style={{
-            height: '100%',
-            width: `${pct}%`,
-            background: isHigh
-              ? 'linear-gradient(90deg, #7c3aed, #a78bfa)'
-              : isMedium
-              ? 'linear-gradient(90deg, #f59e0b, #fbbf24)'
-              : 'linear-gradient(90deg, #ef4444, #f87171)',
-            borderRadius: 10,
-            transition: 'width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)',
-            boxShadow: isHigh
-              ? '0 0 12px rgba(124,58,237,0.5)'
-              : isMedium
-              ? '0 0 12px rgba(245,158,11,0.5)'
-              : '0 0 12px rgba(239,68,68,0.5)',
-          }}
-        />
+      {/* Track */}
+      <div style={trackStyle}>
+        <div style={fillStyle} />
       </div>
     </div>
   );
 }
 
-/**
- * TargetGPACalculator – Computes required future GPA to reach a target.
- * Validated, glassmorphic UI with clear error handling.
- */
+// ── TargetGPACalculator ────────────────────────────────────────────────
 export function TargetGPACalculator({ currentGPA, totalCredits, darkMode }) {
   const [targetGPA, setTargetGPA] = useState('');
   const [remainingCredits, setRemainingCredits] = useState('');
   const [requiredGPA, setRequiredGPA] = useState(null);
   const [error, setError] = useState('');
-
   const isDark = darkMode;
 
+  // Memoised styles
+  const cardStyle = useMemo(
+    () => ({
+      background: isDark
+        ? 'linear-gradient(135deg, rgba(30,20,60,0.5), rgba(15,12,35,0.6))'
+        : 'linear-gradient(135deg, rgba(255,255,255,0.7), rgba(240,235,255,0.7))',
+      backdropFilter: 'blur(16px)',
+      WebkitBackdropFilter: 'blur(16px)',
+      border: `1px solid ${isDark ? 'rgba(167,139,250,0.2)' : 'rgba(124,58,237,0.15)'}`,
+      borderRadius: 20,
+      padding: 'clamp(18px, 4vw, 24px)',
+      marginTop: 24,
+      boxShadow: isDark
+        ? '0 12px 32px rgba(0,0,0,0.4)'
+        : '0 12px 32px rgba(0,0,0,0.06)',
+    }),
+    [isDark]
+  );
+
+  const headingStyle = useMemo(
+    () => ({
+      fontSize: 16,
+      fontWeight: 600,
+      margin: 0,
+      color: isDark ? '#e2d9f3' : '#1a1035',
+    }),
+    [isDark]
+  );
+
+  const labelStyle = useMemo(
+    () => ({
+      fontSize: 13,
+      fontWeight: 500,
+      color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)',
+    }),
+    [isDark]
+  );
+
+  // Input style helper (memoised factory)
+  const inputStyle = useCallback(
+    (hasValue) => ({
+      width: '100%',
+      padding: '12px 16px',
+      borderRadius: 12,
+      border: `1px solid ${
+        hasValue
+          ? isDark
+            ? 'rgba(167,139,250,0.5)'
+            : 'rgba(124,58,237,0.4)'
+          : isDark
+          ? 'rgba(255,255,255,0.12)'
+          : 'rgba(0,0,0,0.1)'
+      }`,
+      background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.7)',
+      backdropFilter: 'blur(8px)',
+      color: isDark ? '#f1f0ff' : '#1a1035',
+      fontSize: 15,
+      fontWeight: 500,
+      outline: 'none',
+      transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
+      boxShadow: isDark
+        ? 'inset 0 2px 4px rgba(0,0,0,0.2)'
+        : 'inset 0 2px 4px rgba(0,0,0,0.02)',
+    }),
+    [isDark]
+  );
+
+  const calculateButtonStyle = useMemo(
+    () => ({
+      width: '100%',
+      padding: '14px',
+      background: 'linear-gradient(135deg, #7c3aed, #6d28d9)',
+      border: 'none',
+      borderRadius: 14,
+      color: '#fff',
+      fontWeight: 600,
+      fontSize: 15,
+      cursor: 'pointer',
+      boxShadow: '0 8px 20px rgba(124,58,237,0.25)',
+      transition: 'all 0.25s ease',
+    }),
+    []
+  );
+
+  const errorBoxStyle = useMemo(
+    () => ({
+      background: 'rgba(239,68,68,0.08)',
+      border: '1px solid rgba(239,68,68,0.2)',
+      borderRadius: 10,
+      padding: '10px 14px',
+      fontSize: 13,
+      color: '#fca5a5',
+      fontWeight: 500,
+    }),
+    []
+  );
+
+  const resultCardStyle = useMemo(
+    () => ({
+      textAlign: 'center',
+      marginTop: 8,
+      padding: '16px',
+      background: isDark
+        ? 'rgba(124,58,237,0.08)'
+        : 'rgba(124,58,237,0.04)',
+      borderRadius: 16,
+      border: `1px solid ${isDark ? 'rgba(124,58,237,0.2)' : 'rgba(124,58,237,0.12)'}`,
+    }),
+    [isDark]
+  );
+
+  // Calculation logic
   const calculateRequired = useCallback(() => {
     setError('');
     setRequiredGPA(null);
@@ -134,7 +271,6 @@ export function TargetGPACalculator({ currentGPA, totalCredits, darkMode }) {
       setError('Please fill all fields with valid numbers.');
       return;
     }
-
     if (target < 0) {
       setError('Target GPA must be non‑negative.');
       return;
@@ -150,137 +286,78 @@ export function TargetGPACalculator({ currentGPA, totalCredits, darkMode }) {
     } else {
       setRequiredGPA(required.toFixed(2));
     }
-  }, [currentGPA, targetGPA, totalCredits, remainingCredits]);
-
-  const inputStyle = (value) => ({
-    width: '100%',
-    padding: '12px 16px',
-    borderRadius: 12,
-    border: `1px solid ${isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.1)'}`,
-    background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.7)',
-    backdropFilter: 'blur(8px)',
-    color: isDark ? '#f1f0ff' : '#1a1035',
-    fontSize: 15,
-    fontWeight: 500,
-    outline: 'none',
-    transition: 'border-color 0.2s ease',
-    boxShadow: isDark
-      ? 'inset 0 2px 4px rgba(0,0,0,0.2)'
-      : 'inset 0 2px 4px rgba(0,0,0,0.02)',
-    ...(value === '' ? {} : { borderColor: isDark ? 'rgba(167,139,250,0.5)' : 'rgba(124,58,237,0.4)' }),
-  });
+  }, [currentGPA, totalCredits, targetGPA, remainingCredits]);
 
   return (
-    <div
-      className="animate-scale-in"
-      style={{
-        background: isDark
-          ? 'linear-gradient(135deg, rgba(30,20,60,0.5), rgba(15,12,35,0.6))'
-          : 'linear-gradient(135deg, rgba(255,255,255,0.7), rgba(240,235,255,0.7))',
-        backdropFilter: 'blur(16px)',
-        WebkitBackdropFilter: 'blur(16px)',
-        border: `1px solid ${isDark ? 'rgba(167,139,250,0.2)' : 'rgba(124,58,237,0.15)'}`,
-        borderRadius: 20,
-        padding: 'clamp(18px, 4vw, 24px)',
-        marginTop: 24,
-        boxShadow: isDark
-          ? '0 12px 32px rgba(0,0,0,0.4)'
-          : '0 12px 32px rgba(0,0,0,0.06)',
-      }}
-    >
+    <div className="animate-scale-in" style={cardStyle}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
         <span aria-hidden="true" style={{ fontSize: 20 }}>🎯</span>
-        <h3 style={{
-          fontSize: 16,
-          fontWeight: 600,
-          margin: 0,
-          color: isDark ? '#e2d9f3' : '#1a1035',
-        }}>
-          Target GPA Calculator
-        </h3>
+        <h3 style={headingStyle}>Target GPA Calculator</h3>
       </div>
 
       <div style={{ display: 'grid', gap: 16 }}>
-        <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          <span style={{
-            fontSize: 13,
-            fontWeight: 500,
-            color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)',
-          }}>
-            Target GPA
-          </span>
+        {/* Target GPA input */}
+        <label htmlFor="target-gpa-input" style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <span style={labelStyle}>Target GPA</span>
           <input
+            id="target-gpa-input"
             type="number"
             min="0"
             step="0.01"
             placeholder="e.g. 3.50"
             value={targetGPA}
             onChange={(e) => setTargetGPA(e.target.value)}
-            style={inputStyle(targetGPA)}
-            onFocus={(e) => (e.target.style.borderColor = '#7c3aed')}
-            onBlur={(e) =>
-              (e.target.style.borderColor = isDark
+            style={inputStyle(targetGPA !== '')}
+            onFocus={(e) => {
+              e.target.style.borderColor = '#7c3aed';
+              e.target.style.boxShadow = '0 0 0 3px rgba(124,58,237,0.15)';
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = isDark
                 ? 'rgba(255,255,255,0.12)'
-                : 'rgba(0,0,0,0.1)')
-            }
+                : 'rgba(0,0,0,0.1)';
+              e.target.style.boxShadow = 'none';
+            }}
+            aria-required="true"
           />
         </label>
-        <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          <span style={{
-            fontSize: 13,
-            fontWeight: 500,
-            color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)',
-          }}>
-            Remaining Credits
-          </span>
+
+        {/* Remaining Credits input */}
+        <label htmlFor="remaining-credits-input" style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <span style={labelStyle}>Remaining Credits</span>
           <input
+            id="remaining-credits-input"
             type="number"
             min="0"
             placeholder="e.g. 30"
             value={remainingCredits}
             onChange={(e) => setRemainingCredits(e.target.value)}
-            style={inputStyle(remainingCredits)}
-            onFocus={(e) => (e.target.style.borderColor = '#7c3aed')}
-            onBlur={(e) =>
-              (e.target.style.borderColor = isDark
+            style={inputStyle(remainingCredits !== '')}
+            onFocus={(e) => {
+              e.target.style.borderColor = '#7c3aed';
+              e.target.style.boxShadow = '0 0 0 3px rgba(124,58,237,0.15)';
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = isDark
                 ? 'rgba(255,255,255,0.12)'
-                : 'rgba(0,0,0,0.1)')
-            }
+                : 'rgba(0,0,0,0.1)';
+              e.target.style.boxShadow = 'none';
+            }}
+            aria-required="true"
           />
         </label>
 
+        {/* Error message */}
         {error && (
-          <div
-            role="alert"
-            style={{
-              background: 'rgba(239,68,68,0.08)',
-              border: '1px solid rgba(239,68,68,0.2)',
-              borderRadius: 10,
-              padding: '10px 14px',
-              fontSize: 13,
-              color: '#fca5a5',
-              fontWeight: 500,
-            }}
-          >
+          <div role="alert" style={errorBoxStyle}>
             ⚠️ {error}
           </div>
         )}
 
+        {/* Calculate button */}
         <button
           onClick={calculateRequired}
-          style={{
-            width: '100%',
-            padding: '14px',
-            background: 'linear-gradient(135deg, #7c3aed, #6d28d9)',
-            border: 'none',
-            borderRadius: 14,
-            color: '#fff',
-            fontWeight: 600,
-            fontSize: 15,
-            cursor: 'pointer',
-            boxShadow: '0 8px 20px rgba(124,58,237,0.25)',
-            transition: 'all 0.25s ease',
-          }}
+          style={calculateButtonStyle}
           onMouseEnter={(e) => {
             e.currentTarget.style.boxShadow = '0 12px 26px rgba(124,58,237,0.4)';
             e.currentTarget.style.transform = 'translateY(-1px)';
@@ -293,35 +370,28 @@ export function TargetGPACalculator({ currentGPA, totalCredits, darkMode }) {
           Calculate Required GPA
         </button>
 
+        {/* Result */}
         {requiredGPA !== null && (
-          <div
-            className="animate-fade-up"
-            style={{
-              textAlign: 'center',
-              marginTop: 8,
-              padding: '16px',
-              background: isDark
-                ? 'rgba(124,58,237,0.08)'
-                : 'rgba(124,58,237,0.04)',
-              borderRadius: 16,
-              border: `1px solid ${isDark ? 'rgba(124,58,237,0.2)' : 'rgba(124,58,237,0.12)'}`,
-            }}
-          >
-            <div style={{
-              fontSize: 12,
-              color: isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)',
-              marginBottom: 6,
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-              fontWeight: 500,
-            }}>
+          <div className="animate-fade-up" style={resultCardStyle}>
+            <div
+              style={{
+                fontSize: 12,
+                color: isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)',
+                marginBottom: 6,
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+                fontWeight: 500,
+              }}
+            >
               Required GPA in remaining courses
             </div>
-            <div style={{
-              fontSize: 'clamp(24px, 8vw, 32px)',
-              fontWeight: 700,
-              color: isDark ? '#c4b5fd' : '#7c3aed',
-            }}>
+            <div
+              style={{
+                fontSize: 'clamp(24px, 8vw, 32px)',
+                fontWeight: 700,
+                color: isDark ? '#c4b5fd' : '#7c3aed',
+              }}
+            >
               {requiredGPA}
             </div>
           </div>
