@@ -1,5 +1,5 @@
 import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react-oxc';
+import react from '@vitejs/plugin-react';
 import path from 'path';
 
 export default defineConfig({
@@ -44,8 +44,6 @@ export default defineConfig({
       '@emailjs/browser',
     ],
     exclude: ['jspdf'],
-    // Use the new Rolldown‑specific options (removes the deprecation warning)
-    rolldownOptions: {},
   },
 
   resolve: {

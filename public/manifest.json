@@ -2,7 +2,7 @@
   "name": "Nexa Calculator",
   "short_name": "Nexa Calc",
   "description": "Free online GPA, CGPA & Scientific Calculator for students. Track academic performance with premium tools.",
-  "start_url": "/?utm_source=pwa",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "any",

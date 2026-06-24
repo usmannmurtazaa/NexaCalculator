@@ -1,4 +1,4 @@
-// ── Core Tokens (unchanged, extended) ────────────────────────────────────────
+// ── Core Design Tokens ──────────────────────────────────────────────────────
 const theme = {
   colors: {
     primary: '#7c3aed',
@@ -59,7 +59,6 @@ const theme = {
 
   animation: '0.3s ease',
 
-  // ── New design tokens (no removal, only additions) ────────────────────────
   breakpoints: {
     xs: 320,
     sm: 480,
@@ -125,69 +124,5 @@ const theme = {
     spring: '0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)',
   },
 };
-
-// ── Dynamic CSS Variable Generator ──────────────────────────────────────────
-export function generateCSSVariables(darkMode) {
-  return {
-    // Primary palette
-    '--color-primary': theme.colors.primary,
-    '--color-primary-light': theme.colors.primaryLight,
-    '--color-primary-dark': theme.colors.primaryDark,
-
-    // Backgrounds
-    '--bg-app': darkMode
-      ? `linear-gradient(135deg, ${theme.colors.backgroundDark}, #1a1035 25%, #2d1b4e 75%, ${theme.colors.backgroundDark})`
-      : `linear-gradient(135deg, ${theme.colors.backgroundLight}, #eef1ff 25%, #f0e6ff 75%, ${theme.colors.backgroundLight})`,
-    '--bg-ambient': darkMode
-      ? 'radial-gradient(circle at 20% 80%, rgba(120,50,220,0.08) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(80,150,255,0.06) 0%, transparent 50%)'
-      : 'radial-gradient(circle at 20% 80%, rgba(120,50,220,0.04) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(80,150,255,0.03) 0%, transparent 50%)',
-
-    // Text
-    '--text-primary': darkMode
-      ? theme.colors.textPrimaryDark
-      : theme.colors.textPrimaryLight,
-    '--text-secondary': darkMode
-      ? theme.colors.textSecondaryDark
-      : theme.colors.textSecondaryLight,
-    '--text-tertiary': darkMode
-      ? 'rgba(255,255,255,0.45)'
-      : 'rgba(0,0,0,0.45)',
-
-    // Glass
-    '--glass-bg': darkMode
-      ? 'rgba(255,255,255,0.05)'
-      : 'rgba(255,255,255,0.7)',
-    '--glass-border': darkMode
-      ? theme.colors.borderDark
-      : theme.colors.borderLight,
-    '--glass-shadow': darkMode
-      ? '0 8px 32px rgba(0,0,0,0.2)'
-      : '0 8px 32px rgba(0,0,0,0.06)',
-
-    // Cards
-    '--card-bg': darkMode
-      ? theme.colors.cardDark
-      : theme.colors.cardLight,
-    '--card-border': darkMode
-      ? 'rgba(255,255,255,0.1)'
-      : 'rgba(0,0,0,0.06)',
-
-    // Status colors (shared)
-    '--color-error': theme.colors.error,
-    '--color-success': theme.colors.success,
-    '--color-warning': theme.colors.warning,
-
-    // Focus
-    '--focus-ring': theme.colors.primary,
-
-    // Scrollbar
-    '--scrollbar-thumb': '#7c3aed44',
-    '--scrollbar-thumb-hover': '#7c3aed66',
-
-    // Transitions
-    '--animation-duration': '0.3s',
-    '--animation-easing': 'cubic-bezier(0.4, 0, 0.2, 1)',
-  };
-}
 
 export default theme;
