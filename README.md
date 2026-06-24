@@ -163,31 +163,13 @@ cd NexaCalculator
 2. Install dependencies
 bash
 npm install
-3. Firebase configuration (optional but recommended)
-Create a Firebase project at console.firebase.google.com and enable Analytics and Firestore (if desired).
 
-Create a .env file in the project root with your Firebase config:
-
-env
-VITE_FIREBASE_API_KEY=your_api_key
-VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
-VITE_FIREBASE_PROJECT_ID=your_project_id
-VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
-VITE_FIREBASE_MESSAGING_SENDER_ID=...
-VITE_FIREBASE_APP_ID=...
-VITE_FIREBASE_MEASUREMENT_ID=G-...
-The app will still work without Firebase; analytics calls are safely wrapped.
-
-4. EmailJS setup
-Add the following environment variables to your .env file:
-
-env
-VITE_EMAILJS_SERVICE_ID=your_service_id
-VITE_EMAILJS_TEMPLATE_ID=your_template_id
-VITE_EMAILJS_PUBLIC_KEY=your_public_key
-5. Start development server
+3. Start development server
 bash
 npm run dev
+```
+---
+
 📖 Usage
 Choose a tab – GPA, CGPA, or Scientific Calculator.
 
@@ -200,6 +182,9 @@ View results – GPA with standing, progress bar, target GPA calculator.
 Export – Click “Export Academic Record” to save as PDF or CSV (data logged to Firebase).
 
 Contact – Use the contact form to send feedback.
+
+---
+
 
 🧱 Project Structure
 text
@@ -242,7 +227,11 @@ src/
 │   └── AnimatedNumber.jsx
 └── styles/
     └── global.css
+
+---
+
 🔮 Roadmap
+
 PWA – Offline support and service worker
 
 LocalStorage history – Save past calculations
@@ -253,12 +242,17 @@ Graphs – GPA trends across semesters
 
 i18n – Multi‑language support
 
+---
+
+
 👨‍💻 Author
 Usman Murtaza
 
 https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white
 https://img.shields.io/badge/Portfolio-000000?style=for-the-badge&logo=About.me&logoColor=white
 https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white
+
+---
 
 📄 License
 MIT License – see the LICENSE file for details.
